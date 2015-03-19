@@ -46,7 +46,8 @@ packages:
  - python-dnspython
  - xsltproc
  - zlib1g-dev
-
+ - autoconf
+ 
 package_upgrade: true
 
 write_files:
