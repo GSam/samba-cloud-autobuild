@@ -73,7 +73,7 @@ write_files:
     cd samba
     git fetch catalyst
     git checkout catalyst/for-cloud-autobuild
-    ./script/autobuild.py --tail --testbase=$HOME/autobuild
+    AUTOBUILD_CLEAN_TREE_OVERRIDE=1 ./script/autobuild.py --nocleanup --testbase=$HOME/autobuild --tail
    path: /usr/local/bin/build-samba
    permissions: '0755'
 
