@@ -76,7 +76,7 @@ runcmd:
     cd samba
     git fetch catalyst
     git checkout catalyst/for-cloud-autobuild
-    AUTOBUILD_CLEAN_TREE_OVERRIDE=1 ./script/autobuild.py --nocleanup --testbase=/home/ubuntu/autobuild --tail
+    ./script/autobuild.py --nocleanup --testbase=/home/ubuntu/autobuild --tail
     EOF
  - chmod 0755 /usr/local/bin/build-samba
  - [ su, ubuntu, -l, -c, /usr/local/bin/clone-samba]
