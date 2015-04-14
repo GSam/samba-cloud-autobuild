@@ -1,0 +1,142 @@
+#!/usr/bin/python
+import argparse
+import os
+import sys
+import subprocess
+import tempfile
+import random
+
+try:
+    from pipes import quote
+except ImportError:
+    from shlex import quote
+
+HERE = os.path.dirname(__file__)
+
+YAML_TEMPLATE = os.path.join(HERE, 'user-config.yaml.template')
+YAML_TEMPLATE_1204 = os.path.join(HERE, 'user-config-12.04.yaml.template')
+
+OPENRC_TABLE = {
+    'por': '~/sambatest.catalyst.net.nz-openrc.sh',
+    'wlg': '~/sambatest.catalyst.net.nz-openrc-wlg.sh'
+}
+
+SERVER_NAME = "samba-build-%s"
+
+def run_nova_cmd(args, centre="por", dry_run=False):
+    open_rc = OPENRC_TABLE[centre]
+    args = ['.', open_rc, ';', 'nova'] + [quote(x) for x in args]
+    str_args = ' '.join(args)
+    if dry_run:
+        return str_args
+    return subprocess.check_output(str_args, shell=True)
+
+
+def write_yaml_config(remote, branch, image):
+    if '12.04' in image:
+        template = YAML_TEMPLATE_1204
+    else:
+        template = YAML_TEMPLATE
+
+    f = open(template)
+    s = f.read()
+    f.close()
+    s = s.format(remote=remote, branch=branch)
+    f = tempfile.NamedTemporaryFile(suffix='.yaml',
+                                    prefix='samba-cloud-autobuild-user-config-',
+                                    delete=False)
+    f.write(s)
+    f.close()
+    return f.name
+
+
+def boot(flavor, image, yaml_file, server_name, key_name, centre, dry_run=False):
+    open_rc = OPENRC_TABLE[centre]
+    if key_name is None:
+        key_name = '$USER'  # maybe the environment here is better
+    args = ['.', open_rc, ';', 'nova', 'boot']
+    if flavor:
+        args += ['--flavor', quote(flavor)]
+    if image:
+        args += ['--image', quote(image)]
+
+    args += ['--user-data', yaml_file]
+    args += ['--key-name', key_name]
+    args += ['--config-drive', 'true']
+    args += ['--poll']
+    args += [server_name]
+    if dry_run:
+        print ' '.join(args)
+    else:
+        subprocess.check_call(' '.join(args), shell=True)
+
+
+def main():
+    default_server_suffix = "%s-%06x" % (os.environ.get('USER'),
+                                        random.randint(0, 0xffffff))
+    parser = argparse.ArgumentParser()
+    parser.add_argument('suffix', nargs='?',
+                        default=default_server_suffix,
+                        help="name the server with this suffix")
+
+    parser.add_argument('--whole-name', action='store_true',
+                        help="use the name as the whole name")
+
+    parser.add_argument('--key-name', default=os.environ.get('USER'),
+                        help="use this ssh key pair")
+
+    parser.add_argument('-i', '--image', default="ubuntu-14.04-x86_64",
+                        help="specify the image to use")
+
+    parser.add_argument('-f', '--flavor',
+                        help="specify which flavour to use")
+
+    parser.add_argument('-c', '--centre', default="por",
+                        help="'wlg' or 'por' (default 'por')")
+
+    parser.add_argument('-b', '--branch',
+                        help="git branch to use")
+
+    parser.add_argument('-r', '--remote',
+                        default='git://git.catalyst.net.nz/samba.git',
+                        help="git remote to use")
+
+    parser.add_argument('--image-list', action='store_true',
+                        help="list the available images, and exit")
+
+    parser.add_argument('--flavor-list', action='store_true',
+                        help="list the available flavours, and exit")
+
+    parser.add_argument('-n', '--dry-run', action='store_true',
+                        help="do nothing remotely, "
+                        "show the nova command that would be run")
+
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help="say a litle more about what is happening")
+
+    args = parser.parse_args()
+
+    if args.dry_run:
+        print " This is what we WOULD be doing without -n/--dry-run:\n"
+
+    for nova_cmd in ("image_list",
+                     "flavor_list"):
+        if vars(args)[nova_cmd]:
+            print(run_nova_cmd([nova_cmd.replace('_', '-')],
+                               centre=args.centre, dry_run=args.dry_run))
+            sys.exit()
+
+    yaml_file = write_yaml_config(args.remote, args.branch, args.image)
+    if args.whole_name:
+        server_name = args.suffix
+    else:
+        server_name = SERVER_NAME % args.suffix
+
+    if args.verbose:
+        print >> sys.stderr, "YAML file is %s" % yaml_file
+
+    boot(args.flavor, args.image, yaml_file, server_name, args.key_name,
+         centre=args.centre, dry_run=args.dry_run)
+
+
+main()
