@@ -80,7 +80,11 @@ write_files:
     git remote add our_repo {remote}
     git fetch our_repo
     git checkout our_repo/{branch}
-    ./script/autobuild.py --nocleanup --testbase=$HOME/autobuild --tail
+    ./script/autobuild.py --email-from=samba-dev@catalyst.net.nz \
+                          --email=samba-dev@catalyst.net.nz \
+                          --email-server=smtp1.catalyst.net.nz \
+                          --always-email \
+                          --nocleanup --testbase=$HOME/autobuild --tail
    path: /usr/local/bin/build-samba
    permissions: '0755'
  - content: |
