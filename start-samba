@@ -32,16 +32,26 @@ def run_nova_cmd(args, centre="por", dry_run=False):
     return subprocess.check_output(str_args, shell=True)
 
 
-def write_yaml_config(remote, branch, image):
+def get_credentials_from_env(credentials_file):
+    env = subprocess.check_output(['bash', '-c', 'source %s && env' %
+                                   credentials_file], env={})
+    credentials = dict(x.strip().split('=', 1) for x in env.split("\n")
+                       if x.startswith('OS_'))
+    return credentials
+
+
+def write_yaml_config(remote, branch, image, centre):
     if '12.04' in image:
         template = YAML_TEMPLATE_1204
     else:
         template = YAML_TEMPLATE
 
+    credentials = get_credentials_from_env(OPENRC_TABLE[centre])
+
     f = open(template)
     s = f.read()
     f.close()
-    s = s.format(remote=remote, branch=branch)
+    s = s.format(remote=remote, branch=branch, **credentials)
     f = tempfile.NamedTemporaryFile(suffix='.yaml',
                                     prefix='samba-cloud-autobuild-user-config-',
                                     delete=False)
@@ -126,7 +136,8 @@ def main():
                                centre=args.centre, dry_run=args.dry_run))
             sys.exit()
 
-    yaml_file = write_yaml_config(args.remote, args.branch, args.image)
+    yaml_file = write_yaml_config(args.remote, args.branch, args.image,
+                                  args.centre)
     if args.whole_name:
         server_name = args.suffix
     else:
