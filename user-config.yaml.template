@@ -83,7 +83,7 @@ write_files:
     ./script/autobuild.py --email-from=samba-dev@catalyst.net.nz \
                           --email=samba-dev@catalyst.net.nz \
                           --email-server=smtp1.catalyst.net.nz \
-                          --always-email \
+                          --always-email --attach-logs \
                           --nocleanup --testbase=$HOME/autobuild --tail
     /usr/local/bin/delete-host
    path: /usr/local/bin/build-samba
@@ -127,7 +127,7 @@ write_files:
    path: /usr/local/bin/delete-host
    permissions: '0755'
 
-
+# If the build succeeds, it deletes the host at the end of build-samba.  Otherwise, we run delete-host or shelve-host depending on what the caller wanted
 runcmd:
  - set -x
  - [ su, ubuntu, -l, -c, /usr/local/bin/clone-samba]
