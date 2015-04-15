@@ -85,6 +85,7 @@ write_files:
                           --email-server=smtp1.catalyst.net.nz \
                           --always-email \
                           --nocleanup --testbase=$HOME/autobuild --tail
+    /usr/local/bin/delete-host
    path: /usr/local/bin/build-samba
    permissions: '0755'
  - content: |
@@ -100,10 +101,35 @@ write_files:
     nova shelve $(hostname)
    path: /usr/local/bin/shelve-host
    permissions: '0755'
+ - content: |
+    #!/bin/bash
+    export OS_AUTH_URL="{OS_AUTH_URL}"
+    export OS_TENANT_ID="{OS_TENANT_ID}"
+    export OS_TENANT_NAME="{OS_TENANT_NAME}"
+    export OS_USERNAME="{OS_USERNAME}"
+    export OS_PASSWORD="{OS_PASSWORD}"
+    export OS_REGION_NAME="{OS_REGION_NAME}"
+    if [ -z "$OS_REGION_NAME" ]; then unset OS_REGION_NAME; fi
+    sync
+    nova suspend $(hostname)
+   path: /usr/local/bin/suspend-host
+   permissions: '0755'
+ - content: |
+    #!/bin/bash
+    export OS_AUTH_URL="{OS_AUTH_URL}"
+    export OS_TENANT_ID="{OS_TENANT_ID}"
+    export OS_TENANT_NAME="{OS_TENANT_NAME}"
+    export OS_USERNAME="{OS_USERNAME}"
+    export OS_PASSWORD="{OS_PASSWORD}"
+    export OS_REGION_NAME="{OS_REGION_NAME}"
+    if [ -z "$OS_REGION_NAME" ]; then unset OS_REGION_NAME; fi
+    nova delete $(hostname)
+   path: /usr/local/bin/delete-host
+   permissions: '0755'
 
 
 runcmd:
  - set -x
  - [ su, ubuntu, -l, -c, /usr/local/bin/clone-samba]
  - [ su, ubuntu, -l, -c, /usr/local/bin/build-samba]
- - [ su, ubuntu, -l, -c, /usr/local/bin/shelve-host]
+ - [ su, ubuntu, -l, -c, /usr/local/bin/{onfail}-host]

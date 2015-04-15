@@ -40,7 +40,7 @@ def get_credentials_from_env(credentials_file):
     return credentials
 
 
-def write_yaml_config(remote, branch, image, centre):
+def write_yaml_config(remote, branch, image, centre, onfail):
     if '12.04' in image:
         template = YAML_TEMPLATE_1204
     else:
@@ -51,7 +51,7 @@ def write_yaml_config(remote, branch, image, centre):
     f = open(template)
     s = f.read()
     f.close()
-    s = s.format(remote=remote, branch=branch, **credentials)
+    s = s.format(remote=remote, branch=branch, onfail=onfail, **credentials)
     f = tempfile.NamedTemporaryFile(suffix='.yaml',
                                     prefix='samba-cloud-autobuild-user-config-',
                                     delete=False)
@@ -124,6 +124,9 @@ def main():
     parser.add_argument('-v', '--verbose', action='store_true',
                         help="say a litle more about what is happening")
 
+    parser.add_argument('--onfail', default="delete",
+                        help="'suspend', 'shelve' or 'delete' (default 'delete')")
+
     args = parser.parse_args()
 
     if args.dry_run:
@@ -137,7 +140,7 @@ def main():
             sys.exit()
 
     yaml_file = write_yaml_config(args.remote, args.branch, args.image,
-                                  args.centre)
+                                  args.centre, args.onfail)
     if args.whole_name:
         server_name = args.suffix
     else:
