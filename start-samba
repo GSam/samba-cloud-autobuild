@@ -98,8 +98,8 @@ def main():
     parser.add_argument('-i', '--image', default="samba-build-14.04-template",
                         help="specify the image to use")
 
-    parser.add_argument('-f', '--flavor',
-                        help="specify which flavour to use")
+    parser.add_argument('-f', '--flavor', default='c093745c-a6c7-4792-9f3d-085e7782eca6',
+                        help="specify which flavour to use (default: 2 CPUs, 4GB)")
 
     parser.add_argument('-c', '--centre', default="por",
                         help="'wlg' or 'por' (default 'por')")
