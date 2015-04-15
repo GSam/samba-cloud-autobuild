@@ -21,7 +21,7 @@ OPENRC_TABLE = {
     'wlg': '~/sambatest.catalyst.net.nz-openrc-wlg.sh'
 }
 
-SERVER_NAME = "samba-build-%s"
+SERVER_NAME = "samba-build-%s-%s"
 
 def run_nova_cmd(args, centre="por", dry_run=False):
     open_rc = OPENRC_TABLE[centre]
@@ -82,8 +82,8 @@ def boot(flavor, image, yaml_file, server_name, key_name, centre, dry_run=False)
 
 
 def main():
-    default_server_suffix = "%s-%06x" % (os.environ.get('USER'),
-                                        random.randint(0, 0xffffff))
+    default_server_suffix = "%s-%04d" % (os.environ.get('USER'),
+                                         random.randint(0, 9999))
     parser = argparse.ArgumentParser()
     parser.add_argument('suffix', nargs='?',
                         default=default_server_suffix,
@@ -141,7 +141,7 @@ def main():
     if args.whole_name:
         server_name = args.suffix
     else:
-        server_name = SERVER_NAME % args.suffix
+        server_name = SERVER_NAME % (args.branch, args.suffix)
 
     if args.verbose:
         print >> sys.stderr, "YAML file is %s" % yaml_file
