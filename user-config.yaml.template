@@ -49,6 +49,7 @@ packages:
  - autoconf
  - jed
  - python-novaclient
+ - libjson-perl
 
 package_upgrade: true
 
