@@ -142,6 +142,7 @@ write_files:
 # If the build succeeds, it deletes the host at the end of build-samba.  Otherwise, we run delete-host or shelve-host depending on what the caller wanted
 runcmd:
  - set -x
+ - [ sudo, blockdev, --setra, {readahead}, /dev/vda]
  - [ su, ubuntu, -l, -c, /usr/local/bin/clone-samba]
  - [ su, ubuntu, -l, -c, /usr/local/bin/build-samba]
  - [ su, ubuntu, -l, -c, /usr/local/bin/{onfail}-host]
