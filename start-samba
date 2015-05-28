@@ -125,7 +125,8 @@ def main():
                         help="say a litle more about what is happening")
 
     parser.add_argument('--onfail', default="delete",
-                        help="'suspend', 'shelve' or 'delete' (default 'delete')")
+                        help=("One of 'suspend|shelve|continue|"
+                              "delayed-delete|delete' (default 'delete')"))
 
     args = parser.parse_args()
 

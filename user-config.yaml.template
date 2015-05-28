@@ -127,6 +127,17 @@ write_files:
     nova delete $(hostname)
    path: /usr/local/bin/delete-host
    permissions: '0755'
+ - content: |
+    #!/bin/bash
+    echo "We failed! doing nothing"
+   path: /usr/local/bin/continue-host
+   permissions: '0755'
+ - content: |
+    #!/bin/bash
+    sleep 5d
+    /usr/local/bin/delete-host
+   path: /usr/local/bin/delayed-delete-host
+   permissions: '0755'
 
 # If the build succeeds, it deletes the host at the end of build-samba.  Otherwise, we run delete-host or shelve-host depending on what the caller wanted
 runcmd:
