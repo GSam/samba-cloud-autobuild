@@ -1,0 +1,43 @@
+# This version is for Centos 6.
+
+packages:
+ - screen
+ - git
+ - jed
+ - perl
+ - gcc
+ - attr
+ - libacl-devel
+ - libblkid-devel
+ - gnutls-devel
+ - readline-devel
+ - python-devel
+ - gdb
+ - pkgconfig
+ - krb5-workstation
+ - zlib-devel
+ - setroubleshoot-server
+ - libaio-devel
+ - setroubleshoot-plugins
+ - policycoreutils-python
+ - libsemanage-python
+ - perl-ExtUtils-MakeMaker
+ - perl-Parse-Yapp
+ - perl-Test-Base
+ # - setools-libs-python
+# - setools-libs
+ - popt-devel
+# - libpcap-devel
+# - sqlite-devel
+# - libidn-devel
+ - libxml2-devel
+# - libsepol-devel
+ - libattr-devel
+ - keyutils-libs-devel
+# - cyrus-sasl-devel
+ - cups-devel
+ - bind-utils
+ - libxslt
+ - docbook-style-xsl
+ - openldap-devel
+ - autoconf

@@ -4,51 +4,43 @@
 # This version is for Ubuntu 12.04.
 
 packages:
- - screen
- - git
- - build-essential
- - libacl1-dev
- - libattr1-dev
- - libblkid-dev
- - libgnutls-dev
- - libreadline-dev
- - python-dev
- - libpam0g-dev
- - python-dnspython
- - gdb
- - pkg-config
- - libpopt-dev
- - libldap2-dev
- - dnsutils
- - libbsd-dev
- - attr
- - krb5-user
- - docbook-xsl
- - libcups2-dev
  - acl
+ - attr
+ - autoconf
  - bison
+ - build-essential
  - debhelper
+ - dnsutils
  - docbook-xml
  - docbook-xsl
  - flex
+ - gdb
+ - git
+ - jed
+ - krb5-user
+ - libacl1-dev
  - libaio-dev
+ - libattr1-dev
+ - libblkid-dev
  - libbsd-dev
  - libcap-dev
  - libcups2-dev
+ - libgnutls-dev
+ - libldap2-dev
  - libncurses5-dev
  - libpam0g-dev
+ - libparse-yapp-perl
  - libpopt-dev
  - libreadline-dev
  - perl
  - perl-modules
- - libparse-yapp-perl
  - pkg-config
  - python-all-dev
+ - python-dev
  - python-dnspython
+ - screen
  - xsltproc
  - zlib1g-dev
- - autoconf
- - jed
 
 package_upgrade: true
 
