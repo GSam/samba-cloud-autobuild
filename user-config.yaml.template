@@ -1,6 +1,7 @@
 #cloud-config
 
 # Install Samba AD DC on first boot
+# This version is for Ubuntu 14.04.
 
 packages:
  - screen
