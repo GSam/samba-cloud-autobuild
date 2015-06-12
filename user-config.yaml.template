@@ -69,8 +69,19 @@ write_files:
     git remote add abartlet git://git.samba.org/abartlet/samba.git
     git remote set-url origin git://git.samba.org/samba.git
     git fetch catalyst
-    mkdir -p ~/autobuild
    path: /usr/local/bin/clone-samba
+   permissions: '0755'
+ - content: |
+    #!/bin/bash
+    set -x
+    set -e
+    rm -rf /home/{user}/autobuild/*
+    mkdir -p /home/{user}/autobuild
+    if [ "{tmpfs}" == "True" ]; then
+         mount -t tmpfs -o size=75% tmpfs /home/{user}/autobuild
+         chown {user}  /home/{user}/autobuild
+    fi
+   path: /usr/local/bin/prepare-autobuild-dir
    permissions: '0755'
  - content: |
     #!/bin/bash
@@ -78,6 +89,7 @@ write_files:
     set -e
     cd ~
     cd samba
+    git remote rm our_repo && echo "removed old remote"
     git remote add our_repo {remote}
     git fetch our_repo
     git checkout our_repo/{branch}
@@ -144,6 +156,7 @@ write_files:
 runcmd:
  - set -x
  - [ sudo, blockdev, --setra, {readahead}, /dev/vda]
- - [ su, ubuntu, -l, -c, /usr/local/bin/clone-samba]
- - [ su, ubuntu, -l, -c, /usr/local/bin/build-samba]
- - [ su, ubuntu, -l, -c, /usr/local/bin/{onfail}-host]
+ - [ /usr/local/bin/prepare-autobuild-dir]
+ - [ su, {user}, -l, -c, /usr/local/bin/clone-samba]
+ - [ su, {user}, -l, -c, /usr/local/bin/build-samba]
+ - [ su, {user}, -l, -c, /usr/local/bin/{onfail}-host]
