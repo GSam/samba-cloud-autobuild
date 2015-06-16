@@ -28,12 +28,11 @@ write_files:
     #!/bin/bash
     set -x
     set -e
-    rm -rf /home/{user}/autobuild/*
-    mkdir -p /home/{user}/autobuild
-    if [ "{tmpfs}" == "True" ]; then
-         mount -t tmpfs -o size=75% tmpfs /home/{user}/autobuild
-         chown {user}  /home/{user}/autobuild
-    fi
+    export AUTOBUILD=/home/{user}/autobuild/
+    rm -rf $AUTOBUILD/*
+    mkdir -p $AUTOBUILD
+    [ "{tmpfs}" == "True" ] && mount -t tmpfs -o size=75% tmpfs $AUTOBUILD
+    chown {user}  $AUTOBUILD
    path: /usr/local/bin/prepare-autobuild-dir
    permissions: '0755'
  - content: |
