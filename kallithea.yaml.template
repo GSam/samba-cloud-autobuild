@@ -1,0 +1,91 @@
+#cloud-config
+
+# Install Samba AD DC on first boot
+
+packages:
+ - screen
+ - git
+ - mercurial
+ - python-virtualenv
+ - python-pip
+ - python-ldap
+ - python-dev
+ - python-pastescript
+ - python-bcrypt
+
+#package_upgrade: true
+
+write_files:
+ - content: |
+    #!/bin/bash
+    set -x
+    set -e
+    mkdir -p /usr/local/kallithea
+    mkdir -p /usr/local/kallithea/repos
+    mkdir -p /usr/local/kallithea/db
+    mkdir -p /usr/local/kallithea/venv
+    chown git /usr/local/kallithea/repos
+    chown git /usr/local/kallithea/db
+    chown git /usr/local/kallithea/venv
+    cd /usr/local/kallithea
+    git clone git://git.catalyst.net.nz/kallithea.git git
+    chown -R git git
+   path: /usr/local/bin/install-kallithea
+   permissions: '0755'
+ - content: |
+    #!/bin/bash
+    cd /usr/local/kallithea/git
+    git remote add our_repo {remote}
+    git fetch our_repo
+    git checkout our_repo/{branch}
+    virtualenv /usr/local/kallithea/venv
+    source /usr/local/kallithea/venv/bin/activate
+    python setup.py develop
+    python setup.py compile_catalog   # for translation of the UI
+   path: /usr/local/bin/build-kallithea
+   permissions: '0755'
+ - content: |
+    #!/bin/bash
+    set -x
+    set -e
+    mkdir -p /home/git/.ssh
+    chmod 755 /home/git/.ssh
+    cd /usr/local/kallithea/db
+    source /usr/local/kallithea/venv/bin/activate
+    rm -f my.ini
+    paster make-config Kallithea my.ini
+    patch my.ini <  /usr/local/kallithea/my.ini.patch
+    paster setup-db my.ini --user={user} --password={password} --email={email} --repos=/usr/local/kallithea/repos  --force-yes
+    paster serve my.ini --reload &
+   path: /usr/local/bin/run-kallithea
+   permissions: '0755'
+ - content: |
+    --- production.ini	2015-06-18 00:54:23.997781151 +0000
+    +++ my.ini	2015-06-22 23:25:40.849781151 +0000
+    @@ -34,6 +30,11 @@
+     ## Specify available auth parameters here (e.g. LOGIN PLAIN CRAM-MD5, etc.)
+     #smtp_auth =
+     
+    +## SSH key settings
+    +ssh_username = git
+    +authorized_keys = /home/git/.ssh/authorized_keys
+    +paster_path = /usr/local/kallithea/venv/bin/paster
+    +
+     [server:main]
+     ## PASTE ##
+     #use = egg:Paste#http
+   path: /usr/local/kallithea/my.ini.patch
+
+
+# Add users to the system. Users are added after groups are added.
+users:
+  - default
+  - name: git
+    gecos: GIT login account and runtime account for kallithea
+
+runcmd:
+ - set -x
+ - [ blockdev, --setra, {readahead}, /dev/vda]
+ - [ /usr/local/bin/install-kallithea ]
+ - [ su, git, -l, -c, /usr/local/bin/build-kallithea]
+ - [ su, git, -l, -c, /usr/local/bin/run-kallithea]
