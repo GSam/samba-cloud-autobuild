@@ -34,6 +34,8 @@ write_files:
    permissions: '0755'
  - content: |
     #!/bin/bash
+    set -x
+    set -e
     cd /usr/local/kallithea/git
     git remote add our_repo {remote}
     git fetch our_repo
@@ -75,6 +77,16 @@ write_files:
      ## PASTE ##
      #use = egg:Paste#http
    path: /usr/local/kallithea/my.ini.patch
+ - content: |
+    #!/bin/bash
+    set -x
+    set -e
+    wget -q -O - https://jenkins-ci.org/debian/jenkins-ci.org.key | apt-key add -
+    sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'
+    apt-get update
+    apt-get install jenkins
+   path: /usr/local/bin/install-jenkins
+   permissions: '0755'
 
 
 # Add users to the system. Users are added after groups are added.
@@ -85,7 +97,9 @@ users:
 
 runcmd:
  - set -x
+ - set -e
  - [ blockdev, --setra, {readahead}, /dev/vda]
  - [ /usr/local/bin/install-kallithea ]
+ - [ /usr/local/bin/install-jenkins ]
  - [ su, git, -l, -c, /usr/local/bin/build-kallithea]
  - [ su, git, -l, -c, /usr/local/bin/run-kallithea]
