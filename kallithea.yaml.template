@@ -64,15 +64,39 @@ write_files:
  - content: |
     --- production.ini	2015-06-18 00:54:23.997781151 +0000
     +++ my.ini	2015-06-22 23:25:40.849781151 +0000
-    @@ -34,6 +30,11 @@
-     ## Specify available auth parameters here (e.g. LOGIN PLAIN CRAM-MD5, etc.)
-     #smtp_auth =
+    @@ -20,20 +15,25 @@
+     ## any error reports after application crash                                  ##
+     ## Additionally those settings will be used by Kallithea mailing system       ##
+     ################################################################################
+    -#email_to = admin@localhost
+    -#error_email_from = paste_error@localhost
+    -#app_email_from = kallithea-noreply@localhost
+    +email_to = {email}
+    +error_email_from = {email}
+    +app_email_from = {email}
+     #error_message =
+     #email_prefix = [Kallithea]
      
+    -#smtp_server = mail.server.com
+    -#smtp_username =
+    -#smtp_password =
+    -#smtp_port =
+    -#smtp_use_tls = false
+    +smtp_server = {smtp_server}
+    +smtp_username = {smtp_username}
+    +smtp_password = {smtp_password}
+    +smtp_port = 25
+    +smtp_use_tls = true
+     #smtp_use_ssl = true
+     ## Specify available auth parameters here (e.g. LOGIN PLAIN CRAM-MD5, etc.)
+    -#smtp_auth =
+    +smtp_auth = LOGIN PLAIN
+    +
     +## SSH key settings
     +ssh_username = git
     +authorized_keys = /home/git/.ssh/authorized_keys
     +paster_path = /usr/local/kallithea/venv/bin/paster
-    +
+     
      [server:main]
      ## PASTE ##
      #use = egg:Paste#http

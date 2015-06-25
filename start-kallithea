@@ -35,12 +35,13 @@ def get_credentials_from_env(credentials_file):
     env = subprocess.check_output(['bash', '-c', 'source %s && env' %
                                    credentials_file], env={})
     credentials = dict(x.strip().split('=', 1) for x in env.split("\n")
-                       if x.startswith('OS_'))
+                       if x.startswith('OS_') or x.startswith('SMTP_'))
     return credentials
 
 
 def write_yaml_config(remote, branch, image, centre, user, email,
-                      password, readahead):
+                      password, smtp_username, smtp_password, smtp_server,
+                      readahead):
     template = YAML_TEMPLATE
 
     credentials = get_credentials_from_env(OPENRC_TABLE[centre])
@@ -48,12 +49,21 @@ def write_yaml_config(remote, branch, image, centre, user, email,
         password = credentials['OS_PASSWORD']
     if email is None:
         email = credentials['OS_USERNAME']
+    if smtp_username is None:
+        smtp_username = credentials['SMTP_USERNAME']
+    if smtp_password is None:
+        smtp_password = credentials['SMTP_PASSWORD']
+    if smtp_server is None:
+        smtp_server = credentials['SMTP_SERVER']
     f = open(template)
     s = f.read()
     f.close()
     s = s.format(remote=remote, branch=branch, 
                  readahead=readahead, user=user, email=email,
                  password=password,
+                 smtp_username=smtp_username,
+                 smtp_password=smtp_password,
+                 smtp_server=smtp_server,
                  **credentials)
     f = tempfile.NamedTemporaryFile(suffix='.yaml',
                                     prefix='kallithea-user-config-',
@@ -126,6 +136,18 @@ def main():
                         default=None,
                         help="email address to use")
 
+    parser.add_argument('--smtp-username',
+                        default=None,
+                        help="SMTP login")
+
+    parser.add_argument('--smtp-password',
+                        default=None,
+                        help="SMTP password")
+
+    parser.add_argument('--smtp-server',
+                        default=None,
+                        help="SMTP server")
+
     parser.add_argument('--image-list', action='store_true',
                         help="list the available images, and exit")
 
@@ -155,7 +177,10 @@ def main():
             sys.exit()
 
     yaml_file = write_yaml_config(args.remote, args.branch, args.image,
-                                  args.centre, args.user, args.email, args.password, args.read_ahead)
+                                  args.centre, args.user, args.email, args.password,
+                                  args.smtp_username, args.smtp_password,
+                                  args.smtp_server,
+                                  args.read_ahead)
     if args.whole_name:
         server_name = args.suffix
     else:
