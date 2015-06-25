@@ -12,6 +12,9 @@ packages:
  - python-dev
  - python-pastescript
  - python-bcrypt
+ - apache2
+ - libapache2-mod-wsgi
+ - ssl-cert
 
 #package_upgrade: true
 
@@ -58,7 +61,6 @@ write_files:
     paster make-config Kallithea my.ini
     patch my.ini <  /usr/local/kallithea/my.ini.patch
     paster setup-db my.ini --user={user} --password={password} --email={email} --repos=/usr/local/kallithea/repos  --force-yes
-    paster serve my.ini --reload &
    path: /usr/local/bin/run-kallithea
    permissions: '0755'
  - content: |
@@ -99,8 +101,33 @@ write_files:
      
      [server:main]
      ## PASTE ##
-     #use = egg:Paste#http
+    @@ -251,7 +252,7 @@
+     ## a prefix key for this instance used for cache invalidation when running
+     ## multiple instances of kallithea, make sure it's globally unique for
+     ## all running kallithea instances. Leave empty if you don't use it
+    -instance_id =
+    +instance_id = *
+     
+     ## alternative return HTTP header for failed authentication. Default HTTP
+     ## response is 401 HTTPUnauthorized. Currently Mercurial clients have trouble with
    path: /usr/local/kallithea/my.ini.patch
+ - content: |
+    --- /etc/default/jenkins.old	2015-06-25 05:52:31.387875040 +0000
+    +++ /etc/default/jenkins	2015-06-25 05:52:55.067875040 +0000
+    @@ -54,10 +54,10 @@
+     # UMASK=027
+     
+     # port for HTTP connector (default 8080; disable with -1)
+    -HTTP_PORT=8080
+    +HTTP_PORT=-1
+     
+     # port for AJP connector (disabled by default)
+    -AJP_PORT=-1
+    +AJP_PORT=8102
+     
+     # servlet context, important if you want to use apache proxying  
+     PREFIX=/$NAME
+   path: /etc/default/jenkins.patch
  - content: |
     #!/bin/bash
     set -x
@@ -108,10 +135,88 @@ write_files:
     wget -q -O - https://jenkins-ci.org/debian/jenkins-ci.org.key | apt-key add -
     sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'
     apt-get update
-    apt-get install jenkins
+    apt-get install jenkins --assume-yes
+    patch /etc/default/jenkins < /etc/default/jenkins.patch
    path: /usr/local/bin/install-jenkins
    permissions: '0755'
-
+ - content: |
+    #!/bin/bash
+    set -x
+    set -e
+    service jenkins start
+   path: /usr/local/bin/start-jenkins
+   permissions: '0755'
+ - content: |
+    <VirtualHost *:80>
+    # Redirect HTTP connections to HTTPS
+    <IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{{HTTPS}} off
+    RewriteRule (.*) https://%{{HTTP_HOST}}%{{REQUEST_URI}} [R=301,L]
+    </IfModule>
+    Header always append X-Frame-Options SAMEORIGIN
+    </VirtualHost>
+    <IfModule mod_ssl.c>
+           <VirtualHost _default_:443>
+                ServerAdmin {email}
+    
+                DocumentRoot /var/www/html
+                Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+                Header always append X-Frame-Options SAMEORIGIN
+                <Directory /var/www/html>
+                Order allow,deny
+                Allow from all
+                </Directory>
+    
+                WSGIScriptAlias /kallithea /usr/local/kallithea/wsgi/kallithea.py
+                WSGIDaemonProcess kallithea user=git group=git processes=10 threads=1
+                WSGIProcessGroup kallithea
+    
+                <Directory /usr/local/kallithea/wsgi>
+                Order allow,deny
+                Allow from all
+                </Directory>
+   
+                <Location /jenkins>
+                AllowEncodedSlashes NoDecode
+                ProxyPass /jenkins ajp://127.0.0.1:8102/jenkins
+                ProxyPassReverse /jenkins ajp://127.0.0.1:8102/jenkins
+                ProxyRequests Off
+                RequestHeader set X-Forwarded-Proto "https"
+                RequestHeader set X-Forwarded-Port "443"
+                </Location>
+                
+                # Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
+                # error, crit, alert, emerg.
+                # It is also possible to configure the loglevel for particular
+                # modules, e.g.
+                #LogLevel info ssl:warn
+   
+                ErrorLog ${{APACHE_LOG_DIR}}/error.log
+                CustomLog ${{APACHE_LOG_DIR}}/access.log combined
+   
+                SSLEngine on
+   
+                #   A self-signed (snakeoil) certificate can be created by installing
+                #   the ssl-cert package. See
+                #   /usr/share/doc/apache2/README.Debian.gz for more info.
+                #   If both key and certificate are stored in the same file, only the
+                #   SSLCertificateFile directive is needed.
+                SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
+                SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+    
+                #   Server Certificate Chain:
+                #   Point SSLCertificateChainFile at a file containing the
+                #   concatenation of PEM encoded CA certificates which form the
+                #   certificate chain for the server certificate. Alternatively
+                #   the referenced file can be the same as SSLCertificateFile
+                #   when the CA certificates are directly appended to the server
+                #   certificate for convinience.
+                #SSLCertificateChainFile /etc/apache2/ssl.crt/server-ca.crt
+       </VirtualHost>
+    </IfModule>
+   path: /etc/apache2/sites-available/kallithea.conf
+   permissions: '0755'
 
 # Add users to the system. Users are added after groups are added.
 users:
@@ -123,7 +228,15 @@ runcmd:
  - set -x
  - set -e
  - [ blockdev, --setra, {readahead}, /dev/vda]
+ - [ a2enmod, wsgi ]
+ - [ a2enmod, ssl ]
+ - [ a2enmod, rewrite ]
+ - [ a2enmod, headers ]
+ - [ a2enmod, proxy_ajp ]
+ - [ a2dissite, 000-default ]
+ - [ a2ensite, kallithea ]
  - [ /usr/local/bin/install-kallithea ]
  - [ /usr/local/bin/install-jenkins ]
  - [ su, git, -l, -c, /usr/local/bin/build-kallithea]
  - [ su, git, -l, -c, /usr/local/bin/run-kallithea]
+ - [ service, apache2, reload ]
