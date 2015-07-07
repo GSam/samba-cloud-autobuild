@@ -41,7 +41,8 @@ def get_credentials_from_env(credentials_file):
     return credentials
 
 def get_package_list(name):
-    f = open("package-lists/%s" % name)
+    fn = os.path.join(HERE, 'package-lists', name)
+    f = open(fn)
     s = f.read()
     f.close()
     return s
