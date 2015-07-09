@@ -42,6 +42,7 @@ write_files:
     #!/bin/bash
     set -x
     set -e
+    [ {skip_samba_build} == "True" ] && exit 0
     cd ~
     cd samba
     git remote rm our_repo && echo "removed old remote"

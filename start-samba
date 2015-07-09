@@ -48,7 +48,7 @@ def get_package_list(name):
     return s
 
 def write_yaml_config(remote, branch, image, centre, onfail, readahead,
-                      maxtime, tmpfs=False):
+                      maxtime, tmpfs=False, skip_samba_build=False):
     if 'centos' in image:
         template = YAML_TEMPLATE
         user = 'centos'
@@ -69,7 +69,8 @@ def write_yaml_config(remote, branch, image, centre, onfail, readahead,
     f.close()
     s = s.format(remote=remote, branch=branch, onfail=onfail,
                  readahead=readahead, maxtime=maxtime, tmpfs=tmpfs,
-                 user=user, package_list=package_list, **credentials)
+                 user=user, package_list=package_list,
+                 skip_samba_build=skip_samba_build, **credentials)
     f = tempfile.NamedTemporaryFile(suffix='.yaml',
                                     prefix='samba-cloud-autobuild-user-config-',
                                     delete=False)
@@ -78,7 +79,8 @@ def write_yaml_config(remote, branch, image, centre, onfail, readahead,
     return f.name
 
 
-def boot(flavor, image, yaml_file, server_name, key_name, centre, dry_run=False):
+def boot(flavor, image, yaml_file, server_name, key_name, centre,
+         skip_samba_build=False, dry_run=False):
     open_rc = OPENRC_TABLE[centre]
     if key_name is None:
         key_name = '$USER'  # maybe the environment here is better
@@ -155,6 +157,9 @@ def main():
     parser.add_argument('--tmpfs', action='store_true',
                         help=("run autobuild in a tmpfs (use 8GB RAM)"))
 
+    parser.add_argument('--skip-samba-build', action='store_true',
+                        help=("prepare the image for autobuild, then stop"))
+
     args = parser.parse_args()
 
     if args.dry_run:
@@ -169,7 +174,8 @@ def main():
 
     yaml_file = write_yaml_config(args.remote, args.branch, args.image,
                                   args.centre, args.onfail, args.read_ahead,
-                                  args.maxtime, args.tmpfs)
+                                  args.maxtime, args.tmpfs,
+                                  skip_samba_build=args.skip_samba_build)
     if args.whole_name:
         server_name = args.suffix
     else:
