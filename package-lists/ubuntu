@@ -9,6 +9,7 @@ packages:
  - dnsutils
  - docbook-xml
  - docbook-xsl
+ - emacs24-nox
  - flex
  - gdb
  - git
