@@ -36,6 +36,7 @@ packages:
  - python-dev
  - python-dnspython
  - python-novaclient
+ - python-crypto
  - screen
  - xsltproc
  - zlib1g-dev
