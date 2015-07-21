@@ -189,13 +189,16 @@ write_files:
                 Allow from all
                 </Directory>
     
+                <Location /kallithea>
+                Header always set Content-Security-Policy "default-src 'self' script-src 'unsafe-inline'"
+                </Location>
+
                 WSGIScriptAlias /kallithea /usr/local/kallithea/wsgi/kallithea.py
                 WSGIDaemonProcess kallithea user=git group=git processes=10 threads=1
                 WSGIProcessGroup kallithea
     
                 <Directory /usr/local/kallithea/wsgi>
-                Order allow,deny
-                Allow from all
+                Require all granted
                 </Directory>
    
                 AllowEncodedSlashes NoDecode
