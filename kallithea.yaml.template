@@ -187,7 +187,9 @@ write_files:
                 Header always set X-Content-Type-Options nosniff
                 Header always set X-Permitted-Cross-Domain-Policies master-only
                 Header always set Content-Security-Policy "default-src 'self'"
-
+                
+                RequestHeader unset X-Forwarded-User
+                
                 <Directory /var/www/html>
                 Order allow,deny
                 Allow from all
