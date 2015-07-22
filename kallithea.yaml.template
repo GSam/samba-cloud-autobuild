@@ -1,6 +1,10 @@
 #cloud-config
 
 # Install Samba AD DC on first boot
+apt_mirror: http://ubuntu.catalyst.net.nz/ubuntu
+apt_mirror_search:
+  - http://ubuntu.catalyst.net.nz/ubuntu
+locale: en_NZ.UTF-8
 
 packages:
  - screen
