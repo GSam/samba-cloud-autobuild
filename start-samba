@@ -49,7 +49,8 @@ def get_package_list(name):
     return s
 
 def write_yaml_config(remote, branch, image, centre, onfail, readahead,
-                      maxtime, tmpfs=False, skip_samba_build=False):
+                      maxtime, tmpfs=False, skip_samba_build=False,
+                      no_secrets=False):
     if 'centos' in image:
         template = YAML_TEMPLATE
         user = 'centos'
@@ -64,6 +65,12 @@ def write_yaml_config(remote, branch, image, centre, onfail, readahead,
         package_list = get_package_list('ubuntu')
 
     credentials = get_credentials_from_env(OPENRC_TABLE[centre])
+
+    if no_secrets:
+        # There is no point preserving any of the credential
+        # variables, even though most are not really secret -- they
+        # are only useful in conjunction with the password.
+        credentials = {k: '' for k, v in credentials.items()}
 
     f = open(template)
     s = f.read()
@@ -161,6 +168,10 @@ def main():
     parser.add_argument('--skip-samba-build', action='store_true',
                         help=("prepare the image for autobuild, then stop"))
 
+    parser.add_argument('--no-secrets', action='store_true',
+                        help=("don't upload nova password; instance won't "
+                              "delete/suspend/shelve itself"))
+
     args = parser.parse_args()
 
     if args.dry_run:
@@ -176,11 +187,14 @@ def main():
     yaml_file = write_yaml_config(args.remote, args.branch, args.image,
                                   args.centre, args.onfail, args.read_ahead,
                                   args.maxtime, args.tmpfs,
-                                  skip_samba_build=args.skip_samba_build)
+                                  skip_samba_build=args.skip_samba_build,
+                                  no_secrets=args.no_secrets)
     if args.whole_name:
         server_name = args.suffix
     else:
         server_name = SERVER_NAME % (args.branch, args.suffix)
+        if args.no_secrets:
+            server_name += '-no-secrets'
 
     _server_name = re.sub(r'[^a-z0-9-]+', '-', server_name.lower())
     if _server_name != server_name:
