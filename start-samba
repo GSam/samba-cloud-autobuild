@@ -5,6 +5,7 @@ import sys
 import subprocess
 import tempfile
 import random
+import re
 
 try:
     from pipes import quote
@@ -180,6 +181,12 @@ def main():
         server_name = args.suffix
     else:
         server_name = SERVER_NAME % (args.branch, args.suffix)
+
+    _server_name = re.sub(r'[^a-z0-9-]+', '-', server_name.lower())
+    if _server_name != server_name:
+        print >> sys.stderr, ("WARNING: the server name '%s' contains invalid characters. "
+                              " Using '%s' instead." % (server_name, _server_name))
+        server_name = _server_name
 
     if args.verbose:
         print >> sys.stderr, "YAML file is %s" % yaml_file
