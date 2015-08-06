@@ -10,8 +10,8 @@ locale: en_NZ.UTF-8
 package_upgrade: true
 
 # Be careful modifying this next bit that writes the script
-# /usr/local/bin/clone-samba -- the image we're starting with has
-# probably already run this.
+# /run/user/1000/clone-samba -- the image we're starting with is
+# likely to have already run this (because it is a snapshot).
 
 write_files:
  - content: |
@@ -25,7 +25,7 @@ write_files:
     git remote add abartlet git://git.samba.org/abartlet/samba.git
     git remote set-url origin git://git.samba.org/samba.git
     git fetch catalyst
-   path: /usr/local/bin/clone-samba
+   path: /run/user/1000/clone-samba
    permissions: '0755'
  - content: |
     #!/bin/bash
@@ -36,7 +36,7 @@ write_files:
     mkdir -p $AUTOBUILD
     [ "{tmpfs}" == "True" ] && mount -t tmpfs -o size=75% tmpfs $AUTOBUILD
     chown {user}  $AUTOBUILD
-   path: /usr/local/bin/prepare-autobuild-dir
+   path: /run/user/1000/prepare-autobuild-dir
    permissions: '0755'
  - content: |
     #!/bin/bash
@@ -55,8 +55,8 @@ write_files:
                           --email-server=smtp1.catalyst.net.nz \
                           --always-email --attach-logs \
                           --nocleanup --testbase=$HOME/autobuild --tail
-    /usr/local/bin/delete-host
-   path: /usr/local/bin/build-samba
+    /run/user/1000/delete-host
+   path: /run/user/1000/build-samba
    permissions: '0755'
  - content: |
     #!/bin/bash
@@ -69,7 +69,7 @@ write_files:
     if [ -z "$OS_REGION_NAME" ]; then unset OS_REGION_NAME; fi
     sync
     nova shelve $(hostname)
-   path: /usr/local/bin/shelve-host
+   path: /run/user/1000/shelve-host
    permissions: '0755'
  - content: |
     #!/bin/bash
@@ -82,7 +82,7 @@ write_files:
     if [ -z "$OS_REGION_NAME" ]; then unset OS_REGION_NAME; fi
     sync
     nova suspend $(hostname)
-   path: /usr/local/bin/suspend-host
+   path: /run/user/1000/suspend-host
    permissions: '0755'
  - content: |
     #!/bin/bash
@@ -94,25 +94,25 @@ write_files:
     export OS_REGION_NAME="{OS_REGION_NAME}"
     if [ -z "$OS_REGION_NAME" ]; then unset OS_REGION_NAME; fi
     nova delete $(hostname)
-   path: /usr/local/bin/delete-host
+   path: /run/user/1000/delete-host
    permissions: '0755'
  - content: |
     #!/bin/bash
     echo "We failed! doing nothing"
-   path: /usr/local/bin/continue-host
+   path: /run/user/1000/continue-host
    permissions: '0755'
  - content: |
     #!/bin/bash
     sleep 5d
-    /usr/local/bin/delete-host
-   path: /usr/local/bin/delayed-delete-host
+    /run/user/1000/delete-host
+   path: /run/user/1000/delayed-delete-host
    permissions: '0755'
 
 # If the build succeeds, it deletes the host at the end of build-samba.  Otherwise, we run delete-host or shelve-host depending on what the caller wanted
 runcmd:
  - set -x
  - [ blockdev, --setra, {readahead}, /dev/vda]
- - [ /usr/local/bin/prepare-autobuild-dir]
- - [ su, {user}, -l, -c, /usr/local/bin/clone-samba]
- - [ su, {user}, -l, -c, /usr/local/bin/build-samba]
- - [ su, {user}, -l, -c, /usr/local/bin/{onfail}-host]
+ - [ /run/user/1000/prepare-autobuild-dir]
+ - [ su, {user}, -l, -c, /run/user/1000/clone-samba]
+ - [ su, {user}, -l, -c, /run/user/1000/build-samba]
+ - [ su, {user}, -l, -c, /run/user/1000/{onfail}-host]
