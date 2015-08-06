@@ -16,7 +16,6 @@ HERE = os.path.dirname(__file__)
 
 YAML_TEMPLATE = os.path.join(HERE, 'user-config.yaml.template')
 YAML_TEMPLATE_1204 = os.path.join(HERE, 'user-config-12.04.yaml.template')
-YAML_TEMPLATE_CENTOS_6 = os.path.join(HERE, 'user-config-centos-6.yaml.template')
 
 OPENRC_TABLE = {
     'por': '~/sambatest.catalyst.net.nz-openrc.sh',
