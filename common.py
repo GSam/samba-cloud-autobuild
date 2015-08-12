@@ -134,7 +134,7 @@ def process_common_args(args):
                      "flavor_list"):
         if vars(args)[nova_cmd]:
             print(run_nova_cmd([nova_cmd.replace('_', '-')],
-                               centre=args.centre, dry_run=args.dry_run))
+                               region=args.region, dry_run=args.dry_run))
             sys.exit()
 
 

@@ -8,6 +8,7 @@ import random
 import re
 
 from common import add_common_args, process_common_args
+from common import get_credentials, get_package_list, OPENRC_TABLE
 
 try:
     from pipes import quote
@@ -19,29 +20,10 @@ HERE = os.path.dirname(__file__)
 YAML_TEMPLATE = os.path.join(HERE, 'user-config.yaml.template')
 YAML_TEMPLATE_1204 = os.path.join(HERE, 'user-config-12.04.yaml.template')
 
-OPENRC_TABLE = {
-    'por': '~/sambatest.catalyst.net.nz-openrc.sh',
-    'wlg': '~/sambatest.catalyst.net.nz-openrc-wlg.sh'
-}
-
 SERVER_NAME = "samba-build-%s-%s"
 
 
-def get_credentials_from_env(credentials_file):
-    env = subprocess.check_output(['bash', '-c', 'source %s && env' %
-                                   credentials_file], env={})
-    credentials = dict(x.strip().split('=', 1) for x in env.split("\n")
-                       if x.startswith('OS_'))
-    return credentials
-
-def get_package_list(name):
-    fn = os.path.join(HERE, 'package-lists', name)
-    f = open(fn)
-    s = f.read()
-    f.close()
-    return s
-
-def write_yaml_config(remote, branch, image, centre, onfail, readahead,
+def write_yaml_config(remote, branch, image, region, onfail, readahead,
                       maxtime, tmpfs=False, skip_samba_build=False,
                       no_secrets=False):
     if 'centos' in image:
@@ -57,7 +39,7 @@ def write_yaml_config(remote, branch, image, centre, onfail, readahead,
         user = 'ubuntu'
         package_list = get_package_list('ubuntu')
 
-    credentials = get_credentials_from_env(OPENRC_TABLE[centre])
+    credentials = get_credentials(region)
 
     if no_secrets:
         # There is no point preserving any of the credential
