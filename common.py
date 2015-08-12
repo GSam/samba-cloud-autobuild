@@ -141,6 +141,7 @@ def process_common_args(args):
 def sanitise_hostname(hostname):
     fixed_name = re.sub(r'[^a-z0-9-]+', '-', hostname.lower())
     if fixed_name != hostname:
-        print >> sys.stderr, ("WARNING: the host name '%s' contains invalid characters. "
-                              " Using '%s' instead." % (hostname, fixed_name))
+        print >> sys.stderr, ("WARNING: the host name '%s' contains invalid "
+                              "characters. Using '%s' instead." %
+                              (hostname, fixed_name))
     return fixed_name

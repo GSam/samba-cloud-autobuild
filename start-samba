@@ -7,7 +7,7 @@ import tempfile
 import random
 import re
 
-from common import add_common_args, process_common_args
+from common import add_common_args, process_common_args, sanitise_hostname
 from common import get_credentials, get_package_list, OPENRC_TABLE
 
 try:
@@ -102,11 +102,7 @@ def main():
         if args.no_secrets:
             server_name += '-no-secrets'
 
-    _server_name = re.sub(r'[^a-z0-9-]+', '-', server_name.lower())
-    if _server_name != server_name:
-        print >> sys.stderr, ("WARNING: the server name '%s' contains invalid characters. "
-                              " Using '%s' instead." % (server_name, _server_name))
-        server_name = _server_name
+    server_name = sanitise_hostname(server_name)
 
     if args.verbose:
         print >> sys.stderr, "YAML file is %s" % yaml_file
