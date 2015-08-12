@@ -16,8 +16,8 @@ except ImportError:
 
 HERE = os.path.dirname(__file__)
 
-YAML_TEMPLATE = os.path.join(HERE, 'user-config.yaml.template')
-YAML_TEMPLATE_1204 = os.path.join(HERE, 'user-config-12.04.yaml.template')
+YAML_TEMPLATE = os.path.join(HERE, 'templates/user-config.yaml.template')
+YAML_TEMPLATE_1204 = os.path.join(HERE, 'templates/user-config-12.04.yaml.template')
 
 SERVER_NAME = "samba-build-%s-%s"
 

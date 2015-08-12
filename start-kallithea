@@ -13,7 +13,7 @@ except ImportError:
 
 HERE = os.path.dirname(__file__)
 
-YAML_TEMPLATE = os.path.join(HERE, 'kallithea.yaml.template')
+YAML_TEMPLATE = os.path.join(HERE, 'templates/kallithea.yaml.template')
 
 OPENRC_TABLE = {
     'por': '~/sambatest.catalyst.net.nz-openrc.sh',
