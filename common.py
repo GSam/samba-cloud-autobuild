@@ -100,7 +100,7 @@ def add_common_args(parser):
 
     parser.add_argument('-n', '--dry-run', action='store_true',
                         help="do nothing remotely, "
-                        "show the nova command that would be run")
+                        "show the command that would be run")
 
     parser.add_argument('-v', '--verbose', action='store_true',
                         help="say a litle more about what is happening")
