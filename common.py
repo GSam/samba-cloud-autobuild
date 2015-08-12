@@ -79,7 +79,8 @@ def add_common_args(parser):
                         help="specify the image to use")
 
     parser.add_argument('-f', '--flavor', default='c1.c2r4',
-                        help="specify which flavour to use (default: 2 CPUs, 4GB)")
+                        help=("specify which flavour to use "
+                              "(default: 2 CPUs, 4GB)"))
 
     parser.add_argument('--region', default="por",
                         help="'wlg' or 'por' (default 'por')")

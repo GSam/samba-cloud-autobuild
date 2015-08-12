@@ -7,7 +7,7 @@ import tempfile
 import random
 import re
 
-from common import run_nova_cmd
+from common import add_common_args, process_common_args
 
 try:
     from pipes import quote
@@ -80,9 +80,9 @@ def write_yaml_config(remote, branch, image, centre, onfail, readahead,
     return f.name
 
 
-def boot(flavor, image, yaml_file, server_name, key_name, centre,
+def boot(flavor, image, yaml_file, server_name, key_name, region,
          skip_samba_build=False, dry_run=False):
-    open_rc = OPENRC_TABLE[centre]
+    open_rc = OPENRC_TABLE[region]
     if key_name is None:
         key_name = '$USER'  # maybe the environment here is better
     args = ['.', open_rc, ';', 'nova', 'boot']
@@ -103,82 +103,13 @@ def boot(flavor, image, yaml_file, server_name, key_name, centre,
 
 
 def main():
-    default_server_suffix = "%s-%04d" % (os.environ.get('USER'),
-                                         random.randint(0, 9999))
     parser = argparse.ArgumentParser()
-    parser.add_argument('suffix', nargs='?',
-                        default=default_server_suffix,
-                        help="name the server with this suffix")
-
-    parser.add_argument('--whole-name', action='store_true',
-                        help="use the name as the whole name")
-
-    parser.add_argument('--key-name', default=os.environ.get('USER'),
-                        help="use this ssh key pair")
-
-    parser.add_argument('-i', '--image', default="samba-build-14.04-template",
-                        help="specify the image to use")
-
-    parser.add_argument('-f', '--flavor', default='62473bef-f73b-4265-a136-e3ae87e7f1e2',
-                        help="specify which flavour to use (default: 4 CPUs, 4GB)")
-
-    parser.add_argument('-c', '--centre', default="por",
-                        help="'wlg' or 'por' (default 'por')")
-
-    parser.add_argument('-b', '--branch',
-                        help="git branch to use")
-
-    parser.add_argument('-r', '--remote',
-                        default='git://git.catalyst.net.nz/samba.git',
-                        help="git remote to use")
-
-    parser.add_argument('--image-list', action='store_true',
-                        help="list the available images, and exit")
-
-    parser.add_argument('--flavor-list', action='store_true',
-                        help="list the available flavours, and exit")
-
-    parser.add_argument('-n', '--dry-run', action='store_true',
-                        help="do nothing remotely, "
-                        "show the nova command that would be run")
-
-    parser.add_argument('-v', '--verbose', action='store_true',
-                        help="say a litle more about what is happening")
-
-    parser.add_argument('--onfail', default="delete",
-                        help=("One of 'suspend|shelve|continue|"
-                              "delayed-delete|delete' (default 'delete')"))
-
-    parser.add_argument('--read-ahead', default=8192, type=int,
-                        help=("block device readahead (default 8192)"))
-
-    parser.add_argument('--maxtime', default=10000, type=int,
-                        help=("how long to wait before timing out"))
-
-    parser.add_argument('--tmpfs', action='store_true',
-                        help=("run autobuild in a tmpfs (use 8GB RAM)"))
-
-    parser.add_argument('--skip-samba-build', action='store_true',
-                        help=("prepare the image for autobuild, then stop"))
-
-    parser.add_argument('--no-secrets', action='store_true',
-                        help=("don't upload nova password; instance won't "
-                              "delete/suspend/shelve itself"))
-
+    add_common_args(parser)
     args = parser.parse_args()
-
-    if args.dry_run:
-        print " This is what we WOULD be doing without -n/--dry-run:\n"
-
-    for nova_cmd in ("image_list",
-                     "flavor_list"):
-        if vars(args)[nova_cmd]:
-            print(run_nova_cmd([nova_cmd.replace('_', '-')],
-                               centre=args.centre, dry_run=args.dry_run))
-            sys.exit()
+    process_common_args(args)
 
     yaml_file = write_yaml_config(args.remote, args.branch, args.image,
-                                  args.centre, args.onfail, args.read_ahead,
+                                  args.region, args.onfail, args.readahead,
                                   args.maxtime, args.tmpfs,
                                   skip_samba_build=args.skip_samba_build,
                                   no_secrets=args.no_secrets)
@@ -199,7 +130,7 @@ def main():
         print >> sys.stderr, "YAML file is %s" % yaml_file
 
     boot(args.flavor, args.image, yaml_file, server_name, args.key_name,
-         centre=args.centre, dry_run=args.dry_run)
+         region=args.region, dry_run=args.dry_run)
 
 
 main()
