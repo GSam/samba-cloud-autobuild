@@ -5,7 +5,6 @@ import sys
 import subprocess
 import tempfile
 import random
-import re
 
 from common import add_common_args, process_common_args, sanitise_hostname
 from common import get_credentials, get_package_list, OPENRC_TABLE

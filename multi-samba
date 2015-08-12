@@ -1,11 +1,7 @@
 #!/usr/bin/python
 import argparse
 import os
-import sys
 import subprocess
-import tempfile
-import random
-import re
 
 from common import YAML_DIR, get_credentials, quote, sanitise_hostname
 from common import get_package_list, add_common_args, process_common_args
@@ -38,7 +34,7 @@ def construct_parameters(args, credentials):
                        ('skip_samba_build', str(args.skip_samba_build)),
                        ('package_list', ','.join(package_list)),
                        ('user', user),
-                ])
+                       ])
 
     #print parameters
     return ';'.join("%s=%s" % (k, quote(v)) for k, v in sorted(parameters))
@@ -54,6 +50,7 @@ def run(template_name, stack_id, parameters, credentials, dry_run=False):
         print ' '.join(quote(x) for x in cmd)
     else:
         subprocess.check_call(cmd, env=credentials)
+
 
 def main():
     parser = argparse.ArgumentParser()

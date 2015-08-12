@@ -2,7 +2,6 @@
 import os
 import sys
 import subprocess
-import tempfile
 import random
 import re
 
@@ -40,6 +39,7 @@ def get_credentials(region, no_secrets=False):
         credentials = {k: '' for k, v in credentials.items()}
 
     return credentials
+
 
 def get_package_list(name, form=str):
     fn = os.path.join(HERE, 'package-lists', name)
