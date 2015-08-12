@@ -1,0 +1,303 @@
+#
+# This is a hello world HOT template just defining a single compute
+# server.
+#
+# template version
+# v1:     2013-05-23
+# Juno    2014-10-16 -- REMOVES some (AWS compatibility?) stuff
+# Kilo    2015-04-30 -- adds repeat function
+# Liberty 2015-10-15
+
+heat_template_version: 2014-10-16
+
+description: >
+  Hello world HOT template that just defines a single server.
+  Contains just base features to verify base HOT support.
+
+parameters:
+  key_name:
+    type: string
+    description: Name of an existing key pair to use for the server
+    constraints:
+      - custom_constraint: nova.keypair
+
+  user:
+    type: string
+    description: Admin user
+    default: "ubuntu"
+    constraints:
+      - allowed_pattern: "[a-z_][a-z0-9_]{0,30}"
+        description: Lowercase please, no fancy characters, not too long.
+
+  tmpfs:
+    type: string
+    description: tmpfs flag
+    default: "False"
+    constraints:
+      - allowed_pattern: "True|False"
+        description: True or False
+
+  flavor:
+    type: string
+    description: Flavor for the server to be created
+    default: c1.c2r4
+    constraints:
+      - custom_constraint: nova.flavor
+
+  image:
+    type: string
+    description: Image ID or image name to use for the server
+    constraints:
+      - custom_constraint: glance.image
+
+  remote:
+    type: string
+    description: URL of git remote
+
+  branch:
+    type: string
+    description: git branch to use
+
+  maxtime:
+    type: number
+    description: timeout in seconds
+
+  readahead:
+    type: number
+    default: 8192
+    description: degree of Ceph readahead
+
+  onfail:
+    type: string
+    description: what to do when everything fails
+
+  package_list:
+    type: comma_delimited_list
+    description: package to install
+
+  skip_samba_build:
+    type: string
+    description: "Don't build samba, just install packages and git pull"
+
+  os_auth_url:
+    type: string
+    default: ""
+    description: compute API URL for auto-shutdown
+
+  os_tenant_id:
+    type: string
+    default: ""
+    constraints:
+      - allowed_pattern: '[0-9a-fA-F-]*'
+        description: some kind of UUID looking thing
+    description: Openstack compute tenant ID (guid) for auto-shutdown
+
+  os_tenant_name:
+    type: string
+    default: ""
+    description: Openstack tenant name for auto-shutdown
+
+  os_username:
+    type: string
+    default: ""
+    description: Openstack username for auto-shutdown
+
+  os_password:
+    type: string
+    default: ""
+    description: Openstack password for auto-shutdown
+
+  os_region_name:
+    type: string
+    default: ""
+    description: Openstack region name for auto-shutdown
+
+
+resources:
+  server:
+    type: OS::Nova::Server
+    properties:
+      key_name: { get_param: key_name }
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      admin_user: { get_param: user }
+      user_data:
+        get_resource: server_init
+      user_data_format: RAW
+
+  server_init:
+    type: OS::Heat::MultipartMime
+    properties:
+      parts:
+      - config: {get_resource: get_packages}
+      - config: {get_resource: mount_script_dir}
+      - config: {get_resource: prepare_samba}
+      - config: {get_resource: run_samba}
+
+  get_packages:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        packages:
+          - acl
+          - attr
+          - autoconf
+
+  mount_script_dir:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config: |
+        #!/bin/sh
+        mkdir /scripts
+        mount -t ramfs -o defaults /scripts
+
+  prepare_samba:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        write_files:
+          - path: /scripts/prepare-autobuild-dir
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  set -e
+                  export AUTOBUILD=/home/_USER_/autobuild/
+                  rm -rf $AUTOBUILD/*
+                  mkdir -p $AUTOBUILD
+                  [ "_TMPFS_" == "True" ] && mount -t tmpfs -o size=75% tmpfs $AUTOBUILD
+                  chown _USER_  $AUTOBUILD
+                params:
+                  _USER_: { get_param: user }
+                  _TMPFS_: { get_param: tmpfs }
+
+          - path: /scripts/clone-samba
+            permissions: '0755'
+            content: |
+              #!/bin/bash
+              set -x
+              set -e
+              cd ~
+              git clone git://git.catalyst.net.nz/samba.git
+              cd samba
+              git remote add catalyst git://git.catalyst.net.nz/samba.git
+              git remote add abartlet git://git.samba.org/abartlet/samba.git
+              git remote set-url origin git://git.samba.org/samba.git
+              git fetch catalyst
+
+          - path: /scripts/build-samba
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  set -e
+                  [ "_SKIP_" == "True" ] && exit 0
+                  cd ~
+                  cd samba
+                  git remote rm our_repo && echo "removed old remote"
+                  git remote add our_repo _REMOTE_
+                  git fetch our_repo
+                  git checkout our_repo/_BRANCH_
+                  export SMBD_MAXTIME=_MAXTIME_
+                  ./script/autobuild.py --email-from=samba-dev@catalyst.net.nz \
+                                        --email=samba-dev@catalyst.net.nz \
+                                        --email-server=smtp1.catalyst.net.nz \
+                                        --always-email --attach-logs \
+                                        --nocleanup --testbase=$HOME/autobuild --tail
+                  /scripts/delete-host
+                params:
+                  _USER_: {get_param: user}
+                  _SKIP_: {get_param: skip_samba_build}
+                  _REMOTE_: {get_param: remote}
+                  _BRANCH_: {get_param: branch}
+                  _MAXTIME_: {get_param: maxtime}
+
+          - path: /scripts/shelve-host
+            permissions: '0755'
+            content: |
+              #!/bin/bash
+              sync
+              nova shelve $(hostname)
+
+          - path: /scripts/suspend-host
+            permissions: '0755'
+            content: |
+              #!/bin/bash
+              sync
+              nova suspend $(hostname)
+
+          - path: /scripts/suspend-host
+            permissions: '0755'
+            content: |
+              #!/bin/bash
+              nova delete $(hostname)
+              path: /scripts/delete-host
+              permissions: '0755'
+
+          - path: /scripts/delayed-delete-host
+            permissions: '0755'
+            content: |
+              #!/bin/bash
+              echo "We failed! doing nothing"
+              path: /scripts/continue-host
+              permissions: '0755'
+
+          - path: /scripts/delayed-delete-host
+            permissions: '0755'
+            content: |
+              #!/bin/bash
+              sleep 5d
+              /scripts/delete-host
+
+          - path: /scripts/run
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  echo this is /scripts/run
+                  su _USER_ -l -c /scripts/prepare-autobuild-dir
+                  su _USER_ -l -c /scripts/clone-samba
+                  su _USER_ -l -c /scripts/build-samba
+                  export OS_AUTH_URL="_OS_AUTH_URL_"
+                  export OS_TENANT_ID="_OS_TENANT_ID_"
+                  export OS_TENANT_NAME="_OS_TENANT_NAME_"
+                  export OS_USERNAME="_OS_USERNAME_"
+                  export OS_PASSWORD="_OS_PASSWORD_"
+                  export OS_REGION_NAME="_OS_REGION_NAME_"
+                  if [ -z "$OS_REGION_NAME" ]; then unset OS_REGION_NAME; fi
+                  su _USER_ -l -c /scripts/_ONFAIL_-host
+                params:
+                  _OS_AUTH_URL_: { get_param: os_auth_url}
+                  _OS_TENANT_ID_: { get_param: os_tenant_id}
+                  _OS_TENANT_NAME_: { get_param: os_tenant_name}
+                  _OS_USERNAME_: { get_param: os_username}
+                  _OS_PASSWORD_: { get_param: os_password}
+                  _OS_REGION_NAME_: { get_param: os_region_name}
+                  _USER_: {get_param: user}
+                  _ONFAIL_: {get_param: onfail }
+
+        runcmd:
+          - /scripts/run
+
+  run_samba:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config: |
+        #!/bin/sh
+        echo hello, actually cloud-init has done this with runcmd?
+        su {get_param: user} -l -c /scripts/prepare-autobuild-dir
+        su {get_param: user} -l -c /scripts/clone-samba
+        su {get_param: user} -l -c /scripts/build-samba
+        su {get_param: user} -l -c /scripts/{get_param: onfail}-host
+
+
+outputs:
+  server_networks:
+    description: The networks of the deployed server
+    value: { get_attr: [server, networks] }

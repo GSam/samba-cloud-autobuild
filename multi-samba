@@ -1,0 +1,85 @@
+#!/usr/bin/python
+import argparse
+import os
+import sys
+import subprocess
+import tempfile
+import random
+import re
+
+from common import YAML_DIR, get_credentials, quote, sanitise_hostname
+from common import get_package_list, add_common_args, process_common_args
+
+YAML_SINGLE = os.path.join(YAML_DIR, 'heat-single.yaml')
+
+SERVER_NAME = "samba-build-%s-%s"
+
+def construct_parameters(args, credentials):
+    """From command line arguments (or similar namespace object),
+    create a parameter string to populate a heat template"""
+
+    if 'centos' in args.image:
+        user = 'centos'
+        package_list = get_package_list('centos6', form=list)
+    else:
+        user = 'ubuntu'
+        package_list = get_package_list('ubuntu', form=list)
+
+    parameters = [(k.lower(), v) for k, v in credentials.items()]
+    parameters.extend([('remote', args.remote),
+                       ('branch', args.branch),
+                       #('region', args.region),
+                       ('onfail', args.onfail),
+                       ('flavor', args.flavor),
+                       ('image', args.image),
+                       ('maxtime', str(args.maxtime)),
+                       ('readahead', str(args.readahead)),
+                       #('stack_id', args.stack_id),
+                       ('key_name', args.key_name),
+                       ('skip_samba_build', str(args.skip_samba_build)),
+                       ('package_list', ','.join(package_list)),
+                       ('user', user),
+                ])
+
+    #print parameters
+    return ';'.join("%s=%s" % (k, quote(v)) for k, v in sorted(parameters))
+
+
+def run(template_name, stack_id, parameters, credentials, dry_run=False):
+    cmd = ["heat", "stack-create",
+           "--template-file", template_name,
+           "--parameters", parameters,
+           stack_id]
+
+    if dry_run:
+        print ' '.join(quote(x) for x in cmd)
+    else:
+        subprocess.check_call(cmd, env=credentials)
+
+def main():
+    parser = argparse.ArgumentParser()
+    add_common_args(parser)
+    parser.add_argument('--stack-id', default=None,
+                        help="use this stack ID (default: auto)")
+    args = parser.parse_args()
+    process_common_args(args)
+
+    if args.stack_id is None:
+        stack_id = "samba-%s-%s-%s" % (os.environ.get('USER'),
+                                       args.branch,
+                                       args.suffix)
+        if args.no_secrets:
+            stack_id += '-no-secrets'
+    else:
+        stack_id = args.stack_id
+
+    args.stack_id = sanitise_hostname(stack_id)
+
+    credentials = get_credentials(args.region, no_secrets=args.no_secrets)
+    parameters = construct_parameters(args, credentials)
+
+    run(YAML_SINGLE, args.stack_id, parameters, credentials,
+        args.dry_run)
+
+
+main()
