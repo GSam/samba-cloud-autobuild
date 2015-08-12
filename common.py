@@ -24,7 +24,6 @@ OPENRC_TABLE = {
     'nz_wlg_2': '~/sambatest.catalyst.net.nz-openrc-wlg.sh'
 }
 
-SERVER_NAME = "samba-build-%s-%s"
 
 def get_credentials(region, no_secrets=False):
     """Get the credentials for the region ('wlg' or 'por')"""

@@ -12,7 +12,6 @@ from common import get_package_list, add_common_args, process_common_args
 
 YAML_SINGLE = os.path.join(YAML_DIR, 'heat-single.yaml')
 
-SERVER_NAME = "samba-build-%s-%s"
 
 def construct_parameters(args, credentials):
     """From command line arguments (or similar namespace object),
