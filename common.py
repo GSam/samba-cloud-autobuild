@@ -52,6 +52,16 @@ def get_package_list(name, form=str):
     f.close()
     return packages
 
+
+def run_nova_cmd(args, region="por", dry_run=False):
+    open_rc = OPENRC_TABLE[region]
+    args = ['.', open_rc, ';', 'nova'] + [quote(x) for x in args]
+    str_args = ' '.join(args)
+    if dry_run:
+        return str_args
+    return subprocess.check_output(str_args, shell=True)
+
+
 def add_common_args(parser):
     default_server_suffix = "%s-%04d" % (os.environ.get('USER'),
                                          random.randint(0, 9999))

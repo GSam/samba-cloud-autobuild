@@ -7,6 +7,8 @@ import tempfile
 import random
 import re
 
+from common import run_nova_cmd
+
 try:
     from pipes import quote
 except ImportError:
@@ -23,14 +25,6 @@ OPENRC_TABLE = {
 }
 
 SERVER_NAME = "samba-build-%s-%s"
-
-def run_nova_cmd(args, centre="por", dry_run=False):
-    open_rc = OPENRC_TABLE[centre]
-    args = ['.', open_rc, ';', 'nova'] + [quote(x) for x in args]
-    str_args = ' '.join(args)
-    if dry_run:
-        return str_args
-    return subprocess.check_output(str_args, shell=True)
 
 
 def get_credentials_from_env(credentials_file):
