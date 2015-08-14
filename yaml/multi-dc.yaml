@@ -1,0 +1,453 @@
+heat_template_version: 2014-10-16
+
+description: >
+  A template to create multiple Samba DCs across many networks.
+
+parameters:
+  key_name:
+    type: string
+    description: Name of an existing key pair to use for the server
+    constraints:
+      - custom_constraint: nova.keypair
+
+  user:
+    type: string
+    description: Admin user
+    default: "ubuntu"
+    constraints:
+      - allowed_pattern: "[a-z_][a-z0-9_]{0,30}"
+        description: Lowercase please, no fancy characters, not too long.
+
+  tmpfs:
+    type: string
+    description: tmpfs flag
+    default: "False"
+    constraints:
+      - allowed_pattern: "True|False"
+        description: True or False
+
+  flavor:
+    type: string
+    description: Flavor for the server to be created
+    default: c1.c2r4
+    constraints:
+      - custom_constraint: nova.flavor
+
+  image:
+    type: string
+    description: Image ID or image name to use for the server
+    constraints:
+      - custom_constraint: glance.image
+
+  remote:
+    type: string
+    description: URL of git remote
+
+  branch:
+    type: string
+    description: git branch to use
+
+  maxtime:
+    type: number
+    description: timeout in seconds
+
+  readahead:
+    type: number
+    default: 8192
+    description: degree of Ceph readahead
+
+  onfail:
+    type: string
+    description: what to do when everything fails
+
+  package_list:
+    type: comma_delimited_list
+    description: package to install
+
+  skip_samba_build:
+    type: string
+    description: >
+      Don't build samba, just install packages and git pull
+
+  os_auth_url:
+    type: string
+    default: ""
+    description: compute API URL for auto-shutdown
+
+  os_tenant_id:
+    type: string
+    default: ""
+    constraints:
+      - allowed_pattern: '[0-9a-fA-F-]*'
+        description: some kind of UUID looking thing
+    description: Openstack compute tenant ID (guid) for auto-shutdown
+
+  os_tenant_name:
+    type: string
+    default: ""
+    description: Openstack tenant name for auto-shutdown
+
+  os_username:
+    type: string
+    default: ""
+    description: Openstack username for auto-shutdown
+
+  os_password:
+    type: string
+    default: ""
+    description: Openstack password for auto-shutdown
+
+  os_region_name:
+    type: string
+    default: ""
+    description: Openstack region name for auto-shutdown
+
+  public_net:
+    type: string
+    default: public-net
+    description: >
+      ID or name of the public network
+
+  private_net_name:
+    type: string
+    default: private-keep-out
+    description: Name of private network to be created
+
+  private_net_cidr:
+    default: 10.9.8.0/24
+    type: string
+    description: Private network address (CIDR notation)
+
+  private_net_gateway:
+    default: 10.9.8.1
+    type: string
+    description: Private network gateway address
+
+  server1_ip:
+    default: 10.9.8.7
+    type: string
+    description: Server 1 local IP
+
+  server2_ip:
+    default: 10.9.8.8
+    type: string
+    description: Server 2 local IP
+
+  private_net_pool_start:
+    default: 10.9.8.100
+    type: string
+    description: Start of private network IP address allocation pool
+
+  private_net_pool_end:
+    default: 10.9.8.200
+    type: string
+    description: End of private network IP address allocation pool
+
+
+resources:
+
+  private_net:
+    type: OS::Neutron::Net
+    properties:
+      name: { get_param: private_net_name }
+
+  private_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: private_net }
+      cidr: { get_param: private_net_cidr }
+      gateway_ip: { get_param: private_net_gateway }
+      #allocation_pools:
+      #  - start: { get_param: private_net_pool_start }
+      #    end: { get_param: private_net_pool_end }
+
+  router:
+    type: OS::Neutron::Router
+    properties:
+      external_gateway_info:
+        network: { get_param: public_net }
+
+  router_interface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: router }
+      subnet_id: { get_resource: private_subnet }
+
+  server1:
+    type: OS::Nova::Server
+    properties:
+      name: Server1
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key_name }
+      user_data:
+        get_resource: server_init
+      user_data_format: RAW
+      networks:
+        - port: { get_resource: server1_port }
+
+  server1_port:
+    type: OS::Neutron::Port
+    properties:
+      network_id: { get_resource: private_net }
+      fixed_ips:
+        - subnet_id: { get_resource: private_subnet }
+          ip_address: 10.9.8.7
+          #ip_address: { get_resource: server1_ip }
+
+  server1_floating_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: { get_param: public_net }
+      port_id: { get_resource: server1_port }
+
+  server1_wait:
+    type: OS::Heat::WaitCondition
+    #depends_on: server1_wait_handle
+    depends_on: server1
+    properties:
+      Handle:
+        get_resource: server1_wait_handle
+      Timeout: 1000
+
+  server1_wait_handle:
+    type: OS::Heat::WaitConditionHandle
+
+  server2:
+    type: OS::Nova::Server
+    depends_on: server1_wait
+    properties:
+      name: Server2
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key_name }
+      user_data:
+        get_resource: server_init
+      user_data_format: RAW
+      networks:
+        - port: { get_resource: server2_port }
+
+  server2_port:
+    type: OS::Neutron::Port
+    properties:
+      network_id: { get_resource: private_net }
+      fixed_ips:
+        - subnet_id: { get_resource: private_subnet }
+          ip_address: 10.9.8.8
+          #ip_address: { get_resource: server2_ip }
+
+  server2_floating_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: { get_param: public_net }
+      port_id: { get_resource: server2_port }
+
+  server_init:
+    type: OS::Heat::MultipartMime
+    properties:
+      parts:
+      - config: {get_resource: get_packages}
+      - config: {get_resource: mount_script_dir}
+      - config: {get_resource: prepare_samba}
+      - config: {get_resource: run_samba}
+
+  get_packages:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        packages:
+          - acl
+          - attr
+          - autoconf
+
+  mount_script_dir:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config: |
+        #!/bin/sh
+        mkdir /scripts
+        mount -t ramfs -o defaults /scripts
+
+  prepare_samba:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        write_files:
+          - path: /scripts/prepare-autobuild-dir
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  set -e
+                  export AUTOBUILD=/home/_USER_/autobuild/
+                  rm -rf $AUTOBUILD/*
+                  mkdir -p $AUTOBUILD
+                  [ "_TMPFS_" == "True" ] && mount -t tmpfs -o size=75% tmpfs $AUTOBUILD
+                  chown _USER_  $AUTOBUILD
+                params:
+                  _USER_: { get_param: user }
+                  _TMPFS_: { get_param: tmpfs }
+
+          - path: /scripts/clone-samba
+            permissions: '0755'
+            content: |
+              #!/bin/bash
+              set -x
+              set -e
+              cd ~
+              git clone git://git.catalyst.net.nz/samba.git
+              cd samba
+              git remote add catalyst git://git.catalyst.net.nz/samba.git
+              git remote add abartlet git://git.samba.org/abartlet/samba.git
+              git remote set-url origin git://git.samba.org/samba.git
+              git fetch catalyst
+
+          - path: /scripts/build-samba
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  set -e
+                  [ "_SKIP_" == "True" ] && exit 0
+                  cd ~
+                  cd samba
+                  git remote rm our_repo && echo "removed old remote"
+                  git remote add our_repo _REMOTE_
+                  git fetch our_repo
+                  git checkout our_repo/_BRANCH_
+                  export SMBD_MAXTIME=_MAXTIME_
+                  ./script/autobuild.py --email-from=samba-dev@catalyst.net.nz \
+                                        --email=samba-dev@catalyst.net.nz \
+                                        --email-server=smtp1.catalyst.net.nz \
+                                        --always-email --attach-logs \
+                                        --nocleanup --testbase=$HOME/autobuild --tail
+                  /scripts/delete-host
+                params:
+                  _USER_: {get_param: user}
+                  _SKIP_: {get_param: skip_samba_build}
+                  _REMOTE_: {get_param: remote}
+                  _BRANCH_: {get_param: branch}
+                  _MAXTIME_: {get_param: maxtime}
+
+          - path: /scripts/shelve-host
+            permissions: '0755'
+            content: |
+              #!/bin/bash
+              sync
+              nova shelve $(hostname)
+
+          - path: /scripts/suspend-host
+            permissions: '0755'
+            content: |
+              #!/bin/bash
+              sync
+              nova suspend $(hostname)
+
+          - path: /scripts/suspend-host
+            permissions: '0755'
+            content: |
+              #!/bin/bash
+              nova delete $(hostname)
+              path: /scripts/delete-host
+              permissions: '0755'
+
+          - path: /scripts/delayed-delete-host
+            permissions: '0755'
+            content: |
+              #!/bin/bash
+              echo "We failed! doing nothing"
+              path: /scripts/continue-host
+              permissions: '0755'
+
+          - path: /scripts/delayed-delete-host
+            permissions: '0755'
+            content: |
+              #!/bin/bash
+              sleep 5d
+              /scripts/delete-host
+
+
+          - path: /scripts/i-am-ready
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  curl -X PUT -H 'Content-Type:application/json' \
+                  -d '{"Status" : "SUCCESS",
+                       "Reason" : "Configuration OK",
+                       "UniqueId" : "_UNIQUE_ID_",
+                       "Data" : "_DATA_"}' \
+                       "_WAIT_HANDLE_"
+                params:
+                  _DATA_:
+                    hello
+                  _UNIQUE_ID_:
+                    get_attr:
+                      - service1_wait
+                      - Data
+                  $wait_handle$:
+                    get_resource: service2_wait_handle
+
+
+          - path: /scripts/run
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  echo this is /scripts/run
+                  su _USER_ -l -c /scripts/prepare-autobuild-dir
+                  su _USER_ -l -c /scripts/clone-samba
+                  su _USER_ -l -c /scripts/build-samba
+                  export OS_AUTH_URL="_OS_AUTH_URL_"
+                  export OS_TENANT_ID="_OS_TENANT_ID_"
+                  export OS_TENANT_NAME="_OS_TENANT_NAME_"
+                  export OS_USERNAME="_OS_USERNAME_"
+                  export OS_PASSWORD="_OS_PASSWORD_"
+                  export OS_REGION_NAME="_OS_REGION_NAME_"
+                  if [ -z "$OS_REGION_NAME" ]; then unset OS_REGION_NAME; fi
+                  su _USER_ -l -c /scripts/_ONFAIL_-host
+                params:
+                  _OS_AUTH_URL_: { get_param: os_auth_url}
+                  _OS_TENANT_ID_: { get_param: os_tenant_id}
+                  _OS_TENANT_NAME_: { get_param: os_tenant_name}
+                  _OS_USERNAME_: { get_param: os_username}
+                  _OS_PASSWORD_: { get_param: os_password}
+                  _OS_REGION_NAME_: { get_param: os_region_name}
+                  _USER_: {get_param: user}
+                  _ONFAIL_: {get_param: onfail }
+
+        runcmd:
+          - /scripts/run
+
+  run_samba:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config: |
+        #!/bin/sh
+        echo hello, actually cloud-init has done this with runcmd?
+        su {get_param: user} -l -c /scripts/prepare-autobuild-dir
+        su {get_param: user} -l -c /scripts/clone-samba
+        su {get_param: user} -l -c /scripts/build-samba
+        su {get_param: user} -l -c /scripts/{get_param: onfail}-host
+
+
+outputs:
+  server1_private_ip:
+    description: IP address of server1 in private network
+    value: { get_attr: [ server1, first_address ] }
+  server1_public_ip:
+    description: Floating IP address of server1 in public network
+    value: { get_attr: [ server1_floating_ip, floating_ip_address ] }
+  server2_private_ip:
+    description: IP address of server2 in private network
+    value: { get_attr: [ server2, first_address ] }
+  server2_public_ip:
+    description: Floating IP address of server2 in public network
+    value: { get_attr: [ server2_floating_ip, floating_ip_address ] }
