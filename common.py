@@ -62,12 +62,6 @@ def run_nova_cmd(args, region="por", dry_run=False):
 
 
 def add_common_args(parser):
-    default_server_suffix = "%s-%04d" % (os.environ.get('USER'),
-                                         random.randint(0, 9999))
-    parser.add_argument('suffix', nargs='?',
-                        default=default_server_suffix,
-                        help="name the server with this suffix")
-
     parser.add_argument('--whole-name', action='store_true',
                         help="use the 'suffix' as the whole name")
 

@@ -61,9 +61,8 @@ def main():
     process_common_args(args)
 
     if args.stack_id is None:
-        stack_id = "samba-%s-%s-%s" % (os.environ.get('USER'),
-                                       args.branch,
-                                       args.suffix)
+        stack_id = "samba-%s-%s" % (os.environ.get('USER'),
+                                    args.branch)
         if args.no_secrets:
             stack_id += '-no-secrets'
     else:
