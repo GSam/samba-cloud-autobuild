@@ -3,7 +3,7 @@ import argparse
 import os
 import subprocess
 
-from common import YAML_DIR, get_credentials, quote, sanitise_hostname
+from common import HERE, YAML_DIR, get_credentials, quote, sanitise_hostname
 from common import get_package_list, add_common_args, process_common_args
 
 YAML_SINGLE = os.path.join(YAML_DIR, 'heat-single.yaml')
@@ -51,13 +51,27 @@ def run(template_name, stack_id, parameters, credentials, dry_run=False):
     else:
         subprocess.check_call(cmd, env=credentials)
 
+def print_template_list():
+    files = os.listdir(os.path.join(HERE, 'yaml'))
+    for f in files:
+        if f.endswith('.yaml'):
+            print "yaml/%s" % (f,)
+
 
 def main():
     parser = argparse.ArgumentParser()
     add_common_args(parser)
     parser.add_argument('--stack-id', default=None,
                         help="use this stack ID (default: auto)")
+    parser.add_argument('--template', default=None,
+                        help="use this yaml template")
+    parser.add_argument('--template-list', action='store_true',
+                        help="list known templates")
     args = parser.parse_args()
+    if args.template_list:
+        print_template_list()
+        sys.exit()
+
     process_common_args(args)
 
     if args.stack_id is None:
@@ -73,7 +87,7 @@ def main():
     credentials = get_credentials(args.region, no_secrets=args.no_secrets)
     parameters = construct_parameters(args, credentials)
 
-    run(YAML_SINGLE, args.stack_id, parameters, credentials,
+    run(args.template, args.stack_id, parameters, credentials,
         args.dry_run)
 
 
