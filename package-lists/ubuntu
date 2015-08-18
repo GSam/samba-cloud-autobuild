@@ -5,6 +5,7 @@ packages:
  - autoconf
  - bison
  - build-essential
+ - curl
  - debhelper
  - dnsutils
  - docbook-xml

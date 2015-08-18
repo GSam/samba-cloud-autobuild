@@ -34,3 +34,4 @@ packages:
  - docbook-style-xsl
  - openldap-devel
  - autoconf
+ - curl
