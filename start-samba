@@ -62,7 +62,7 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
 
 
 def boot(flavor, image, yaml_file, server_name, key_name, region,
-         skip_samba_build=False, dry_run=False):
+         skip_samba_build=False, dry_run=False, net_id=None):
     open_rc = OPENRC_TABLE[region]
     if key_name is None:
         key_name = '$USER'  # maybe the environment here is better
@@ -76,11 +76,23 @@ def boot(flavor, image, yaml_file, server_name, key_name, region,
     args += ['--key-name', key_name]
     args += ['--config-drive', 'true']
     args += ['--poll']
+    if net_id is not None:
+        args += ['--nic', 'net-id=%s' % net_id]
     args += [server_name]
     if dry_run:
         print ' '.join(args)
     else:
         subprocess.check_call(' '.join(args), shell=True)
+
+
+def find_good_net_id():
+    cmd = ['nova', 'net-list']
+    s = subprocess.check_output(cmd)
+    # we're looking for one like this:
+    # | 10f83a57-2c8c-40c9-a472-a2ae10e2a65f | 10.59.0.0/24     | -    |
+    # Let's assume it is the first.
+    cells = s.split('|', 6)
+    return cells[5].strip()
 
 
 def main():
@@ -91,6 +103,10 @@ def main():
     parser.add_argument('suffix', nargs='?',
                         default=default_server_suffix,
                         help="name the server with this suffix")
+
+    parser.add_argument('--net-id',
+                        help=("Use net with this UUID "
+                              "(auto to search for a good one)"))
 
     args = parser.parse_args()
     process_common_args(args)
@@ -112,8 +128,13 @@ def main():
     if args.verbose:
         print >> sys.stderr, "YAML file is %s" % yaml_file
 
+    if args.net_id == 'auto':
+        net_id = find_good_net_id()
+    else:
+        net_id = args.net_id
+
     boot(args.flavor, args.image, yaml_file, server_name, args.key_name,
-         region=args.region, dry_run=args.dry_run)
+         region=args.region, dry_run=args.dry_run, net_id=net_id)
 
 
 main()
