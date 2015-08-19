@@ -200,21 +200,9 @@ resources:
       floating_network: { get_param: public_net }
       port_id: { get_resource: server1_port }
 
-  server1_wait:
-    type: OS::Heat::WaitCondition
-    #depends_on: server1_wait_handle
-    depends_on: server1
-    properties:
-      Handle:
-        get_resource: server1_wait_handle
-      Timeout: 1000
-
-  server1_wait_handle:
-    type: OS::Heat::WaitConditionHandle
 
   server2:
     type: OS::Nova::Server
-    depends_on: server1_wait
     properties:
       name: Server2
       image: { get_param: image }
@@ -265,6 +253,7 @@ resources:
         #!/bin/sh
         mkdir /scripts
         mount -t ramfs -o defaults /scripts
+
 
   prepare_samba:
     type: OS::Heat::CloudConfig
@@ -367,29 +356,6 @@ resources:
               #!/bin/bash
               sleep 5d
               /scripts/delete-host
-
-
-          - path: /scripts/i-am-ready
-            permissions: '0755'
-            content:
-              str_replace:
-                template: |
-                  #!/bin/bash
-                  curl -X PUT -H 'Content-Type:application/json' \
-                  -d '{"Status" : "SUCCESS",
-                       "Reason" : "Configuration OK",
-                       "UniqueId" : "_UNIQUE_ID_",
-                       "Data" : "_DATA_"}' \
-                       "_WAIT_HANDLE_"
-                params:
-                  _DATA_:
-                    hello
-                  _UNIQUE_ID_:
-                    get_attr:
-                      - service1_wait
-                      - Data
-                  $wait_handle$:
-                    get_resource: service2_wait_handle
 
 
           - path: /scripts/run
