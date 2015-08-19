@@ -306,19 +306,30 @@ resources:
                   git remote add our_repo _REMOTE_
                   git fetch our_repo
                   git checkout our_repo/_BRANCH_
-                  export SMBD_MAXTIME=_MAXTIME_
-                  ./script/autobuild.py --email-from=samba-dev@catalyst.net.nz \
-                                        --email=samba-dev@catalyst.net.nz \
-                                        --email-server=smtp1.catalyst.net.nz \
-                                        --always-email --attach-logs \
-                                        --nocleanup --testbase=$HOME/autobuild --tail
-                  /scripts/delete-host
+                  ./configure.developer
+                  make
+                  sudo make install
+
+                  sudo /usr/local/samba/bin/samba-tool domain provision --use-rfc2307 \
+                    --realm=SAMDOM.EXAMPLE.COM \
+                    --domain=SAMDOM \
+                    --server-role=dc \
+                    --adminpass='password12#' \
+                    --krbtgtpass='password12#' \
+                    --machinepass='password12#' \
+                    --ldapadminpass='password12#' \
+                    --dnspass='password12#' \
+
+                  sleep 10
+                  /usr/local/samba/sbin/samba
+                  /usr/local/samba/bin/smbclient -L localhost -U%
+                  /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls'
+
                 params:
                   _USER_: {get_param: user}
                   _SKIP_: {get_param: skip_samba_build}
                   _REMOTE_: {get_param: remote}
                   _BRANCH_: {get_param: branch}
-                  _MAXTIME_: {get_param: maxtime}
 
           - path: /scripts/shelve-host
             permissions: '0755'
@@ -369,6 +380,7 @@ resources:
                   su _USER_ -l -c /scripts/prepare-autobuild-dir
                   su _USER_ -l -c /scripts/clone-samba
                   su _USER_ -l -c /scripts/build-samba
+                  su _USER_ -l -c /scripts/start-samba
                   export OS_AUTH_URL="_OS_AUTH_URL_"
                   export OS_TENANT_ID="_OS_TENANT_ID_"
                   export OS_TENANT_NAME="_OS_TENANT_NAME_"
@@ -391,16 +403,23 @@ resources:
           - /scripts/run
 
   run_samba:
-    type: OS::Heat::SoftwareConfig
+    type: OS::Heat::CloudConfig
     properties:
-      config: |
-        #!/bin/sh
-        echo hello, actually cloud-init has done this with runcmd?
-        su {get_param: user} -l -c /scripts/prepare-autobuild-dir
-        su {get_param: user} -l -c /scripts/clone-samba
-        su {get_param: user} -l -c /scripts/build-samba
-        su {get_param: user} -l -c /scripts/{get_param: onfail}-host
-
+      cloud_config:
+        write_files:
+          - path: /scripts/prepare-autobuild-dir
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/sh
+                  echo hello, actually cloud-init has done this with runcmd?
+                  su {get_param: user} -l -c /scripts/prepare-autobuild-dir
+                  su {get_param: user} -l -c /scripts/clone-samba
+                  su {get_param: user} -l -c /scripts/build-samba
+                  su {get_param: user} -l -c /scripts/_ON_FAIL_-host
+                params:
+                  _ON_FAIL_ : {get_param: onfail}
 
 outputs:
   server1_private_ip:
