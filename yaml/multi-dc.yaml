@@ -256,9 +256,7 @@ resources:
     properties:
       cloud_config:
         packages:
-          - acl
-          - attr
-          - autoconf
+          {get_param: package_list}
 
   mount_script_dir:
     type: OS::Heat::SoftwareConfig
@@ -373,7 +371,7 @@ resources:
                 template: |
                   #!/bin/bash
                   set -x
-                  sudo /usr/local/samba/bin/samba-tool domain provision --use-rfc2307 \
+                  /usr/local/samba/bin/samba-tool domain provision --use-rfc2307 \
                     --realm=_REALM_ \
                     --domain=_DOMAIN_ \
                     --server-role=dc \
@@ -383,8 +381,13 @@ resources:
                     --ldapadminpass='_PASSWORD_' \
                     --dnspass='_PASSWORD_'
 
-                  sleep 10
-                  sudo -u _USER_ /usr/local/samba/sbin/samba
+                  killall dhclient
+                  sleep 1
+                  /usr/local/samba/sbin/samba
+                  killall dhclient
+                  sleep 1
+                  echo -e 'domain samdom.example.com\nnameserver 10.9.8.7' > /etc/resolv.conf
+
                   sudo -u _USER_ /usr/local/samba/bin/smbclient -L localhost -U%
                   sudo -u _USER_ /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls'
                 params:
@@ -403,16 +406,21 @@ resources:
                   set -x
                   sleep 180
 
-                  echo -e 'auto eth0\niface eth0 inet static\n  address 10.9.8.8\n  netmask 255.255.255.0' > /etc/network/interfaces.d/eth0.cfg
+                  echo -e 'auto eth0\niface eth0 inet static\n  address 10.9.8.8\n  netmask 255.255.255.0' > \
+                           /etc/network/interfaces.d/eth0.cfg
+
                   service networking restart
-                  echo -e 'nameserver 10.9.8.7\nsearch samdom.example.com' > /etc/resolv.conf
+                  killall dhclient
+                  echo -e 'nameserver 10.9.8.7\nsearch _REALM_' > /etc/resolv.conf
 
                   echo -e '[libdefaults]\ndns_lookup_realm = false\ndns_lookup_kdc = true\ndefault_realm = _REALM_' > /etc/krb5.conf
 
-                  /usr/local/samba/bin/samba-tool domain join _REALM_ DC -Uadministrator --realm=samdom.example.com
+                  /usr/local/samba/bin/samba-tool domain join _REALM_ DC -UAdministrator \
+                          --password='_PASSWORD_' --realm=_REALM_
 
-                  sleep 10
-                  sudo -u _USER_ /usr/local/samba/sbin/samba
+                  sleep 1
+                  /usr/local/samba/sbin/samba
+                  sleep 1
                   sudo -u _USER_ /usr/local/samba/bin/smbclient -L localhost -U%
                   sudo -u _USER_ /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls'
                 params:
