@@ -3,6 +3,14 @@ heat_template_version: 2014-10-16
 description: >
   A template to create multiple Samba DCs across many networks.
 
+
+# in some later version:
+#power_state:
+#  delay: "+30"
+#  mode: poweroff
+#  message: Bye Bye
+#  timeout: 30
+ 
 parameters:
   key_name:
     type: string
@@ -172,9 +180,6 @@ resources:
       network_id: { get_resource: private_net }
       cidr: { get_param: private_net_cidr }
       gateway_ip: { get_param: private_net_gateway }
-      #allocation_pools:
-      #  - start: { get_param: private_net_pool_start }
-      #    end: { get_param: private_net_pool_end }
 
   router:
     type: OS::Neutron::Router
@@ -265,7 +270,6 @@ resources:
         #!/bin/sh
         mkdir /scripts
         mount -t ramfs -o defaults /scripts
-
 
   prepare_samba:
     type: OS::Heat::CloudConfig
