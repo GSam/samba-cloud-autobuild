@@ -143,6 +143,21 @@ parameters:
     type: string
     description: End of private network IP address allocation pool
 
+  samba_realm:
+    type: string
+    default: "SAMDOM.EXAMPLE.COM"
+    description: Realm for the samba DCs
+
+  samba_domain:
+    type: string
+    default: "SAMDOM"
+    description: Domain for the samba DCs
+
+  samba_password:
+    type: string
+    default: "password12#"
+    description: Password for the samba DCs
+
 
 resources:
 
@@ -309,27 +324,11 @@ resources:
                   ./configure.developer
                   make
                   sudo make install
-
-                  sudo /usr/local/samba/bin/samba-tool domain provision --use-rfc2307 \
-                    --realm=SAMDOM.EXAMPLE.COM \
-                    --domain=SAMDOM \
-                    --server-role=dc \
-                    --adminpass='password12#' \
-                    --krbtgtpass='password12#' \
-                    --machinepass='password12#' \
-                    --ldapadminpass='password12#' \
-                    --dnspass='password12#' \
-
-                  sleep 10
-                  /usr/local/samba/sbin/samba
-                  /usr/local/samba/bin/smbclient -L localhost -U%
-                  /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls'
-
                 params:
-                  _USER_: {get_param: user}
                   _SKIP_: {get_param: skip_samba_build}
                   _REMOTE_: {get_param: remote}
                   _BRANCH_: {get_param: branch}
+
 
           - path: /scripts/shelve-host
             permissions: '0755'
@@ -368,6 +367,60 @@ resources:
               sleep 5d
               /scripts/delete-host
 
+          - path: /scripts/provision-server1-dc
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  sudo /usr/local/samba/bin/samba-tool domain provision --use-rfc2307 \
+                    --realm=_REALM_ \
+                    --domain=_DOMAIN_ \
+                    --server-role=dc \
+                    --adminpass='_PASSWORD_' \
+                    --krbtgtpass='_PASSWORD_' \
+                    --machinepass='_PASSWORD_' \
+                    --ldapadminpass='_PASSWORD_' \
+                    --dnspass='_PASSWORD_'
+
+                  sleep 10
+                  sudo -u _USER_ /usr/local/samba/sbin/samba
+                  sudo -u _USER_ /usr/local/samba/bin/smbclient -L localhost -U%
+                  sudo -u _USER_ /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls'
+                params:
+                  _USER_: {get_param: user}
+                  _REALM_:  {get_param: samba_realm}
+                  _DOMAIN_:  {get_param: samba_domain}
+                  _PASSWORD_:  {get_param: samba_password}
+
+
+          - path: /scripts/join-server2-dc
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  sleep 180
+
+                  echo -e 'auto eth0\niface eth0 inet static\n  address 10.9.8.8\n  netmask 255.255.255.0' > /etc/network/interfaces.d/eth0.cfg
+                  service networking restart
+                  echo -e 'nameserver 10.9.8.7\nsearch samdom.example.com' > /etc/resolv.conf
+
+                  echo -e '[libdefaults]\ndns_lookup_realm = false\ndns_lookup_kdc = true\ndefault_realm = _REALM_' > /etc/krb5.conf
+
+                  /usr/local/samba/bin/samba-tool domain join _REALM_ DC -Uadministrator --realm=samdom.example.com
+
+                  sleep 10
+                  sudo -u _USER_ /usr/local/samba/sbin/samba
+                  sudo -u _USER_ /usr/local/samba/bin/smbclient -L localhost -U%
+                  sudo -u _USER_ /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls'
+                params:
+                  _USER_: {get_param: user}
+                  _REALM_:  {get_param: samba_realm}
+                  _DOMAIN_:  {get_param: samba_domain}
+                  _PASSWORD_:  {get_param: samba_password}
 
           - path: /scripts/run
             permissions: '0755'
@@ -380,7 +433,13 @@ resources:
                   su _USER_ -l -c /scripts/prepare-autobuild-dir
                   su _USER_ -l -c /scripts/clone-samba
                   su _USER_ -l -c /scripts/build-samba
+                  if [[ "$(hostname)" == 'server1' ]]; then
+                     /scripts/provision-server1-dc
+                  else
+                     /scripts/join-server2-dc
+                  fi
                   su _USER_ -l -c /scripts/start-samba
+
                   export OS_AUTH_URL="_OS_AUTH_URL_"
                   export OS_TENANT_ID="_OS_TENANT_ID_"
                   export OS_TENANT_NAME="_OS_TENANT_NAME_"
