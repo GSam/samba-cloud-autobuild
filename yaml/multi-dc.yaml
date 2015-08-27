@@ -32,7 +32,7 @@ parameters:
     default: "False"
     constraints:
       - allowed_pattern: "True|False"
-        description: True or False
+        description: True to use tmpfs, False for real disk
 
   flavor:
     type: string
