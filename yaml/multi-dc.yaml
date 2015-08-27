@@ -250,7 +250,6 @@ resources:
       - config: {get_resource: get_packages}
       - config: {get_resource: mount_script_dir}
       - config: {get_resource: prepare_samba}
-      - config: {get_resource: run_samba}
 
   get_packages:
     type: OS::Heat::CloudConfig
@@ -461,24 +460,6 @@ resources:
         runcmd:
           - /scripts/run
 
-  run_samba:
-    type: OS::Heat::CloudConfig
-    properties:
-      cloud_config:
-        write_files:
-          - path: /scripts/prepare-autobuild-dir
-            permissions: '0755'
-            content:
-              str_replace:
-                template: |
-                  #!/bin/sh
-                  echo hello, actually cloud-init has done this with runcmd?
-                  su {get_param: user} -l -c /scripts/prepare-autobuild-dir
-                  su {get_param: user} -l -c /scripts/clone-samba
-                  su {get_param: user} -l -c /scripts/build-samba
-                  su {get_param: user} -l -c /scripts/_ON_FAIL_-host
-                params:
-                  _ON_FAIL_ : {get_param: onfail}
 
 outputs:
   server1_private_ip:
