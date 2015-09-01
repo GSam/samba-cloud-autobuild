@@ -1,9 +1,148 @@
 heat_template_version: 2014-10-16
 
+parameters:
+  key_name:
+    type: string
+    description: Name of an existing key pair to use for the server
+    constraints:
+      - custom_constraint: nova.keypair
+
+  user:
+    type: string
+    description: Admin user
+    default: "ubuntu"
+    constraints:
+      - allowed_pattern: "[a-z_][a-z0-9_]{0,30}"
+        description: Lowercase please, no fancy characters, not too long.
+
+  tmpfs:
+    type: string
+    description: tmpfs flag
+    default: "False"
+    constraints:
+      - allowed_pattern: "True|False"
+        description: True to use tmpfs, False for real disk
+
+  flavor:
+    type: string
+    description: Flavor for the server to be created
+    default: c1.c2r4
+    constraints:
+      - custom_constraint: nova.flavor
+
+  image:
+    type: string
+    description: Image ID or image name to use for the server
+    constraints:
+      - custom_constraint: glance.image
+
+  remote:
+    type: string
+    description: URL of git remote
+
+  branch:
+    type: string
+    description: git branch to use
+
+  maxtime:
+    type: number
+    description: timeout in seconds
+
+  readahead:
+    type: number
+    default: 8192
+    description: degree of Ceph readahead
+
+  onfail:
+    type: string
+    description: what to do when everything fails
+
+  package_list:
+    type: comma_delimited_list
+    description: package to install
+
+  skip_samba_build:
+    type: string
+    default: 'False'
+    description: >
+      Don't build samba, just install packages and git pull
+
+  os_auth_url:
+    type: string
+    default: ""
+    description: compute API URL for auto-shutdown
+
+  os_tenant_id:
+    type: string
+    default: ""
+    constraints:
+      - allowed_pattern: '[0-9a-fA-F-]*'
+        description: some kind of UUID looking thing
+    description: Openstack compute tenant ID (guid) for auto-shutdown
+
+  os_tenant_name:
+    type: string
+    default: ""
+    description: Openstack tenant name for auto-shutdown
+
+  os_username:
+    type: string
+    default: ""
+    description: Openstack username for auto-shutdown
+
+  os_password:
+    type: string
+    default: ""
+    description: Openstack password for auto-shutdown
+
+  os_region_name:
+    type: string
+    default: ""
+    description: Openstack region name for auto-shutdown
+
+  public_net:
+    type: string
+    default: public-net
+    description: >
+      ID or name of the public network
+
+  private_net_name:
+    type: string
+    default: private-keep-out
+    description: Name of private network to be created
+
+  private_net_cidr:
+    default: 10.9.8.0/24
+    type: string
+    description: Private network address (CIDR notation)
+
+  private_net_gateway:
+    default: 10.9.8.1
+    type: string
+    description: Private network gateway address
+
+  samba_realm:
+    type: string
+    default: "SAMDOM.EXAMPLE.COM"
+    description: Realm for the samba DCs
+
+  samba_domain:
+    type: string
+    default: "SAMDOM"
+    description: Domain for the samba DCs
+
+  samba_password:
+    type: string
+    default: "penguin12#"
+    description: Password for the samba DCs
+
+
+
+
 resources:
   rg:
     type: OS::Heat::ResourceGroup
     properties:
       count: 5
       resource_def: {type: dc.yaml}
-      
+
