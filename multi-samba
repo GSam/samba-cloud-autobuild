@@ -41,11 +41,14 @@ def construct_parameters(args, credentials):
     return ';'.join("%s=%s" % (k, quote(v)) for k, v in sorted(parameters))
 
 
-def run(template_name, stack_id, parameters, credentials, dry_run=False):
-    cmd = ["heat", "stack-create",
+def run(template_name, stack_id, parameters, credentials, dry_run=False,
+        verbose=False):
+    cmd = ["heat"]
+    if verbose:
+        cmd += ['-v']
+    cmd += ["stack-create",
            "--template-file", template_name,
-           "--parameters", parameters,
-           stack_id]
+           "--parameters", parameters, stack_id]
 
     if dry_run:
         print ' '.join(quote(x) for x in cmd)
@@ -93,7 +96,7 @@ def main():
     parameters = construct_parameters(args, credentials)
 
     run(args.template, args.stack_id, parameters, credentials,
-        args.dry_run)
+        args.dry_run, args.verbose)
 
 
 main()
