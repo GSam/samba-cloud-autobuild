@@ -2,8 +2,8 @@ heat_template_version: 2014-10-16
 
 description: >
   A template to create multiple Samba DCs across many networks.
- 
-parameters:
+
+properties:
   key_name:
     type: string
     description: Name of an existing key pair to use for the server
@@ -35,6 +35,7 @@ parameters:
 
   image:
     type: string
+    default: samba-build-14.04
     description: Image ID or image name to use for the server
     constraints:
       - custom_constraint: glance.image
@@ -66,6 +67,7 @@ parameters:
 
   skip_samba_build:
     type: string
+    default: 'False'
     description: >
       Don't build samba, just install packages and git pull
 
@@ -139,6 +141,7 @@ parameters:
     description: Password for the samba DCs
 
 
+
 resources:
 
   private_net:
@@ -165,10 +168,10 @@ resources:
       router_id: { get_resource: router }
       subnet_id: { get_resource: private_subnet }
 
-  server1:
+  server:
     type: OS::Nova::Server
     properties:
-      name: Server1
+      name: Server
       image: { get_param: image }
       flavor: { get_param: flavor }
       key_name: { get_param: key_name }
@@ -176,49 +179,21 @@ resources:
         get_resource: server_init
       user_data_format: RAW
       networks:
-        - port: { get_resource: server1_port }
+        - port: { get_resource: server_port }
 
-  server1_port:
+  server_port:
     type: OS::Neutron::Port
     properties:
       network_id: { get_resource: private_net }
       fixed_ips:
         - subnet_id: { get_resource: private_subnet }
-          ip_address: { get_param: server1_ip }
+          ip_address: { get_param: server_ip }
 
-  server1_floating_ip:
+  server_floating_ip:
     type: OS::Neutron::FloatingIP
     properties:
       floating_network: { get_param: public_net }
-      port_id: { get_resource: server1_port }
-
-
-  server2:
-    type: OS::Nova::Server
-    properties:
-      name: Server2
-      image: { get_param: image }
-      flavor: { get_param: flavor }
-      key_name: { get_param: key_name }
-      user_data:
-        get_resource: server_init
-      user_data_format: RAW
-      networks:
-        - port: { get_resource: server2_port }
-
-  server2_port:
-    type: OS::Neutron::Port
-    properties:
-      network_id: { get_resource: private_net }
-      fixed_ips:
-        - subnet_id: { get_resource: private_subnet }
-          ip_address: { get_param: server2_ip }
-
-  server2_floating_ip:
-    type: OS::Neutron::FloatingIP
-    properties:
-      floating_network: { get_param: public_net }
-      port_id: { get_resource: server2_port }
+      port_id: { get_resource: server_port }
 
   server_init:
     type: OS::Heat::MultipartMime
@@ -340,7 +315,7 @@ resources:
               sleep 5d
               /scripts/delete-host
 
-          - path: /scripts/provision-server1-dc
+          - path: /scripts/provision-dc
             permissions: '0755'
             content:
               str_replace:
@@ -373,7 +348,7 @@ resources:
                   _PASSWORD_:  {get_param: samba_password}
 
 
-          - path: /scripts/join-server2-dc
+          - path: /scripts/join-dc
             permissions: '0755'
             content:
               str_replace:
@@ -417,9 +392,9 @@ resources:
                   su _USER_ -l -c /scripts/clone-samba
                   su _USER_ -l -c /scripts/build-samba
                   if [[ "$(hostname)" == 'server1' ]]; then
-                     /scripts/provision-server1-dc
+                     /scripts/provision-dc
                   else
-                     /scripts/join-server2-dc
+                     /scripts/join-dc
                   fi
                   su _USER_ -l -c /scripts/start-samba
 
@@ -446,15 +421,6 @@ resources:
 
 
 outputs:
-  server1_private_ip:
-    description: IP address of server1 in private network
-    value: { get_attr: [ server1, first_address ] }
-  server1_public_ip:
-    description: Floating IP address of server1 in public network
-    value: { get_attr: [ server1_floating_ip, floating_ip_address ] }
-  server2_private_ip:
-    description: IP address of server2 in private network
-    value: { get_attr: [ server2, first_address ] }
-  server2_public_ip:
-    description: Floating IP address of server2 in public network
-    value: { get_attr: [ server2_floating_ip, floating_ip_address ] }
+  server_private_ip:
+    description: IP address of server in private network
+    value: { get_attr: [ server, first_address ] }

@@ -63,6 +63,19 @@ resources:
     properties:
       router_id: { get_resource: router }
       subnet_id: { get_resource: private_subnet }
+    
+  ports:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: { get_param: count }
+      resource_def:
+        type: OS::Neutron::Port
+        name: port-%index%
+        properties:
+          network_id: { get_resource: private_net }
+          fixed_ips:
+            - subnet_id: { get_resource: private_subnet }
+              ip_address: 10.9.8.1%index%
 
       
   servers:
@@ -76,5 +89,5 @@ resources:
           image: { get_param: image }
           flavor: { get_param: flavor }
           networks:
-            - network: { get_resource: private_net }
-
+            - port:
+                { get_resource: port-%index% }
