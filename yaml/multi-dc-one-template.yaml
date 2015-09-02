@@ -99,13 +99,23 @@ parameters:
     default: private-keep-out
     description: Name of private network to be created
 
-  private_net_cidr:
+  private_net_cidr_1:
     default: 10.9.8.0/24
     type: string
     description: Private network address (CIDR notation)
 
-  private_net_gateway:
+  private_net_cidr_2:
+    default: 10.9.9.0/24
+    type: string
+    description: Private network address (CIDR notation)
+
+  private_net_gateway_1:
     default: 10.9.8.1
+    type: string
+    description: Private network gateway address
+
+  private_net_gateway_2:
+    default: 10.9.9.1
     type: string
     description: Private network gateway address
 
@@ -121,12 +131,21 @@ resources:
     properties:
       name: { get_param: private_net_name }
 
-  private_subnet:
+  private_subnet_1:
     type: OS::Neutron::Subnet
     properties:
       network_id: { get_resource: private_net }
-      cidr: { get_param: private_net_cidr }
-      gateway_ip: { get_param: private_net_gateway }
+      cidr: { get_param: private_net_cidr_1 }
+      enable_dhcp: true
+      #gateway_ip: { get_param: private_net_gateway }
+
+  private_subnet_2:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: private_net }
+      cidr: { get_param: private_net_cidr_2 }
+      enable_dhcp: true
+      #gateway_ip: { get_param: private_net_gateway }
 
   router:
     type: OS::Neutron::Router
@@ -134,17 +153,22 @@ resources:
       external_gateway_info:
         network: { get_param: public_net }
 
-  router_interface:
+  router_interface_1:
     type: OS::Neutron::RouterInterface
     properties:
       router_id: { get_resource: router }
-      subnet_id: { get_resource: private_subnet }
+      subnet_id: { get_resource: private_subnet_1 }
+
+  router_interface_2:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: router }
+      subnet_id: { get_resource: private_subnet_2 }
 
 
-  servers:
+  servers_1:
     type: OS::Heat::ResourceGroup
-    type: "OS::Heat::ResourceGroup"
-    depends_on: private_subnet
+    depends_on: private_subnet_1
     properties:
       count: { get_param: count }
       resource_def:
@@ -154,11 +178,40 @@ resources:
           image: { get_param: image }
           networks:
               - network: { get_resource: private_net }
+                fixed_ip: 10.9.8.1%index%
+
+
           flavor: { get_param: flavor }
           name:
             str_replace:
               template:
-                _NAME_-_INDEX_
+                _NAME_-1-_INDEX_
+              params:
+                _NAME_: { get_param: basename }
+                _INDEX_: "%index%"
+          user_data_format: RAW
+          user_data:
+            get_resource: server_init
+
+  servers_2:
+    type: OS::Heat::ResourceGroup
+    depends_on: private_subnet_2
+    properties:
+      count: { get_param: count }
+      resource_def:
+        type: OS::Nova::Server
+        properties:
+          #key_name: { get_param: key_name }
+          image: { get_param: image }
+          networks:
+              - network: { get_resource: private_net }
+                fixed_ip: 10.9.9.1%index%
+
+          flavor: { get_param: flavor }
+          name:
+            str_replace:
+              template:
+                _NAME_-2-_INDEX_
               params:
                 _NAME_: { get_param: basename }
                 _INDEX_: "%index%"
@@ -270,7 +323,7 @@ resources:
                   /usr/local/samba/sbin/samba
                   killall dhclient
                   sleep 1
-                  echo -e 'domain samdom.example.com\nnameserver 10.9.8.7' > /etc/resolv.conf
+                  echo -e 'domain samdom.example.com\nnameserver 10.9.8.10' > /etc/resolv.conf
 
                   sudo -u _USER_ /usr/local/samba/bin/smbclient -L localhost -U%
                   sudo -u _USER_ /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls'
@@ -279,7 +332,7 @@ resources:
                   _REALM_:  {get_param: samba_realm}
                   _DOMAIN_:  {get_param: samba_domain}
                   _PASSWORD_:  {get_param: samba_password}
-
+                  #_IP_: {get_attr: [my_server, networks, net0, 0]}
 
           - path: /scripts/join-dc
             permissions: '0755'
@@ -290,12 +343,12 @@ resources:
                   set -x
                   sleep 180
 
-                  echo -e 'auto eth0\niface eth0 inet static\n  address 10.9.8.8\n  netmask 255.255.255.0' > \
-                           /etc/network/interfaces.d/eth0.cfg
+                  #echo -e 'auto eth0\niface eth0 inet static\n  address 10.9.8.8\n  netmask 255.255.255.0' > \
+                  #         /etc/network/interfaces.d/eth0.cfg
 
                   service networking restart
                   killall dhclient
-                  echo -e 'nameserver 10.9.8.7\nsearch _REALM_' > /etc/resolv.conf
+                  echo -e 'nameserver 10.9.8.10\nsearch _REALM_' > /etc/resolv.conf
 
                   echo -e '[libdefaults]\ndns_lookup_realm = false\ndns_lookup_kdc = true\ndefault_realm = _REALM_' > /etc/krb5.conf
 
