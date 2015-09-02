@@ -45,7 +45,7 @@ def run(template_name, stack_id, parameters, credentials, dry_run=False,
         verbose=False):
     cmd = ["heat"]
     if verbose:
-        cmd += ['-v']
+        cmd += ['-d', '-v']
     cmd += ["stack-create",
            "--template-file", template_name,
            "--parameters", parameters, stack_id]
