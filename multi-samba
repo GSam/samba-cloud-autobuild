@@ -75,6 +75,8 @@ def main():
                         help="use this yaml template")
     parser.add_argument('--template-list', action='store_true',
                         help="list known templates")
+    parser.add_argument('--give-template-credentials', action='store_true',
+                        help="provide openstack crednetials to template (for self shutdown)")
     args = parser.parse_args()
     if args.template_list:
         print_template_list()
@@ -93,7 +95,10 @@ def main():
     args.stack_id = sanitise_hostname(stack_id)
 
     credentials = get_credentials(args.region, no_secrets=args.no_secrets)
-    parameters = construct_parameters(args, credentials)
+    if args.give_template_credentials:
+        parameters = construct_parameters(args, credentials)
+    else:
+        parameters = construct_parameters(args, {})
 
     run(args.template, args.stack_id, parameters, credentials,
         args.dry_run, args.verbose)
