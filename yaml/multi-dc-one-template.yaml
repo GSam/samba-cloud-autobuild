@@ -318,12 +318,12 @@ resources:
                     --ldapadminpass='_PASSWORD_' \
                     --dnspass='_PASSWORD_'
 
-                  killall dhclient
                   sleep 1
                   /usr/local/samba/sbin/samba
-                  killall dhclient
                   sleep 1
-                  echo -e 'domain samdom.example.com\nnameserver 10.9.8.10' > /etc/resolv.conf
+
+                  MY_IP=$(ip addr |grep -oP '(?<=inet )10\.9\.\d+\.\d+')
+                  echo -e "domain samdom.example.com\nnameserver $MY_IP" > /etc/resolv.conf
 
                   sudo -u _USER_ /usr/local/samba/bin/smbclient -L localhost -U%
                   sudo -u _USER_ /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls'
@@ -343,12 +343,9 @@ resources:
                   set -x
                   sleep 180
 
-                  #echo -e 'auto eth0\niface eth0 inet static\n  address 10.9.8.8\n  netmask 255.255.255.0' > \
-                  #         /etc/network/interfaces.d/eth0.cfg
+                  MY_SUBNET=$(ip addr |grep -oP '(?<=inet )10\.9\.\d+')
 
-                  service networking restart
-                  killall dhclient
-                  echo -e 'nameserver 10.9.8.10\nsearch _REALM_' > /etc/resolv.conf
+                  echo -e "nameserver $MY_SUBNET.10\nsearch _REALM_" > /etc/resolv.conf
 
                   echo -e '[libdefaults]\ndns_lookup_realm = false\ndns_lookup_kdc = true\ndefault_realm = _REALM_' > /etc/krb5.conf
 
