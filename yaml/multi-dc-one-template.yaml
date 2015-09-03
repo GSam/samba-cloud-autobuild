@@ -100,22 +100,22 @@ parameters:
     description: Private network address (CIDR notation)
 
   private_net_cidr_1:
-    default: 10.9.8.0/24
+    default: 10.9.1.0/24
     type: string
     description: Private network address (CIDR notation)
 
   private_net_cidr_2:
-    default: 10.9.9.0/24
+    default: 10.9.2.0/24
     type: string
     description: Private network address (CIDR notation)
 
   private_net_gateway_1:
-    default: 10.9.8.1
+    default: 10.9.1.1
     type: string
     description: Private network gateway address
 
   private_net_gateway_2:
-    default: 10.9.9.1
+    default: 10.9.2.1
     type: string
     description: Private network gateway address
 
@@ -269,8 +269,7 @@ resources:
           image: { get_param: image }
           networks:
               - network: { get_resource: private_net }
-                fixed_ip: 10.9.8.1%index%
-
+                fixed_ip: 10.9.1.1%index%
 
           flavor: { get_param: flavor }
           name:
@@ -296,7 +295,7 @@ resources:
           image: { get_param: image }
           networks:
               - network: { get_resource: private_net }
-                fixed_ip: 10.9.9.1%index%
+                fixed_ip: 10.9.2.1%index%
 
           flavor: { get_param: flavor }
           name:
