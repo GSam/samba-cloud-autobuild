@@ -336,6 +336,14 @@ resources:
     type: OS::Heat::CloudConfig
     properties:
       cloud_config:
+        bootcmd: |
+          #!/bin/bash
+          /bin/ping -w 300 -c 1 10.9.100.10
+          for i in {1..100}; do
+            /usr/bin/host catalyst.net.nz 10.9.100.10 && break
+            /bin/sleep 5
+          done
+
         write_files:
           - path: /scripts/prepare-autobuild-dir
             permissions: '0755'
@@ -398,6 +406,11 @@ resources:
                 template: |
                   #!/bin/bash
                   set -x
+                  for i in {1..100}; do
+                    host catalyst.net.nz && break
+                    sleep 5
+                  done
+
                   /usr/local/samba/bin/samba-tool domain provision --use-rfc2307 \
                     --realm=_REALM_ \
                     --domain=_DOMAIN_ \
@@ -431,7 +444,10 @@ resources:
                 template: |
                   #!/bin/bash
                   set -x
-                  sleep 180
+                  for i in {1..100}; do
+                    host samdom.example.com && break
+                    sleep 5
+                  done
 
                   MY_SUBNET=$(ip addr |grep -oP '(?<=inet )10\.9\.\d+')
 
