@@ -83,11 +83,6 @@ parameters:
     description: >
       Don't build samba, just install packages and git pull
 
-  private_net_name:
-    type: string
-    default: private-keep-out
-    description: Name of private network to be created
-
   public_net:
     type: string
     default: public-net
@@ -119,17 +114,17 @@ parameters:
     type: string
     description: Private network gateway address
 
-  basename:
-    default: server
-    type: string
-    description: name the servers thus (with iteger suffix)
-
 
 resources:
   private_net:
     type: OS::Neutron::Net
     properties:
-      name: { get_param: private_net_name }
+      name:
+        str_replace:
+          template:
+            _NAME_-network
+          params:
+            _NAME_: { get_param: "OS::stack_name" }
 
   private_subnet_1:
     type: OS::Neutron::Subnet
@@ -187,7 +182,7 @@ resources:
               template:
                 _NAME_-1-_INDEX_
               params:
-                _NAME_: { get_param: basename }
+                _NAME_: { get_param: "OS::stack_name" }
                 _INDEX_: "%index%"
           user_data_format: RAW
           user_data:
@@ -213,7 +208,7 @@ resources:
               template:
                 _NAME_-2-_INDEX_
               params:
-                _NAME_: { get_param: basename }
+                _NAME_: { get_param: "OS::stack_name" }
                 _INDEX_: "%index%"
           user_data_format: RAW
           user_data:
@@ -381,7 +376,7 @@ resources:
                   fi
 
                 params:
-                  _NAME_: { get_param: basename }
+                  _NAME_: { get_param: "OS::stack_name" }
                   _USER_: {get_param: user}
 
         runcmd:
