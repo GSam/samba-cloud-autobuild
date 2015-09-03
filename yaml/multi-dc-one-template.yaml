@@ -94,6 +94,11 @@ parameters:
     default: private-keep-out
     description: Name of private network to be created
 
+  private_net_cidr_dns:
+    default: 10.9.100.0/24
+    type: string
+    description: Private network address (CIDR notation)
+
   private_net_cidr_1:
     default: 10.9.8.0/24
     type: string
@@ -126,13 +131,20 @@ resources:
           params:
             _NAME_: { get_param: "OS::stack_name" }
 
+  private_subnet_dns:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: private_net }
+      cidr: { get_param: private_net_cidr_dns }
+      enable_dhcp: true
+
   private_subnet_1:
     type: OS::Neutron::Subnet
     properties:
       network_id: { get_resource: private_net }
       cidr: { get_param: private_net_cidr_1 }
       enable_dhcp: true
-      #gateway_ip: { get_param: private_net_gateway }
+      dns_nameservers: [10.9.100.10]
 
   private_subnet_2:
     type: OS::Neutron::Subnet
@@ -140,7 +152,7 @@ resources:
       network_id: { get_resource: private_net }
       cidr: { get_param: private_net_cidr_2 }
       enable_dhcp: true
-      #gateway_ip: { get_param: private_net_gateway }
+      dns_nameservers: [10.9.100.10]
 
   router:
     type: OS::Neutron::Router
@@ -160,6 +172,90 @@ resources:
       router_id: { get_resource: router }
       subnet_id: { get_resource: private_subnet_2 }
 
+  router_interface_dns:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: router }
+      subnet_id: { get_resource: private_subnet_dns }
+
+  dns_server:
+    type: OS::Nova::Server
+    properties:
+      #key_name: { get_param: key_name }
+      image: { get_param: image }
+      networks:
+          - network: { get_resource: private_net }
+            fixed_ip: 10.9.100.10
+      flavor: { get_param: flavor }
+      name:
+        str_replace:
+          template:
+            _NAME_-dns
+          params:
+            _NAME_: { get_param: "OS::stack_name" }
+      user_data_format: RAW
+      user_data:
+        get_resource: server_init_dns
+
+  server_init_dns:
+      type: OS::Heat::MultipartMime
+      properties:
+        parts:
+        - config: {get_resource: get_packages_dns}
+        - config: {get_resource: prepare_dns}
+
+  get_packages_dns:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        packages: [bind9]
+
+  prepare_dns:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        write_files:
+          - path: /etc/bind/named.conf.options
+            content: |
+
+              options {
+                directory "/var/cache/bind";
+
+                forwarders {
+                      202.78.247.197;
+                      202.78.247.198;
+                      202.78.247.199;
+                };
+
+                //========================================================================
+                // If BIND logs error messages about the root key being expired,
+                // you will need to update your keys.  See https://www.isc.org/bind-keys
+                //========================================================================
+                dnssec-validation auto;
+
+                auth-nxdomain no;    # conform to RFC1035
+                listen-on-v6 { any; };
+
+                allow-recursion {
+                  10.9.1.0/16;
+                };
+              };
+
+
+          - path: /etc/bind/named.conf.local
+            content:
+              str_replace:
+                template: |
+                  zone "_REALM_" {
+                      type forward;
+                      forwarders {
+                        10.9.100.10;
+                      };
+                  };
+                params:
+                  _REALM_:  {get_param: samba_realm}
+        runcmd:
+          - service bind9 start
 
   servers_1:
     type: OS::Heat::ResourceGroup
