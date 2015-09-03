@@ -464,12 +464,11 @@ resources:
                   su _USER_ -l -c /scripts/prepare-autobuild-dir
                   su _USER_ -l -c /scripts/clone-samba
                   su _USER_ -l -c /scripts/build-samba
-                  if [[ "$(hostname)" == '_NAME_-0' ]]; then
+                  if [[ "$(hostname)" == '_NAME_-1-0' ]]; then
                      /scripts/provision-dc
                   else
                      /scripts/join-dc
                   fi
-
                 params:
                   _NAME_: { get_param: "OS::stack_name" }
                   _USER_: {get_param: user}
