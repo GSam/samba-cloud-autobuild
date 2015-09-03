@@ -149,7 +149,7 @@ resources:
       config: |
         #!/bin/sh
         mkdir /scripts
-        mount -t ramfs -o defaults /scripts
+        mount -t ramfs -o defaults ramfs /scripts
 
   prepare_samba:
     type: OS::Heat::CloudConfig
