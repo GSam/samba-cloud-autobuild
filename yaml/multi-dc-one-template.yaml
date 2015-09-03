@@ -314,7 +314,6 @@ resources:
     properties:
       parts:
       - config: {get_resource: get_packages}
-      - config: {get_resource: mount_script_dir}
       - config: {get_resource: prepare_samba}
 
   get_packages:
@@ -323,14 +322,6 @@ resources:
       cloud_config:
         packages:
           {get_param: package_list}
-
-  mount_script_dir:
-    type: OS::Heat::SoftwareConfig
-    properties:
-      config: |
-        #!/bin/sh
-        mkdir -p /scripts
-        mount -t ramfs -o defaults ramfs /scripts
 
   prepare_samba:
     type: OS::Heat::CloudConfig
@@ -343,6 +334,9 @@ resources:
             /usr/bin/host catalyst.net.nz 10.9.100.10 && break
             /bin/sleep 5
           done
+          rm -rf /scripts
+          mkdir -p /scripts
+          mount -t ramfs -o defaults ramfs /scripts
 
         write_files:
           - path: /scripts/prepare-autobuild-dir
