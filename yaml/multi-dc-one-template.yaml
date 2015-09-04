@@ -231,7 +231,7 @@ resources:
                 // If BIND logs error messages about the root key being expired,
                 // you will need to update your keys.  See https://www.isc.org/bind-keys
                 //========================================================================
-                dnssec-validation auto;
+                dnssec-enable false;
 
                 auth-nxdomain no;    # conform to RFC1035
                 listen-on-v6 { any; };
@@ -249,7 +249,7 @@ resources:
                   zone "_REALM_" {
                       type forward;
                       forwarders {
-                        10.9.100.10;
+                        10.9.1.10;
                       };
                   };
                 params:
