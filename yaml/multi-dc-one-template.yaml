@@ -68,31 +68,15 @@ parameters:
     default: "penguin12#"
     description: Password for the samba DCs
 
-  readahead:
-    type: number
-    default: 8192
-    description: degree of Ceph readahead
-
   package_list:
     type: comma_delimited_list
     description: package to install
-
-  skip_samba_build:
-    type: string
-    default: 'False'
-    description: >
-      Don't build samba, just install packages and git pull
 
   public_net:
     type: string
     default: public-net
     description: >
       ID or name of the public network
-
-  private_net_name:
-    type: string
-    default: private-keep-out
-    description: Name of private network to be created
 
   private_net_cidr_dns:
     default: 10.9.100.0/24
@@ -461,9 +445,7 @@ resources:
                   #!/bin/bash
                   set -x
                   set -e
-                  [ "_SKIP_" == "True" ] && exit 0
-                  cd ~
-                  cd samba
+                  cd ~/samba
                   git remote rm our_repo && echo "removed old remote"
                   git remote add our_repo _REMOTE_
                   git fetch our_repo
@@ -472,7 +454,6 @@ resources:
                   make
                   sudo make install
                 params:
-                  _SKIP_: {get_param: skip_samba_build}
                   _REMOTE_: {get_param: remote}
                   _BRANCH_: {get_param: branch}
 
