@@ -121,7 +121,7 @@ parameters:
 
 
 resources:
-  private_net:
+  private_net_dns:
     type: OS::Neutron::Net
     properties:
       name:
@@ -134,14 +134,34 @@ resources:
   private_subnet_dns:
     type: OS::Neutron::Subnet
     properties:
-      network_id: { get_resource: private_net }
+      network_id: { get_resource: private_net_dns }
       cidr: { get_param: private_net_cidr_dns }
       enable_dhcp: true
+
+  private_net_1:
+    type: OS::Neutron::Net
+    properties:
+      name:
+        str_replace:
+          template:
+            _NAME_-network-1
+          params:
+            _NAME_: { get_param: "OS::stack_name" }
+
+  private_net_2:
+    type: OS::Neutron::Net
+    properties:
+      name:
+        str_replace:
+          template:
+            _NAME_-network-2
+          params:
+            _NAME_: { get_param: "OS::stack_name" }
 
   private_subnet_1:
     type: OS::Neutron::Subnet
     properties:
-      network_id: { get_resource: private_net }
+      network_id: { get_resource: private_net_1 }
       cidr: { get_param: private_net_cidr_1 }
       enable_dhcp: true
       dns_nameservers: [10.9.100.10]
@@ -149,7 +169,7 @@ resources:
   private_subnet_2:
     type: OS::Neutron::Subnet
     properties:
-      network_id: { get_resource: private_net }
+      network_id: { get_resource: private_net_2 }
       cidr: { get_param: private_net_cidr_2 }
       enable_dhcp: true
       dns_nameservers: [10.9.100.10]
@@ -162,27 +182,78 @@ resources:
 
   router_1:
     type: OS::Neutron::Router
+    depends_on: router
     properties:
-      external_gateway_info:
-        network: { get_resource: private_subnet_dns }
+      name:
+        str_replace:
+          template:
+            _NAME_-router-1
+          params:
+            _NAME_: { get_param: "OS::stack_name" }
 
   router_2:
     type: OS::Neutron::Router
+    depends_on: router
     properties:
-      external_gateway_info:
-        network: { get_resource: private_subnet_dns }
+      name:
+        str_replace:
+          template:
+            _NAME_-router-2
+          params:
+            _NAME_: { get_param: "OS::stack_name" }
+
 
   router_interface_1:
     type: OS::Neutron::RouterInterface
     properties:
       router_id: { get_resource: router_1 }
-      subnet_id: { get_resource: private_subnet_1 }
+      port_id: { get_resource: port_router_1 }
 
   router_interface_2:
     type: OS::Neutron::RouterInterface
     properties:
       router_id: { get_resource: router_2 }
-      subnet_id: { get_resource: private_subnet_2 }
+      port_id: { get_resource: port_router_2 }
+
+
+  port_router_1:
+    type: OS::Neutron::Port
+    properties:
+      #fixed_ips: [ ip_address: 10.9.1.251, subnet:  { get_resource: private_subnet_1 } ]
+      network: { get_resource: private_net_1 }
+
+  port_router_2:
+    type: OS::Neutron::Port
+    properties:
+      #fixed_ips: [ ip_address: 10.9.2.251, subnet:  { get_resource: private_subnet_2 } ]
+      network: { get_resource: private_net_2 }
+
+
+  port_router_1_dns:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: private_net_dns }
+
+  port_router_2_dns:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: private_net_dns }
+
+
+  router_interface_1_dns:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: router_1 }
+      port_id: { get_resource: port_router_1_dns }
+
+
+  router_interface_2_dns:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: router_2 }
+      port_id: { get_resource: port_router_2_dns }
+
+
 
   router_interface_dns:
     type: OS::Neutron::RouterInterface
@@ -196,7 +267,7 @@ resources:
       #key_name: { get_param: key_name }
       image: { get_param: image }
       networks:
-          - network: { get_resource: private_net }
+          - network: { get_resource: private_net_dns }
             fixed_ip: 10.9.100.10
       flavor: { get_param: flavor }
       name:
@@ -280,7 +351,7 @@ resources:
           #key_name: { get_param: key_name }
           image: { get_param: image }
           networks:
-              - network: { get_resource: private_net }
+              - network: { get_resource: private_net_dns }
                 fixed_ip: 10.9.1.1%index%
 
           flavor: { get_param: flavor }
@@ -306,7 +377,7 @@ resources:
           #key_name: { get_param: key_name }
           image: { get_param: image }
           networks:
-              - network: { get_resource: private_net }
+              - network: { get_resource: private_net_dns }
                 fixed_ip: 10.9.2.1%index%
 
           flavor: { get_param: flavor }
