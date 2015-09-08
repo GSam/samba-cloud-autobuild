@@ -325,7 +325,7 @@ resources:
           #key_name: { get_param: key_name }
           image: { get_param: image }
           networks:
-              - network: { get_resource: private_net_dns }
+              - network: { get_resource: private_net_1 }
                 fixed_ip: 10.9.1.1%index%
 
           flavor: { get_param: flavor }
@@ -351,7 +351,7 @@ resources:
           #key_name: { get_param: key_name }
           image: { get_param: image }
           networks:
-              - network: { get_resource: private_net_dns }
+              - network: { get_resource: private_net_2 }
                 fixed_ip: 10.9.2.1%index%
 
           flavor: { get_param: flavor }
