@@ -93,16 +93,6 @@ parameters:
     type: string
     description: Private network address (CIDR notation)
 
-  private_net_gateway_1:
-    default: 10.9.1.1
-    type: string
-    description: Private network gateway address
-
-  private_net_gateway_2:
-    default: 10.9.2.1
-    type: string
-    description: Private network gateway address
-
 
 resources:
   private_net_dns:
