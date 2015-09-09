@@ -1,0 +1,237 @@
+heat_template_version: 2014-10-16
+
+description: >
+  A template to create multiple Samba DCs across many networks.
+
+parameters:
+  servers_per_subnet:
+    default: 2
+    type: number
+    description: How many servers to build in each subnet
+
+  subnet_count:
+    default: 2
+    type: number
+    description: How many subnets to build
+
+  key_name:
+    type: string
+    description: Name of an existing key pair to use for the server
+    constraints:
+      - custom_constraint: nova.keypair
+
+  user:
+    type: string
+    description: Admin user
+    default: "ubuntu"
+    constraints:
+      - allowed_pattern: "[a-z_][a-z0-9_]{0,30}"
+        description: Lowercase please, no fancy characters, not too long.
+
+  tmpfs:
+    type: string
+    description: tmpfs flag
+    default: "False"
+    constraints:
+      - allowed_pattern: "True|False"
+        description: True to use tmpfs, False for real disk
+
+  flavor:
+    type: string
+    description: Flavor for the server to be created
+    default: c1.c2r4
+    constraints:
+      - custom_constraint: nova.flavor
+
+  image:
+    type: string
+    default: ubuntu-15.04
+    description: Image ID or image name to use for the server
+    constraints:
+      - custom_constraint: glance.image
+
+  remote:
+    type: string
+    description: URL of git remote
+
+  branch:
+    type: string
+    description: git branch to use
+
+  samba_realm:
+    type: string
+    default: "SAMDOM.EXAMPLE.COM"
+    description: Realm for the samba DCs
+
+  samba_domain:
+    type: string
+    default: "SAMDOM"
+    description: Domain for the samba DCs
+
+  samba_password:
+    type: string
+    default: "penguin12#"
+    description: Password for the samba DCs
+
+  package_list:
+    type: comma_delimited_list
+    description: package to install
+
+  public_net:
+    type: string
+    default: public-net
+    description: >
+      ID or name of the public network
+
+  private_net_cidr_dns:
+    default: 10.9.100.0/24
+    type: string
+    description: Private network address (CIDR notation)
+
+resources:
+  private_net_dns:
+    type: OS::Neutron::Net
+    properties:
+      name:
+        str_replace:
+          template:
+            _NAME_-network
+          params:
+            _NAME_: { get_param: "OS::stack_name" }
+
+  private_subnet_dns:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: private_net_dns }
+      cidr: { get_param: private_net_cidr_dns }
+      enable_dhcp: true
+
+
+  subnets:
+    type: OS::Heat::ResourceGroup
+    depends_on: router    
+    properties:
+      count: {get_param: subnet_count}
+      resource_def:
+        type: single-site.yaml
+        properties:          
+          subnet_id:
+            str_replace:
+              template:
+                X
+              params:
+                X: "%index%"
+          server_count: { get_param: servers_per_subnet }
+          key_name: { get_param: key_name }
+          user: { get_param: user }
+          tmpfs: { get_param: tmpfs }
+          flavor: { get_param: flavor }
+          image: { get_param: image }
+          remote: { get_param: remote }
+          branch: { get_param: branch }
+          samba_realm: { get_param: samba_realm }
+          samba_domain: { get_param: samba_domain }
+          samba_password: { get_param: samba_password }
+          package_list: { get_param: package_list }
+
+          dns_net: {get_resource: private_net_dns }
+          router: {get_resource: router }
+          private_net_cidr:
+            str_replace:
+              template:
+                10.9.X.0/24
+              params:
+                X: "%index%"
+          #nameservers: 10.9.100.10
+
+  router:
+    type: OS::Neutron::Router
+    properties:
+      external_gateway_info:
+        network: { get_param: public_net }
+
+  router_interface_dns:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: router }
+      subnet_id: { get_resource: private_subnet_dns }
+
+  dns_server:
+    type: OS::Nova::Server
+    properties:
+      #key_name: { get_param: key_name }
+      image: { get_param: image }
+      networks:
+          - network: { get_resource: private_net_dns }
+            fixed_ip: 10.9.100.10
+      flavor: { get_param: flavor }
+      name:
+        str_replace:
+          template:
+            _NAME_-dns
+          params:
+            _NAME_: { get_param: "OS::stack_name" }
+      user_data_format: RAW
+      user_data:
+        get_resource: server_init_dns
+
+  server_init_dns:
+      type: OS::Heat::MultipartMime
+      properties:
+        parts:
+        - config: {get_resource: get_packages_dns}
+        - config: {get_resource: prepare_dns}
+
+  get_packages_dns:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        packages: [bind9]
+
+  prepare_dns:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        write_files:
+          - path: /etc/bind/named.conf.options
+            content: |
+
+              options {
+                directory "/var/cache/bind";
+
+                forwarders {
+                      202.78.247.197;
+                      202.78.247.198;
+                      202.78.247.199;
+                };
+
+                //========================================================================
+                // If BIND logs error messages about the root key being expired,
+                // you will need to update your keys.  See https://www.isc.org/bind-keys
+                //========================================================================
+                dnssec-enable false;
+
+                auth-nxdomain no;    # conform to RFC1035
+                listen-on-v6 { any; };
+
+                allow-recursion {
+                  10.9.1.0/16;
+                };
+              };
+
+
+          - path: /etc/bind/named.conf.local
+            content:
+              str_replace:
+                template: |
+                  zone "_REALM_" {
+                      type forward;
+                      forwarders {
+                        10.9.1.10;
+                      };
+                  };
+                params:
+                  _REALM_:  {get_param: samba_realm}
+        runcmd:
+          - service bind9 start
+

@@ -1,0 +1,328 @@
+heat_template_version: 2014-10-16
+
+description: >
+  A Samba site on a subnet
+
+parameters:
+
+  subnet_id:
+    type: string
+    description: an integer between 1 and 99
+    constraints:
+      - allowed_pattern: "[1-9][0-9]?"
+
+  server_count:
+    default: 2
+    type: number
+    description: How many servers to build
+
+  key_name:
+    type: string
+    description: Name of an existing key pair to use for the server
+    constraints:
+      - custom_constraint: nova.keypair
+
+  user:
+    type: string
+    description: Admin user
+    default: "ubuntu"
+    constraints:
+      - allowed_pattern: "[a-z_][a-z0-9_]{0,30}"
+        description: Lowercase please, no fancy characters, not too long.
+
+  tmpfs:
+    type: string
+    description: tmpfs flag
+    default: "False"
+    constraints:
+      - allowed_pattern: "True|False"
+        description: True to use tmpfs, False for real disk
+
+  flavor:
+    type: string
+    description: Flavor for the server to be created
+    default: c1.c2r4
+    constraints:
+      - custom_constraint: nova.flavor
+
+  image:
+    type: string
+    default: ubuntu-15.04
+    description: Image ID or image name to use for the server
+    constraints:
+      - custom_constraint: glance.image
+
+  remote:
+    type: string
+    description: URL of git remote
+
+  branch:
+    type: string
+    description: git branch to use
+
+  samba_realm:
+    type: string
+    default: "SAMDOM.EXAMPLE.COM"
+    description: Realm for the samba DCs
+
+  samba_domain:
+    type: string
+    default: "SAMDOM"
+    description: Domain for the samba DCs
+
+  samba_password:
+    type: string
+    default: "penguin12#"
+    description: Password for the samba DCs
+
+  package_list:
+    type: comma_delimited_list
+    description: package to install
+
+  dns_net:
+    type: string
+    description: >
+      ID or name of the parent network
+
+  router:
+    type: string
+    description: >
+      ID of router to connect to
+
+  private_net_cidr:
+    default: 10.9.1.0/24
+    type: string
+    description: Private network address (CIDR notation)
+
+  nameservers:
+    type: comma_delimited_list
+    default: [10.9.100.10]
+    description: list of nameservers to use
+
+resources:
+  private_net:
+    type: OS::Neutron::Net
+    properties:
+      name:
+        str_replace:
+          template:
+            _NAME_-network-_ID_
+          params:
+            _NAME_: { get_param: "OS::stack_name" }
+            _ID_: { get_param: subnet_id }
+
+  private_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: private_net }
+      cidr: { get_param: private_net_cidr }
+      enable_dhcp: true
+      dns_nameservers: { get_param: nameservers }
+
+  router_interface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_param: router }
+      subnet_id: { get_resource: private_subnet }
+
+  servers:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: { get_param: server_count }
+      resource_def:
+        type: OS::Nova::Server
+        properties:
+          #key_name: { get_param: key_name }
+          image: { get_param: image }
+          networks:
+              - network: { get_resource: private_net }
+                fixed_ip:
+                  str_replace:
+                    template:
+                      10.9._ID_.1_INDEX_
+                    params:
+                      _INDEX_: "%index%"
+                      _ID_: { get_param: subnet_id }
+
+          flavor: { get_param: flavor }
+          name:
+            str_replace:
+              template:
+                _NAME_-_ID_-_INDEX_
+              params:
+                _NAME_: { get_param: "OS::stack_name" }
+                _INDEX_: "%index%"
+          user_data_format: RAW
+          user_data:
+            get_resource: server_init
+
+  server_init:
+    type: OS::Heat::MultipartMime
+    properties:
+      parts:
+      - config: {get_resource: get_packages}
+      - config: {get_resource: prepare_samba}
+
+  get_packages:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        packages:
+          {get_param: package_list}
+
+  prepare_samba:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        bootcmd: |
+          #!/bin/bash
+          /bin/ping -w 300 -c 1 10.9.100.10
+          for i in {1..100}; do
+            /usr/bin/host catalyst.net.nz 10.9.100.10 && break
+            /bin/sleep 5
+          done
+          rm -rf /scripts
+          mkdir -p /scripts
+          mount -t ramfs -o defaults ramfs /scripts
+
+        write_files:
+          - path: /scripts/prepare-autobuild-dir
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  set -e
+                  export AUTOBUILD=/home/_USER_/autobuild/
+                  rm -rf $AUTOBUILD/*
+                  mkdir -p $AUTOBUILD
+                  [ "_TMPFS_" == "True" ] && mount -t tmpfs -o size=75% tmpfs $AUTOBUILD
+                  chown _USER_  $AUTOBUILD
+                params:
+                  _USER_: { get_param: user }
+                  _TMPFS_: { get_param: tmpfs }
+
+          - path: /scripts/clone-samba
+            permissions: '0755'
+            content: |
+              #!/bin/bash
+              set -x
+              set -e
+              cd ~
+              git clone git://git.catalyst.net.nz/samba.git
+              cd samba
+              git remote add catalyst git://git.catalyst.net.nz/samba.git
+              git remote add abartlet git://git.samba.org/abartlet/samba.git
+              git remote set-url origin git://git.samba.org/samba.git
+              git fetch catalyst
+
+          - path: /scripts/build-samba
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  set -e
+                  cd ~/samba
+                  git remote rm our_repo && echo "removed old remote"
+                  git remote add our_repo _REMOTE_
+                  git fetch our_repo
+                  git checkout our_repo/_BRANCH_
+                  ./configure.developer
+                  make
+                  sudo make install
+                params:
+                  _REMOTE_: {get_param: remote}
+                  _BRANCH_: {get_param: branch}
+
+          - path: /scripts/provision-dc
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  for i in {1..100}; do
+                    host catalyst.net.nz && break
+                    sleep 5
+                  done
+
+                  /usr/local/samba/bin/samba-tool domain provision --use-rfc2307 \
+                    --realm=_REALM_ \
+                    --domain=_DOMAIN_ \
+                    --server-role=dc \
+                    --adminpass='_PASSWORD_' \
+                    --krbtgtpass='_PASSWORD_' \
+                    --machinepass='_PASSWORD_' \
+                    --ldapadminpass='_PASSWORD_' \
+                    --dnspass='_PASSWORD_'
+
+                  sleep 1
+                  /usr/local/samba/sbin/samba
+                  sleep 1
+
+                  #echo -e "domain samdom.example.com\nnameserver 10.9.1.10" >> /etc/resolv.conf
+
+                  sudo -u _USER_ /usr/local/samba/bin/smbclient -L localhost -U%
+                  sudo -u _USER_ /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls'
+                params:
+                  _USER_: {get_param: user}
+                  _REALM_:  {get_param: samba_realm}
+                  _DOMAIN_:  {get_param: samba_domain}
+                  _PASSWORD_:  {get_param: samba_password}
+                  #_IP_: {get_attr: [my_server, networks, net0, 0]}
+
+          - path: /scripts/join-dc
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  for i in {1..100}; do
+                    host samdom.example.com && break
+                    sleep 5
+                  done
+
+                  #echo -e "nameserver 10.9.1.10\nsearch _REALM_" > /etc/resolv.conf
+
+                  echo -e '[libdefaults]\ndns_lookup_realm = false\ndns_lookup_kdc = true\ndefault_realm = _REALM_' > /etc/krb5.conf
+
+                  /usr/local/samba/bin/samba-tool domain join _REALM_ DC -UAdministrator \
+                          --password='_PASSWORD_' --realm=_REALM_
+
+                  sleep 1
+                  /usr/local/samba/sbin/samba
+                  sleep 1
+                  sudo -u _USER_ /usr/local/samba/bin/smbclient -L localhost -U%
+                  sudo -u _USER_ /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls'
+                params:
+                  _USER_: {get_param: user}
+                  _REALM_:  {get_param: samba_realm}
+                  _DOMAIN_:  {get_param: samba_domain}
+                  _PASSWORD_:  {get_param: samba_password}
+
+          - path: /scripts/run
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  echo this is /scripts/run
+                  su _USER_ -l -c /scripts/prepare-autobuild-dir
+                  su _USER_ -l -c /scripts/clone-samba
+                  su _USER_ -l -c /scripts/build-samba
+                  if [[ "$(hostname)" == '_NAME_-1-0' ]]; then
+                     /scripts/provision-dc
+                  else
+                     /scripts/join-dc
+                  fi
+                params:
+                  _NAME_: { get_param: "OS::stack_name" }
+                  _USER_: {get_param: user}
+
+        runcmd:
+          - /scripts/run
