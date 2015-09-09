@@ -3,6 +3,7 @@ packages:
  - acl
  - attr
  - autoconf
+ - bind9utils
  - bison
  - build-essential
  - ccache
@@ -47,6 +48,5 @@ packages:
  - screen
  - xsltproc
  - zlib1g-dev
- - ccache
  - rng-tools
  - realpath
