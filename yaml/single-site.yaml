@@ -22,6 +22,10 @@ parameters:
     constraints:
       - custom_constraint: nova.keypair
 
+  stack_name:
+    type: string
+    description: Name of parent stack creating this
+
   user:
     type: string
     description: Admin user
@@ -107,7 +111,7 @@ resources:
           template:
             _NAME_-network-_ID_
           params:
-            _NAME_: { get_param: "OS::stack_name" }
+            _NAME_: { get_param: stack_name }
             _ID_: { get_param: subnet_id }
 
   private_subnet:
