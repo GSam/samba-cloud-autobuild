@@ -129,6 +129,7 @@ resources:
           samba_domain: { get_param: samba_domain }
           samba_password: { get_param: samba_password }
           package_list: { get_param: package_list }
+          stack_name: { get_param: "OS::stack_name" }
 
           dns_net: {get_resource: private_net_dns }
           router: {get_resource: router }
