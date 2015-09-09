@@ -7,9 +7,9 @@ parameters:
 
   subnet_id:
     type: string
-    description: an integer between 1 and 99
+    description: an integer between 0 and 99
     constraints:
-      - allowed_pattern: "[1-9][0-9]?"
+      - allowed_pattern: "[0-9][0-9]?"
 
   server_count:
     default: 2
@@ -90,7 +90,6 @@ parameters:
       ID of router to connect to
 
   private_net_cidr:
-    default: 10.9.1.0/24
     type: string
     description: Private network address (CIDR notation)
 
@@ -263,8 +262,6 @@ resources:
                   /usr/local/samba/sbin/samba
                   sleep 1
 
-                  #echo -e "domain samdom.example.com\nnameserver 10.9.1.10" >> /etc/resolv.conf
-
                   sudo -u _USER_ /usr/local/samba/bin/smbclient -L localhost -U%
                   sudo -u _USER_ /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls'
                 params:
@@ -285,8 +282,6 @@ resources:
                     host samdom.example.com && break
                     sleep 5
                   done
-
-                  #echo -e "nameserver 10.9.1.10\nsearch _REALM_" > /etc/resolv.conf
 
                   echo -e '[libdefaults]\ndns_lookup_realm = false\ndns_lookup_kdc = true\ndefault_realm = _REALM_' > /etc/krb5.conf
 

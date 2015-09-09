@@ -83,10 +83,6 @@ parameters:
     description: >
       ID or name of the public network
 
-  private_net_cidr_dns:
-    default: 10.9.100.0/24
-    type: string
-    description: Private network address (CIDR notation)
 
 resources:
   private_net_dns:
@@ -103,7 +99,7 @@ resources:
     type: OS::Neutron::Subnet
     properties:
       network_id: { get_resource: private_net_dns }
-      cidr: { get_param: private_net_cidr_dns }
+      cidr: 10.9.100.1/24
       enable_dhcp: true
 
 
@@ -142,7 +138,7 @@ resources:
                 10.9.X.0/24
               params:
                 X: "%index%"
-          #nameservers: 10.9.100.10
+          nameservers: [10.9.100.10]
 
   router:
     type: OS::Neutron::Router
@@ -215,7 +211,7 @@ resources:
                 listen-on-v6 { any; };
 
                 allow-recursion {
-                  10.9.1.0/16;
+                  10.9.0.0/16;
                 };
               };
 
@@ -227,7 +223,7 @@ resources:
                   zone "_REALM_" {
                       type forward;
                       forwarders {
-                        10.9.1.10;
+                        10.9.0.10;
                       };
                   };
                 params:
