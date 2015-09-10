@@ -105,18 +105,25 @@ resources:
 
   subnets:
     type: OS::Heat::ResourceGroup
-    depends_on: router    
+    depends_on: router
     properties:
       count: {get_param: subnet_count}
       resource_def:
         type: single-site.yaml
-        properties:          
+        properties:
+          name:
+            str_replace:
+              template:
+                subnet-X
+              params:
+                X: "%index%"
           subnet_id:
             str_replace:
               template:
                 X
               params:
                 X: "%index%"
+          subnet_count: { get_param: subnet_count }
           server_count: { get_param: servers_per_subnet }
           key_name: { get_param: key_name }
           user: { get_param: user }
@@ -231,4 +238,3 @@ resources:
                   _REALM_:  {get_param: samba_realm}
         runcmd:
           - service bind9 start
-
