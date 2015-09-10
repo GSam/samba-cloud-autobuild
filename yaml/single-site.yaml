@@ -196,23 +196,6 @@ resources:
           mount -t ramfs -o defaults ramfs /scripts
 
         write_files:
-          - path: /scripts/prepare-autobuild-dir
-            permissions: '0755'
-            content:
-              str_replace:
-                template: |
-                  #!/bin/bash
-                  set -x
-                  set -e
-                  export AUTOBUILD=/home/_USER_/autobuild/
-                  rm -rf $AUTOBUILD/*
-                  mkdir -p $AUTOBUILD
-                  [ "_TMPFS_" == "True" ] && mount -t tmpfs -o size=75% tmpfs $AUTOBUILD
-                  chown _USER_  $AUTOBUILD
-                params:
-                  _USER_: { get_param: user }
-                  _TMPFS_: { get_param: tmpfs }
-
           - path: /scripts/clone-samba
             permissions: '0755'
             content: |
@@ -336,7 +319,6 @@ resources:
                   #!/bin/bash
                   set -x
                   echo this is /scripts/run
-                  su _USER_ -l -c /scripts/prepare-autobuild-dir
                   su _USER_ -l -c /scripts/clone-samba
                   su _USER_ -l -c /scripts/build-samba
                   if [[ "$(hostname)" == '_NAME_-0-0' ]]; then
