@@ -5,6 +5,10 @@ description: >
 
 parameters:
 
+  subnet_count:
+    type: number
+    description: how many subnets there are in total
+
   subnet_id:
     type: string
     description: an integer between 0 and 99
@@ -180,11 +184,13 @@ resources:
       cloud_config:
         bootcmd: |
           #!/bin/bash
+          # Wait for the DNS server to come up
           /bin/ping -w 300 -c 1 10.9.100.10
           for i in {1..100}; do
             /usr/bin/host catalyst.net.nz 10.9.100.10 && break
-            /bin/sleep 5
+            /bin/sleep 10
           done
+
           rm -rf /scripts
           mkdir -p /scripts
           mount -t ramfs -o defaults ramfs /scripts
@@ -250,7 +256,7 @@ resources:
                   set -x
                   for i in {1..100}; do
                     host catalyst.net.nz && break
-                    sleep 5
+                    sleep 10
                   done
 
                   /usr/local/samba/bin/samba-tool domain provision --use-rfc2307 \
@@ -261,19 +267,31 @@ resources:
                     --krbtgtpass='_PASSWORD_' \
                     --machinepass='_PASSWORD_' \
                     --ldapadminpass='_PASSWORD_' \
-                    --dnspass='_PASSWORD_'
+                    --dnspass='_PASSWORD_' \
+                    -d 3
 
-                  sleep 1
-                  /usr/local/samba/sbin/samba
-                  sleep 1
+                  for i in $(seq 0 $((_SUBNET_COUNT_ - 1)) ); do
+                    /usr/local/samba/bin/samba-tool sites create site-$i
 
-                  sudo -u _USER_ /usr/local/samba/bin/smbclient -L localhost -U%
-                  sudo -u _USER_ /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls'
+                  done
+
+                  (/usr/local/samba/sbin/samba &)
+
+                  for i in {1..100}; do
+                    /usr/local/samba/bin/smbclient -L localhost -U% && break
+                    sleep 10
+                  done
+                  for i in {1..10}; do
+                    /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls' && break
+                    sleep 10
+                  done
+
                 params:
                   _USER_: {get_param: user}
                   _REALM_:  {get_param: samba_realm}
                   _DOMAIN_:  {get_param: samba_domain}
                   _PASSWORD_:  {get_param: samba_password}
+                  _SUBNET_COUNT_:  {get_param: subnet_count}
                   #_IP_: {get_attr: [my_server, networks, net0, 0]}
 
           - path: /scripts/join-dc
@@ -285,19 +303,25 @@ resources:
                   set -x
                   for i in {1..100}; do
                     host samdom.example.com && break
-                    sleep 5
+                    sleep 10
                   done
 
                   echo -e '[libdefaults]\ndns_lookup_realm = false\ndns_lookup_kdc = true\ndefault_realm = _REALM_' > /etc/krb5.conf
 
-                  /usr/local/samba/bin/samba-tool domain join _REALM_ DC -UAdministrator \
-                          --password='_PASSWORD_' --realm=_REALM_
+                  for i in {1..10}; do
+                    /usr/local/samba/bin/smbclient -L _REALM_ -U% && break
+                    sleep 10
+                  done
 
-                  sleep 1
+                  /usr/local/samba/bin/samba-tool domain join _REALM_ DC -UAdministrator \
+                          --password='_PASSWORD_' --realm=_REALM_ -d 3
+
+
                   /usr/local/samba/sbin/samba
-                  sleep 1
-                  sudo -u _USER_ /usr/local/samba/bin/smbclient -L localhost -U%
-                  sudo -u _USER_ /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls'
+                  for i in {1..10}; do
+                    /usr/local/samba/bin/smbclient //$(hostname)/netlogon -P -c 'ls' && break
+                    sleep 10
+                  done
                 params:
                   _USER_: {get_param: user}
                   _REALM_:  {get_param: samba_realm}
