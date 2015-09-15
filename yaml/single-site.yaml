@@ -30,6 +30,10 @@ parameters:
     type: string
     description: Name of parent stack creating this
 
+  name:
+    type: string
+    description: a name for this sub-stack
+
   user:
     type: string
     description: Admin user
