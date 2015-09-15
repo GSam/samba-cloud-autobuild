@@ -92,7 +92,7 @@ resources:
       name:
         str_replace:
           template:
-            _NAME_-network
+            _NAME_-network-dns
           params:
             _NAME_: { get_param: "OS::stack_name" }
 
