@@ -51,6 +51,7 @@ parameters:
       - custom_constraint: glance.image
 
   remote:
+    default: git://git.catalyst.net.nz/samba.git
     type: string
     description: URL of git remote
 
