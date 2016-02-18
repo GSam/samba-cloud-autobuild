@@ -12,6 +12,7 @@ packages:
  - gnutls-devel
  - readline-devel
  - python-devel
+ - python3-devel
  - gdb
  - pkgconfig
  - krb5-workstation
