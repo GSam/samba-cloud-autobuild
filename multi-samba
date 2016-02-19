@@ -22,20 +22,17 @@ def construct_parameters(args, credentials):
         package_list = get_package_list('ubuntu', form=list)
 
     parameters = [(k.lower(), v) for k, v in credentials.items()]
-    parameters.extend([('remote', args.remote),
-                       ('branch', args.branch),
-                       #('region', args.region),
-                       ('onfail', args.onfail),
-                       ('flavor', args.flavor),
-                       ('image', args.image),
-                       ('maxtime', str(args.maxtime)),
-                       ('readahead', str(args.readahead)),
-                       #('stack_id', args.stack_id),
-                       ('key_name', args.key_name),
-                       ('skip_samba_build', str(args.skip_samba_build)),
-                       ('package_list', ','.join(package_list)),
-                       ('user', user),
-                       ])
+    arg_d = vars(args)
+    parameters.extend([(k, str(arg_d[k])) for k in ('remote',
+                                                    'branch',
+                                                    'flavor',
+                                                    'image',
+                                                    'key_name',
+                                                    'servers_per_subnet',
+                                                    'subnet_count')])
+
+    parameters.extend([('user', user),
+                       ('package_list', ','.join(package_list))])
 
     #print parameters
     return ';'.join("%s=%s" % (k, quote(v)) for k, v in sorted(parameters))
@@ -77,6 +74,12 @@ def main():
                         help="list known templates")
     parser.add_argument('--give-template-credentials', action='store_true',
                         help="provide openstack crednetials to template (for self shutdown)")
+    parser.add_argument('--subnet-count', type=int, default=1,
+                        help="create this many subnets")
+    parser.add_argument('--servers-per-subnet', type=int, default=1,
+                        help="create this many servers in each subnet")
+
+
     args = parser.parse_args()
     if args.template_list:
         print_template_list()
