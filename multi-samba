@@ -68,7 +68,7 @@ def main():
     add_common_args(parser)
     parser.add_argument('--stack-id', default=None,
                         help="use this stack ID (default: auto)")
-    parser.add_argument('--template', default=None,
+    parser.add_argument('--template', default='yaml/multi-dc-top-level.yaml',
                         help="use this yaml template")
     parser.add_argument('--template-list', action='store_true',
                         help="list known templates")
