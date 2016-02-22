@@ -50,7 +50,7 @@ write_files:
     git fetch our_repo
     git checkout our_repo/{branch}
     export SMBD_MAXTIME={maxtime}
-    ./script/autobuild.py --email-from=samba-dev@catalyst.net.nz \
+    CC="ccache gcc" ./script/autobuild.py --email-from=samba-dev@catalyst.net.nz \
                           --email=samba-dev@catalyst.net.nz \
                           --email-server=smtp1.catalyst.net.nz \
                           --always-email --attach-logs \

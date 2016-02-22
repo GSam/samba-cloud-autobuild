@@ -42,3 +42,4 @@ packages:
  - screen
  - xsltproc
  - zlib1g-dev
+ - ccache

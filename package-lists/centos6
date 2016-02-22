@@ -35,3 +35,4 @@ packages:
  - openldap-devel
  - autoconf
  - curl
+ - ccache
