@@ -231,6 +231,7 @@ resources:
                 template: |
                   zone "_REALM_" {
                       type forward;
+                      forward only;
                       forwarders {
                         10.9.0.10;
                       };
