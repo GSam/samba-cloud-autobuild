@@ -128,6 +128,20 @@ resources:
       network_id: { get_resource: private_net }
       cidr: { get_param: private_net_cidr }
       enable_dhcp: true
+      allocation_pools:
+        - start:
+            str_replace:
+              template:
+                10.9._ID_.200
+              params:
+                _ID_: { get_param: subnet_id }
+          end:
+            str_replace:
+              template:
+                10.9._ID_.254
+              params:
+                _ID_: { get_param: subnet_id }
+
       dns_nameservers: { get_param: nameservers }
 
   router_interface:
