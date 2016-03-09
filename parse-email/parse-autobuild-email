@@ -1,0 +1,136 @@
+#!/usr/bin/python
+
+import os
+import sys
+import mailbox
+import argparse
+import re
+import requests
+import errno
+import collections
+import time
+
+import config
+
+CACHE = os.path.join(os.path.dirname(__file__), 'cache')
+
+
+def get_cvs_email():
+    mbox = mailbox.mbox(config.MAILBOX)
+    subj_match = re.compile(r'autobuild[\w\[\].-]*: '
+                            'intermittent test failure detected').match
+    messages = [x for x in mbox if
+                subj_match(x.get('Subject'))]
+
+    return messages
+
+
+def get_cvs_links():
+    messages = get_cvs_email()
+    urlre = re.compile(r'http://git.samba.org/autobuild.flakey[\w.-]*/'
+                       '\d\d\d\d-\d\d-\d\d-\d+/[\w.]+').findall
+    links = []
+    for m in messages:
+        s = m.get_payload()
+        links.extend(urlre(s))
+
+    return links
+
+
+def update_stdout_cache(force=False):
+    try:
+        os.makedirs(CACHE)
+    except OSError, e:
+        if e.errno != errno.EEXIST:
+            raise
+
+    for url in get_cvs_links():
+        if not url.endswith('samba.stdout'):
+            continue
+        fn = re.sub(r'[^\w.-]+', '+', url[7:])
+        ffn = os.path.join(CACHE, fn)
+        if force or not os.path.exists(ffn):
+            print "fetching %s" % url
+            r = requests.get(url)
+            f = open(ffn, 'w')
+            f.write(r.text.encode('utf=8'))
+            f.close()
+
+
+def filter_by_date(files, date):
+    date_search = re.compile(r'(20\d\d-\d\d-\d\d)-').search
+    out = []
+    threshold = time.mktime(time.strptime(date, '%Y-%m-%d'))
+    for fn in files:
+        m = date_search(fn)
+        if m:
+            t = time.mktime(time.strptime(m.group(1), '%Y-%m-%d'))
+            if t > threshold:
+                out.append(fn)
+    return out
+
+
+def count_lines(fn_re, line_re, count=None, since=None):
+    fn_match = re.compile(fn_re).search
+    line_match = re.compile(line_re).search
+    files = sorted(x for x in os.listdir(CACHE) if fn_match(x))
+    if since:
+        files = filter_by_date(files, since)
+
+    lines = []
+    for fn in files:
+        f = open(os.path.join(CACHE, fn))
+        for line in f:
+            if line_match(line):
+                lines.append(line.strip())
+        f.close()
+
+    print ("found %d lines matching %r in %d files matching %r" %
+           (len(lines), line_re, len(files), fn_re))
+
+    c = collections.Counter(lines)
+    if count:
+        rows = c.most_common(count)
+    else:
+        rows = c.most_common()
+    for k, v in rows:
+        print '%4d %s' % (v, k)
+
+
+def print_all_links():
+    for x in get_cvs_links():
+        print x
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--print-links', action='store_true',
+                        help="print all the autobuild links and exit")
+
+    parser.add_argument('-c', '--count', type=int,
+                        help="print this many errors (default all)")
+
+    parser.add_argument('--file-regex', default='samba.stdout$',
+                        help="look at files matching this regex")
+
+    parser.add_argument('--line-regex', default='^UNEXPECTED',
+                        help="look for lines matching this regex")
+
+    parser.add_argument('--since',
+                        help=("restrict to filenames containing dates "
+                              "> this (YYYY-MM-DD)"))
+
+    args = parser.parse_args()
+
+    if args.print_links:
+        print_all_links()
+        sys.exit()
+
+    update_stdout_cache()
+    count_lines(fn_re=args.file_regex,
+                line_re=args.line_regex,
+                count=args.count,
+                since=args.since)
+
+
+main()

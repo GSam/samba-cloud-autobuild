@@ -1,0 +1,2 @@
+# modify this to point to the right mailbox
+MAILBOX = '/home/you/.thunderbird/xxxxxxx.default/ImapMail/whichever/INBOX.sbd/samba-cvs'
