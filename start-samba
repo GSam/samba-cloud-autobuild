@@ -74,7 +74,6 @@ def boot(flavor, image, yaml_file, server_name, key_name, region,
 
     args += ['--user-data', yaml_file]
     args += ['--key-name', key_name]
-    args += ['--config-drive', 'true']
     args += ['--poll']
     if net_id is not None:
         args += ['--nic', 'net-id=%s' % net_id]
