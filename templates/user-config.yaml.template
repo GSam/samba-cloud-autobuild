@@ -112,6 +112,7 @@ write_files:
 runcmd:
  - set -x
  - echo 0 > /proc/sys/kernel/yama/ptrace_scope
+ - mount / -o remount,rw,nobarrier
  - [ blockdev, --setra, {readahead}, /dev/vda]
  - [ /usr/local/bin/prepare-autobuild-dir]
  - [ su, {user}, -l, -c, /usr/local/bin/clone-samba]
