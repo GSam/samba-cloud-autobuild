@@ -1,0 +1,97 @@
+#!/usr/bin/python
+
+import os
+import sys
+import mailbox
+import argparse
+import re
+import requests
+import errno
+import collections
+import time
+import tarfile
+import cStringIO
+
+import config
+from common import filter_by_date, count_lines
+
+CACHE = os.path.join(os.path.dirname(__file__), 'cache/cloud')
+
+
+def fix_time(s):
+    # from "Sun, 27 Mar 2016 22:31:57 +0000"
+    # to   "2016-03-27-22-31-27"
+    t = time.strptime(s, "%a, %d %b %Y %H:%M:%S +0000")
+    return time.strftime("%Y-%m-%d-%H-%M-%S", t)
+
+
+def filename_generator(name):
+    mbox = mailbox.mbox(config.CLOUD_MAILBOX)
+    subj_match = re.compile(r'autobuild failure on ').match
+    for msg in mbox:
+        subject = msg.get('Subject')
+        if subj_match(subject):
+            date = fix_time(msg.get('Date'))
+            tag = subject.split()[3]
+            fn = '%s-%s-%s' % (name, tag, date)
+            yield (fn, msg)
+
+
+def get_content(msg, name):
+    payload = msg.get_payload()
+    tarball = payload[1].get_payload(decode=True)
+    f = cStringIO.StringIO(tarball)
+    tf = tarfile.open(fileobj=f)
+    try:
+        f2 = tf.extractfile(name)
+        content = f2.read()
+        f2.close()
+        return content
+    except tarfile.TarError, e:
+        print e
+
+
+def update_cache(name, force=False):
+    try:
+        os.makedirs(CACHE)
+    except OSError, e:
+        if e.errno != errno.EEXIST:
+            raise
+    print "updating cache..."
+    for fn, msg in filename_generator(name):
+        ffn = os.path.join(CACHE, fn)
+        if force or not os.path.exists(ffn):
+            print "unpacking %s" % fn
+            f = open(ffn, 'w')
+            content = get_content(msg, name)
+            f.write(content)
+            f.close()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--count', type=int,
+                        help="print this many errors (default all)")
+
+    parser.add_argument('--file-name', default='samba.stdout',
+                        help="look at files matching this regex")
+
+    parser.add_argument('--line-regex', default='^UNEXPECTED',
+                        help="look for lines matching this regex")
+
+    parser.add_argument('--since',
+                        help=("restrict to filenames containing dates "
+                              "> this (YYYY-MM-DD)"))
+
+    args = parser.parse_args()
+
+    update_cache(args.file_name)
+    file_regex = '^' + args.file_name
+    count_lines(fn_re=file_regex,
+                line_re=args.line_regex,
+                cache=CACHE,
+                count=args.count,
+                since=args.since)
+
+
+main()
