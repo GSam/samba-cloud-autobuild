@@ -147,7 +147,8 @@ resources:
                 10.9.X.0/24
               params:
                 X: "%index%"
-          nameservers: [10.9.100.10]
+          nameservers: [10.9.100.10, 202.78.247.198]
+          #nameservers: [127.0.0.1, 10.9.100.10, 202.78.247.198]
 
   router:
     type: OS::Neutron::Router
