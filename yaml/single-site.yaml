@@ -325,6 +325,21 @@ resources:
                 /usr/bin/host catalyst.net.nz 10.9.100.10 && break
                 /bin/sleep 10
               done
+
+          - path: /run/samba-scripts/mangle-dns
+            permissions: '0755'
+            content: |
+              # put localhost in resolv.conf
+              # resolvconf(8) wants to look after it but we don't entirely trust it.
+              printf 'nameserver 127.0.0.1\n' > /etc/resolv.conf.new
+              cat /etc/resolv.conf >> /etc/resolv.conf.new
+              cp /etc/resolv.conf /etc/resolv.conf.old
+              mv /etc/resolv.conf.new /etc/resolv.conf
+
+              # Now make sure resolvconf doesn't muck it up
+              printf 'nameserver 127.0.0.1\n' >> /etc/resolvconf/resolv.conf.d/head
+              #resolvconf -u
+
           - path: /run/samba-scripts/run
             permissions: '0755'
             content:
