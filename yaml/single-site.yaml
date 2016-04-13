@@ -201,7 +201,7 @@ resources:
     properties:
       cloud_config:
         write_files:
-          - path: /run/samba-scripts/clone-samba
+          - path: /run/shm/samba-scripts/clone-samba
             permissions: '0755'
             content: |
               #!/bin/bash
@@ -215,7 +215,7 @@ resources:
               git remote set-url origin git://git.samba.org/samba.git
               git fetch catalyst
 
-          - path: /run/samba-scripts/build-samba
+          - path: /run/shm/samba-scripts/build-samba
             permissions: '0755'
             content:
               str_replace:
@@ -235,7 +235,7 @@ resources:
                   _REMOTE_: {get_param: remote}
                   _BRANCH_: {get_param: branch}
 
-          - path: /run/samba-scripts/provision-dc
+          - path: /run/shm/samba-scripts/provision-dc
             permissions: '0755'
             content:
               str_replace:
@@ -282,7 +282,7 @@ resources:
                   _SUBNET_COUNT_:  {get_param: subnet_count}
                   #_IP_: {get_attr: [my_server, networks, net0, 0]}
 
-          - path: /run/samba-scripts/join-dc
+          - path: /run/shm/samba-scripts/join-dc
             permissions: '0755'
             content:
               str_replace:
@@ -310,13 +310,18 @@ resources:
                     /usr/local/samba/bin/smbclient //$(hostname)/netlogon -P -c 'ls' && break
                     sleep 10
                   done
+
+                  ip=$(ip -o -4 addr show dev eth0 |grep -oP '\d+\.\d+\.\d+\.\d+(?=/\d+)')
+
+                  /usr/local/samba/samba-tool dns add 10.9.0.10 _REALM_ $(hostname) A  $ip -Uadministrator%_PASSWORD_
+
                 params:
                   _USER_: {get_param: user}
                   _REALM_:  {get_param: samba_realm}
                   _DOMAIN_:  {get_param: samba_domain}
                   _PASSWORD_:  {get_param: samba_password}
 
-          - path: /run/samba-scripts/wait-for-dns
+          - path: /run/shm/samba-scripts/wait-for-dns
             permissions: '0755'
             content: |
               # Wait for the DNS server to come up
@@ -326,7 +331,7 @@ resources:
                 /bin/sleep 10
               done
 
-          - path: /run/samba-scripts/mangle-dns
+          - path: /run/shm/samba-scripts/mangle-dns
             permissions: '0755'
             content: |
               # put localhost in resolv.conf
@@ -340,27 +345,27 @@ resources:
               printf 'nameserver 127.0.0.1\n' >> /etc/resolvconf/resolv.conf.d/head
               #resolvconf -u
 
-          - path: /run/samba-scripts/run
+          - path: /run/shm/samba-scripts/run
             permissions: '0755'
             content:
               str_replace:
                 template: |
                   #!/bin/bash
                   set -x
-                  echo this is /run/samba-scripts/run
-                  su _USER_ -l -c /run/samba-scripts/clone-samba
-                  su _USER_ -l -c /run/samba-scripts/build-samba
+                  echo this is /run/shm/samba-scripts/run
+                  /run/shm/samba-scripts/wait-for-dns
+                  su _USER_ -l -c /run/shm/samba-scripts/clone-samba
+                  su _USER_ -l -c /run/shm/samba-scripts/build-samba
 
-                  /run/samba-scripts/wait-for-dns
-
+                  /run/shm/samba-scripts/mangle-dns
                   if [[ "$(hostname)" == '_NAME_-0-0' ]]; then
-                     /run/samba-scripts/provision-dc
+                     /run/shm/samba-scripts/provision-dc
                   else
-                     /run/samba-scripts/join-dc
+                     /run/shm/samba-scripts/join-dc
                   fi
                 params:
                   _NAME_: { get_param: stack_name }
                   _USER_: {get_param: user}
 
         runcmd:
-          - /run/samba-scripts/run
+          - /run/shm/samba-scripts/run
