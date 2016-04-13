@@ -107,7 +107,7 @@ parameters:
 
   nameservers:
     type: comma_delimited_list
-    default: [10.9.100.10]
+    default: [127.0.0.1, 10.9.100.10, 8.8.8.8]
     description: list of nameservers to use
 
 resources:
