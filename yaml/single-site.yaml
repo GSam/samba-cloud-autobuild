@@ -208,13 +208,8 @@ resources:
             /usr/bin/host catalyst.net.nz 10.9.100.10 && break
             /bin/sleep 10
           done
-
-          rm -rf /scripts
-          mkdir -p /scripts
-          mount -t ramfs -o defaults ramfs /scripts
-
         write_files:
-          - path: /scripts/clone-samba
+          - path: /run/samba-scripts/clone-samba
             permissions: '0755'
             content: |
               #!/bin/bash
@@ -228,7 +223,7 @@ resources:
               git remote set-url origin git://git.samba.org/samba.git
               git fetch catalyst
 
-          - path: /scripts/build-samba
+          - path: /run/samba-scripts/build-samba
             permissions: '0755'
             content:
               str_replace:
@@ -248,7 +243,7 @@ resources:
                   _REMOTE_: {get_param: remote}
                   _BRANCH_: {get_param: branch}
 
-          - path: /scripts/provision-dc
+          - path: /run/samba-scripts/provision-dc
             permissions: '0755'
             content:
               str_replace:
@@ -295,7 +290,7 @@ resources:
                   _SUBNET_COUNT_:  {get_param: subnet_count}
                   #_IP_: {get_attr: [my_server, networks, net0, 0]}
 
-          - path: /scripts/join-dc
+          - path: /run/samba-scripts/join-dc
             permissions: '0755'
             content:
               str_replace:
@@ -329,24 +324,25 @@ resources:
                   _DOMAIN_:  {get_param: samba_domain}
                   _PASSWORD_:  {get_param: samba_password}
 
-          - path: /scripts/run
+          - path: /run/samba-scripts/run
             permissions: '0755'
             content:
               str_replace:
                 template: |
                   #!/bin/bash
                   set -x
-                  echo this is /scripts/run
-                  su _USER_ -l -c /scripts/clone-samba
-                  su _USER_ -l -c /scripts/build-samba
+                  echo this is /run/samba-scripts/run
+                  su _USER_ -l -c /run/samba-scripts/clone-samba
+                  su _USER_ -l -c /run/samba-scripts/build-samba
+
                   if [[ "$(hostname)" == '_NAME_-0-0' ]]; then
-                     /scripts/provision-dc
+                     /run/samba-scripts/provision-dc
                   else
-                     /scripts/join-dc
+                     /run/samba-scripts/join-dc
                   fi
                 params:
                   _NAME_: { get_param: stack_name }
                   _USER_: {get_param: user}
 
         runcmd:
-          - /scripts/run
+          - /run/samba-scripts/run
