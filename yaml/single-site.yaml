@@ -200,14 +200,6 @@ resources:
     type: OS::Heat::CloudConfig
     properties:
       cloud_config:
-        bootcmd: |
-          #!/bin/bash
-          # Wait for the DNS server to come up
-          /bin/ping -w 300 -c 1 10.9.100.10
-          for i in {1..100}; do
-            /usr/bin/host catalyst.net.nz 10.9.100.10 && break
-            /bin/sleep 10
-          done
         write_files:
           - path: /run/samba-scripts/clone-samba
             permissions: '0755'
@@ -324,6 +316,15 @@ resources:
                   _DOMAIN_:  {get_param: samba_domain}
                   _PASSWORD_:  {get_param: samba_password}
 
+          - path: /run/samba-scripts/wait-for-dns
+            permissions: '0755'
+            content: |
+              # Wait for the DNS server to come up
+              /bin/ping -w 300 -c 1 10.9.100.10
+              for i in {1..100}; do
+                /usr/bin/host catalyst.net.nz 10.9.100.10 && break
+                /bin/sleep 10
+              done
           - path: /run/samba-scripts/run
             permissions: '0755'
             content:
@@ -334,6 +335,8 @@ resources:
                   echo this is /run/samba-scripts/run
                   su _USER_ -l -c /run/samba-scripts/clone-samba
                   su _USER_ -l -c /run/samba-scripts/build-samba
+
+                  /run/samba-scripts/wait-for-dns
 
                   if [[ "$(hostname)" == '_NAME_-0-0' ]]; then
                      /run/samba-scripts/provision-dc
