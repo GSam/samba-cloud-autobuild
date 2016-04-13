@@ -86,24 +86,6 @@ parameters:
 
 
 resources:
-  private_net_dns:
-    type: OS::Neutron::Net
-    properties:
-      name:
-        str_replace:
-          template:
-            _NAME_-network-dns
-          params:
-            _NAME_: { get_param: "OS::stack_name" }
-
-  private_subnet_dns:
-    type: OS::Neutron::Subnet
-    properties:
-      network_id: { get_resource: private_net_dns }
-      cidr: 10.9.100.1/24
-      enable_dhcp: true
-
-
   subnets:
     type: OS::Heat::ResourceGroup
     depends_on: router
@@ -139,7 +121,6 @@ resources:
           package_list: { get_param: package_list }
           stack_name: { get_param: "OS::stack_name" }
 
-          dns_net: {get_resource: private_net_dns }
           router: {get_resource: router }
           private_net_cidr:
             str_replace:
@@ -147,97 +128,11 @@ resources:
                 10.9.X.0/24
               params:
                 X: "%index%"
-          nameservers: [10.9.100.10, 202.78.247.198]
-          #nameservers: [127.0.0.1, 10.9.100.10, 202.78.247.198]
+          nameservers: [10.9.0.10, 202.78.247.198]
+          #nameservers: [127.0.0.1, 10.9.0.10, 202.78.247.198]
 
   router:
     type: OS::Neutron::Router
     properties:
       external_gateway_info:
         network: { get_param: public_net }
-
-  router_interface_dns:
-    type: OS::Neutron::RouterInterface
-    properties:
-      router_id: { get_resource: router }
-      subnet_id: { get_resource: private_subnet_dns }
-
-  dns_server:
-    type: OS::Nova::Server
-    properties:
-      key_name: { get_param: key_name }
-      image: { get_param: image }
-      networks:
-          - network: { get_resource: private_net_dns }
-            fixed_ip: 10.9.100.10
-      flavor: { get_param: flavor }
-      name:
-        str_replace:
-          template:
-            _NAME_-dns
-          params:
-            _NAME_: { get_param: "OS::stack_name" }
-      user_data_format: RAW
-      user_data:
-        get_resource: server_init_dns
-
-  server_init_dns:
-      type: OS::Heat::MultipartMime
-      properties:
-        parts:
-        - config: {get_resource: get_packages_dns}
-        - config: {get_resource: prepare_dns}
-
-  get_packages_dns:
-    type: OS::Heat::CloudConfig
-    properties:
-      cloud_config:
-        packages: [bind9]
-
-  prepare_dns:
-    type: OS::Heat::CloudConfig
-    properties:
-      cloud_config:
-        write_files:
-          - path: /etc/bind/named.conf.options
-            content: |
-
-              options {
-                directory "/var/cache/bind";
-
-                forwarders {
-                      202.78.247.197;
-                      202.78.247.198;
-                      202.78.247.199;
-                };
-
-                //========================================================================
-                // If BIND logs error messages about the root key being expired,
-                // you will need to update your keys.  See https://www.isc.org/bind-keys
-                //========================================================================
-                dnssec-enable false;
-
-                auth-nxdomain no;    # conform to RFC1035
-                listen-on-v6 { any; };
-
-                allow-recursion {
-                  10.9.0.0/16;
-                };
-              };
-
-
-          - path: /etc/bind/named.conf.local
-            content:
-              str_replace:
-                template: |
-                  zone "_REALM_" {
-                      type forward;
-                      forward only;
-                      forwarders {
-                        10.9.0.10;
-                      };
-                  };
-                params:
-                  _REALM_:  {get_param: samba_realm}
-        runcmd:
-          - service bind9 start

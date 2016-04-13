@@ -91,11 +91,6 @@ parameters:
     type: comma_delimited_list
     description: package to install
 
-  dns_net:
-    type: string
-    description: >
-      ID or name of the parent network
-
   router:
     type: string
     description: >
@@ -107,7 +102,7 @@ parameters:
 
   nameservers:
     type: comma_delimited_list
-    default: [127.0.0.1, 10.9.100.10, 202.78.247.198]
+    default: [10.9.100.10, 202.78.247.198]
     description: list of nameservers to use
 
 resources:
@@ -256,6 +251,7 @@ resources:
                     --machinepass='_PASSWORD_' \
                     --ldapadminpass='_PASSWORD_' \
                     --dnspass='_PASSWORD_' \
+                    --option='dns forwarder=202.78.247.198' \
                     -d 3
 
                   for i in $(seq 0 $((_SUBNET_COUNT_ - 1)) ); do
@@ -325,25 +321,26 @@ resources:
             permissions: '0755'
             content: |
               # Wait for the DNS server to come up
-              /bin/ping -w 300 -c 1 10.9.100.10
+              /bin/ping -w 300 -c 1 10.9.0.10
               for i in {1..100}; do
-                /usr/bin/host catalyst.net.nz 10.9.100.10 && break
+                /usr/bin/host catalyst.net.nz 10.9.0.10 && break
                 /bin/sleep 10
               done
+
 
           - path: /run/shm/samba-scripts/mangle-dns
             permissions: '0755'
             content: |
+              #!/bin/bash -x
               # put localhost in resolv.conf
-              # resolvconf(8) wants to look after it but we don't entirely trust it.
-              printf 'nameserver 127.0.0.1\n' > /etc/resolv.conf.new
-              cat /etc/resolv.conf >> /etc/resolv.conf.new
-              cp /etc/resolv.conf /etc/resolv.conf.old
-              mv /etc/resolv.conf.new /etc/resolv.conf
+              # resolvconf(8) wants to look after it via symlinks and so forth.
+              # To be sure we nuke its copies too.
 
-              # Now make sure resolvconf doesn't muck it up
-              printf 'nameserver 127.0.0.1\n' >> /etc/resolvconf/resolv.conf.d/head
-              #resolvconf -u
+              cat /etc/resolv.conf >  /etc/resolv.conf.old
+              printf 'nameserver 10.9.0.10\n' > /etc/resolv.conf.new
+              printf 'search samdom.example.com\n' >> /etc/resolv.conf.new
+              mv /etc/resolv.conf.new /etc/resolv.conf
+              chattr +i  /etc/resolv.conf
 
           - path: /run/shm/samba-scripts/run
             permissions: '0755'
@@ -353,14 +350,15 @@ resources:
                   #!/bin/bash
                   set -x
                   echo this is /run/shm/samba-scripts/run
-                  /run/shm/samba-scripts/wait-for-dns
                   su _USER_ -l -c /run/shm/samba-scripts/clone-samba
                   su _USER_ -l -c /run/shm/samba-scripts/build-samba
 
-                  /run/shm/samba-scripts/mangle-dns
                   if [[ "$(hostname)" == '_NAME_-0-0' ]]; then
+                     /run/shm/samba-scripts/mangle-dns
                      /run/shm/samba-scripts/provision-dc
                   else
+                     /run/shm/samba-scripts/wait-for-dns
+                     /run/shm/samba-scripts/mangle-dns
                      /run/shm/samba-scripts/join-dc
                   fi
                 params:
