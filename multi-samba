@@ -29,7 +29,10 @@ def construct_parameters(args, credentials):
                                                     'image',
                                                     'key_name',
                                                     'servers_per_subnet',
-                                                    'subnet_count')])
+                                                    'subnet_count',
+                                                    'use_samba_kcc',
+                                                    'kcc_interval',)
+                       if arg_d[k] is not None])
 
     parameters.extend([('user', user),
                        ('package_list', ','.join(package_list))])
@@ -78,7 +81,11 @@ def main():
                         help="create this many subnets")
     parser.add_argument('--servers-per-subnet', type=int, default=1,
                         help="create this many servers in each subnet")
-
+    parser.add_argument('--no-samba-kcc', action='store_false',
+                        dest='use_samba_kcc', default=True,
+                        help="Use the old KCC, not samba_kcc")
+    parser.add_argument('--kcc-interval', type=int,
+                        help="set the interval between KCC runs")
 
     args = parser.parse_args()
     if args.template_list:

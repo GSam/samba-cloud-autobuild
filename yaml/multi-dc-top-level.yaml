@@ -84,6 +84,16 @@ parameters:
     description: >
       ID or name of the public network
 
+  use_samba_kcc:
+    type: boolean
+    default: true
+    description: Use the new samba_kcc
+
+  kcc_interval:
+    type: number
+    default: 0
+    description: interval between KCC  runs (seconds)
+
 
 resources:
   subnets:
@@ -120,6 +130,8 @@ resources:
           samba_password: { get_param: samba_password }
           package_list: { get_param: package_list }
           stack_name: { get_param: "OS::stack_name" }
+          use_samba_kcc: { get_param: use_samba_kcc }
+          kcc_interval: { get_param: kcc_interval }
 
           router: {get_resource: router }
           private_net_cidr:

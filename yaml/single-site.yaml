@@ -105,6 +105,15 @@ parameters:
     default: [10.9.100.10, 202.78.247.198]
     description: list of nameservers to use
 
+  use_samba_kcc:
+    type: boolean
+    description: Use the new samba_kcc
+
+  kcc_interval:
+    type: number
+    default: 0
+    description: interval between KCC  runs (seconds)
+
 resources:
   private_net:
     type: OS::Neutron::Net
@@ -237,10 +246,15 @@ resources:
                 template: |
                   #!/bin/bash
                   set -x
+
                   for i in {1..100}; do
                     host catalyst.net.nz && break
                     sleep 10
                   done
+
+                  if [[ "_KCC_INTERVAL_" != "0" ]]; then
+                     KCC_INTERVAL_OPT="--option=kccsrv:periodic_interval=_KCC_INTERVAL_"
+                  fi
 
                   /usr/local/samba/bin/samba-tool domain provision --use-rfc2307 \
                     --realm=_REALM_ \
@@ -252,6 +266,8 @@ resources:
                     --ldapadminpass='_PASSWORD_' \
                     --dnspass='_PASSWORD_' \
                     --option='dns forwarder=202.78.247.198' \
+                    --option='kccsrv:samba_kcc=_USE_SAMBA_KCC_' \
+                    $KCC_INTERVAL_OPT \
                     -d 3
 
                   for i in $(seq 0 $((_SUBNET_COUNT_ - 1)) ); do
@@ -276,6 +292,8 @@ resources:
                   _DOMAIN_:  {get_param: samba_domain}
                   _PASSWORD_:  {get_param: samba_password}
                   _SUBNET_COUNT_:  {get_param: subnet_count}
+                  _USE_SAMBA_KCC_:  {get_param: use_samba_kcc}
+                  _KCC_INTERVAL_:  {get_param: kcc_interval}
                   #_IP_: {get_attr: [my_server, networks, net0, 0]}
 
           - path: /run/shm/samba-scripts/join-dc
