@@ -247,11 +247,6 @@ resources:
                   #!/bin/bash
                   set -x
 
-                  for i in {1..100}; do
-                    host catalyst.net.nz && break
-                    sleep 10
-                  done
-
                   if [[ "_KCC_INTERVAL_" != "0" ]]; then
                      KCC_INTERVAL_OPT="--option=kccsrv:periodic_interval=_KCC_INTERVAL_"
                   fi
