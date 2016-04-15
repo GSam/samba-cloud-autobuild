@@ -363,6 +363,11 @@ resources:
                   #!/bin/bash
                   set -x
                   echo this is /run/shm/samba-scripts/run
+
+                  echo PATH="/usr/local/samba/bin:$PATH" >> /etc/profile
+                  echo PATH="/usr/local/samba/bin:$PATH" >> /root/.profile
+                  su _USER_ -l -c echo PATH="/usr/local/samba/bin:$PATH" >> /home/_USER_/.profile
+
                   su _USER_ -l -c /run/shm/samba-scripts/clone-samba
                   su _USER_ -l -c /run/shm/samba-scripts/build-samba
 
