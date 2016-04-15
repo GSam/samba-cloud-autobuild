@@ -83,7 +83,7 @@ def add_common_args(parser):
     parser.add_argument('--region', default=DEFAULT_REGION,
                         help="'wlg' or 'por' (default '%s')" % DEFAULT_REGION)
 
-    parser.add_argument('-b', '--branch', default='master',
+    parser.add_argument('-b', '--branch',
                         help="git branch to use")
 
     parser.add_argument('-r', '--remote',
@@ -130,6 +130,11 @@ def add_common_args(parser):
 def process_common_args(args):
     if args.dry_run:
         print " This is what we WOULD be doing without -n/--dry-run:\n"
+
+    if args.branch is None:
+        print "You have not specified a branch!"
+        print "Use '-b master' if you want the master branch."
+        sys.exit()
 
     for nova_cmd in ("image_list",
                      "flavor_list"):
