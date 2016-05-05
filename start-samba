@@ -23,7 +23,8 @@ SERVER_NAME = "samba-build-%s-%s"
 
 
 def write_yaml_config(remote, branch, image, region, onfail, readahead,
-                      maxtime, tmpfs=False, skip_samba_build=False,
+                      maxtime, tmpfs=False, dont_fail_immediately=False,
+                      skip_samba_build=False,
                       no_secrets=False):
     if 'centos' in image:
         template = YAML_TEMPLATE
@@ -52,7 +53,9 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
     s = s.format(remote=remote, branch=branch, onfail=onfail,
                  readahead=readahead, maxtime=maxtime, tmpfs=tmpfs,
                  user=user, package_list=package_list,
-                 skip_samba_build=skip_samba_build, **credentials)
+                 skip_samba_build=skip_samba_build,
+                 dont_fail_immediately=int(dont_fail_immediately),
+                 **credentials)
     f = tempfile.NamedTemporaryFile(suffix='.yaml',
                                     prefix='samba-cloud-autobuild-user-config-',
                                     delete=False)
@@ -107,12 +110,16 @@ def main():
                         help=("Use net with this UUID "
                               "(auto to search for a good one)"))
 
+    parser.add_argument('--dont-fail-immediately', action='store_true',
+                        help=("don't stop testing on the first error"))
+
     args = parser.parse_args()
     process_common_args(args)
 
     yaml_file = write_yaml_config(args.remote, args.branch, args.image,
                                   args.region, args.onfail, args.readahead,
                                   args.maxtime, args.tmpfs,
+                                  args.dont_fail_immediately,
                                   skip_samba_build=args.skip_samba_build,
                                   no_secrets=args.no_secrets)
     if args.whole_name:

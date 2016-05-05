@@ -79,6 +79,9 @@ def main():
     parser.add_argument('--line-regex', default='^UNEXPECTED',
                         help="look for lines matching this regex")
 
+    parser.add_argument('--filter-line',
+                        help="only look at matched parts of the line")
+
     parser.add_argument('--since',
                         help=("restrict to filenames containing dates "
                               "> this (YYYY-MM-DD)"))
@@ -91,7 +94,8 @@ def main():
                 line_re=args.line_regex,
                 cache=CACHE,
                 count=args.count,
-                since=args.since)
+                since=args.since,
+                filter_re=args.filter_line)
 
 
 main()

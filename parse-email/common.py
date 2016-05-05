@@ -24,7 +24,7 @@ def filter_by_date(files, date):
     return out
 
 
-def count_lines(fn_re, line_re, cache, count=None, since=None):
+def count_lines(fn_re, line_re, cache, count=None, since=None, filter_re=None):
     fn_match = re.compile(fn_re).search
     line_match = re.compile(line_re).search
     files = sorted(x for x in os.listdir(cache) if fn_match(x))
@@ -38,6 +38,11 @@ def count_lines(fn_re, line_re, cache, count=None, since=None):
             if line_match(line):
                 lines.append(line.strip())
         f.close()
+
+    if filter_re is not None:
+        filter_match = re.compile(filter_re).search
+        lines = [' '.join(filter_match(x).groups()) for x in lines
+                 if filter_match(x)]
 
     print ("found %d lines matching %r in %d files matching %r" %
            (len(lines), line_re, len(files), fn_re))
