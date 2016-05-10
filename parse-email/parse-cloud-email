@@ -76,7 +76,7 @@ def main():
     parser.add_argument('--file-name', default='samba.stdout',
                         help="look at files matching this regex")
 
-    parser.add_argument('--line-regex', default='^UNEXPECTED',
+    parser.add_argument('--line-regex', default='^(UNEXPECTED|ERROR:)',
                         help="look for lines matching this regex")
 
     parser.add_argument('--filter-line',
