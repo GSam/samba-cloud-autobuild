@@ -121,6 +121,11 @@ def main():
     args = parser.parse_args()
     process_common_args(args)
 
+    if (args.ramfs or args.tmpfs) and 'r4' in args.flavor:
+        print "--ramfs and --tmpfs WILL NOT WORK with %s" % args.flavor
+        print "Stopping now to save your time!"
+        sys.exit(1)
+
     yaml_file = write_yaml_config(args.remote, args.branch, args.image,
                                   args.region, args.onfail, args.readahead,
                                   args.maxtime, args.tmpfs, args.ramfs,
