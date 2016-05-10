@@ -18,6 +18,7 @@ packages:
  - krb5-user
  - libacl1-dev
  - libaio-dev
+ - libarchive-dev
  - libattr1-dev
  - libblkid-dev
  - libbsd-dev
