@@ -111,6 +111,9 @@ def add_common_args(parser):
     parser.add_argument('--tmpfs', action='store_true',
                         help=("run autobuild in a tmpfs (use 8GB RAM)"))
 
+    parser.add_argument('--ramfs', action='store_true',
+                        help=("run autobuild in a ramfs (use 8GB RAM)"))
+
     parser.add_argument('--skip-samba-build', action='store_true',
                         help=("prepare the image for autobuild, then stop"))
 

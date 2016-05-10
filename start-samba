@@ -23,7 +23,8 @@ SERVER_NAME = "samba-build-%s-%s"
 
 
 def write_yaml_config(remote, branch, image, region, onfail, readahead,
-                      maxtime, tmpfs=False, dont_fail_immediately=False,
+                      maxtime, tmpfs=False, ramfs=False,
+                      dont_fail_immediately=False,
                       skip_samba_build=False, verbose_logs=False,
                       no_secrets=False):
     if 'centos' in image:
@@ -52,7 +53,7 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
     f.close()
     s = s.format(remote=remote, branch=branch, onfail=onfail,
                  readahead=readahead, maxtime=maxtime, tmpfs=tmpfs,
-                 user=user, package_list=package_list,
+                 ramfs=ramfs, user=user, package_list=package_list,
                  skip_samba_build=skip_samba_build,
                  dont_fail_immediately=int(dont_fail_immediately),
                  verbose=('--verbose' if verbose_logs else ''),
@@ -122,7 +123,7 @@ def main():
 
     yaml_file = write_yaml_config(args.remote, args.branch, args.image,
                                   args.region, args.onfail, args.readahead,
-                                  args.maxtime, args.tmpfs,
+                                  args.maxtime, args.tmpfs, args.ramfs,
                                   args.dont_fail_immediately,
                                   skip_samba_build=args.skip_samba_build,
                                   verbose_logs=args.verbose_logs,

@@ -31,10 +31,18 @@ write_files:
     #!/bin/bash
     set -x
     set -e
-    export AUTOBUILD=/home/{user}/autobuild/
+    export AUTOBUILD=/home/{user}/autobuild
     rm -rf $AUTOBUILD/*
     mkdir -p $AUTOBUILD
-    [ "{tmpfs}" == "True" ] && mount -t tmpfs -o size=75% tmpfs $AUTOBUILD
+    if [ "{ramfs}" == "True" ]; then
+        mkdir -p $AUTOBUILD-tmpfs
+        mount -t tmpfs -o size=75% tmpfs $AUTOBUILD-tmpfs
+        dd if=/dev/zero of=$AUTOBUILD-tmpfs/ramfs bs=1M seek=4K count=1
+        mkfs.ext4 -F $AUTOBUILD-tmpfs/ramfs
+        mount $AUTOBUILD-tmpfs/ramfs $AUTOBUILD -o loop
+    elif [ "{tmpfs}" == "True" ]; then
+        mount -t tmpfs -o size=75% tmpfs $AUTOBUILD
+    fi
     chown {user}  $AUTOBUILD
    path: /usr/local/bin/prepare-autobuild-dir
    permissions: '0755'
