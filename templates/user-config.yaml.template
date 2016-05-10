@@ -55,7 +55,8 @@ write_files:
                           --email=samba-dev@catalyst.net.nz \
                           --email-server=smtp1.catalyst.net.nz \
                           --always-email --attach-logs \
-                          --nocleanup --testbase=$HOME/autobuild --tail
+                          --nocleanup --testbase=$HOME/autobuild --tail \
+                          {verbose}
     /usr/local/bin/delete-host
    path: /usr/local/bin/build-samba
    permissions: '0755'
