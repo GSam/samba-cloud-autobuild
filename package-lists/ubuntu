@@ -33,6 +33,8 @@ packages:
  - libparse-yapp-perl
  - libpopt-dev
  - libreadline-dev
+ - linux-tools-generic
+ - linux-cloud-tools-generic
  - perl
  - perl-modules
  - pkg-config
