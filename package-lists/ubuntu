@@ -5,6 +5,7 @@ packages:
  - autoconf
  - bison
  - build-essential
+ - ccache
  - curl
  - debhelper
  - dnsutils
@@ -44,4 +45,3 @@ packages:
  - screen
  - xsltproc
  - zlib1g-dev
- - ccache
