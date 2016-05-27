@@ -24,6 +24,10 @@ OPENRC_TABLE = {
 }
 
 
+class SambaCloudError(Exception):
+    pass
+
+
 def get_credentials(region, no_secrets=False):
     """Get the credentials for the region ('wlg' or 'por')"""
     credentials_file = OPENRC_TABLE[region]

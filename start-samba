@@ -7,7 +7,7 @@ import tempfile
 import random
 
 from common import add_common_args, process_common_args, sanitise_hostname
-from common import get_credentials, get_package_list, OPENRC_TABLE
+from common import get_credentials, get_package_list, OPENRC_TABLE, SambaCloudError
 
 try:
     from pipes import quote
@@ -94,9 +94,16 @@ def find_good_net_id():
     s = subprocess.check_output(cmd)
     # we're looking for one like this:
     # | 10f83a57-2c8c-40c9-a472-a2ae10e2a65f | 10.59.0.0/24     | -    |
-    # Let's assume it is the first.
-    cells = s.split('|', 6)
-    return cells[5].strip()
+    # Let's assume it is the first one that isn't called "public-net"
+    for line in s.split('\n')[3:]:
+        cells = line.split('|')
+        net = cells[2].strip()
+        if net != 'public-net':
+            uuid = cells[1].strip()
+            print "using net %s (%s)" % (net, uuid)
+            return uuid
+
+    raise SambaCloudError("There seems to be no good net ID")
 
 
 def main():
