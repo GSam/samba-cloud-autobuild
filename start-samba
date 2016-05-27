@@ -90,7 +90,7 @@ def boot(flavor, image, yaml_file, server_name, key_name, region,
 
 
 def find_good_net_id():
-    cmd = ['nova', 'net-list']
+    cmd = ['nova', 'tenant-network-list']
     s = subprocess.check_output(cmd)
     # we're looking for one like this:
     # | 10f83a57-2c8c-40c9-a472-a2ae10e2a65f | 10.59.0.0/24     | -    |
