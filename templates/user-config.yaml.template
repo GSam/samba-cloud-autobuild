@@ -117,12 +117,16 @@ write_files:
     /usr/local/bin/delete-host
    path: /usr/local/bin/delayed-delete-host
    permissions: '0755'
+ - content:
+    HRNGDEVICE=/dev/urandom
+   path: /etc/default/rng-tools
 
 # If the build succeeds, it deletes the host at the end of build-samba.  Otherwise, we run delete-host or shelve-host depending on what the caller wanted
 runcmd:
  - set -x
  - echo 0 > /proc/sys/kernel/yama/ptrace_scope
  - mount / -o remount,rw,nobarrier
+ - /etc/init.d/rng-tools start
  - [ blockdev, --setra, {readahead}, /dev/vda]
  - [ /usr/local/bin/prepare-autobuild-dir]
  - [ su, {user}, -l, -c, /usr/local/bin/clone-samba]
