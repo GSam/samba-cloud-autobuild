@@ -127,6 +127,7 @@ runcmd:
  - echo 0 > /proc/sys/kernel/yama/ptrace_scope
  - mount / -o remount,rw,nobarrier
  - /etc/init.d/rng-tools start
+ - ln -sf /usr/bin/ld.gold /usr/bin/ld
  - [ blockdev, --setra, {readahead}, /dev/vda]
  - [ /usr/local/bin/prepare-autobuild-dir]
  - [ su, {user}, -l, -c, /usr/local/bin/clone-samba]
