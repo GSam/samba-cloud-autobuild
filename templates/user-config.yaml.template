@@ -36,12 +36,12 @@ write_files:
     mkdir -p $AUTOBUILD
     if [ "{ramfs}" == "True" ]; then
         mkdir -p $AUTOBUILD-tmpfs
-        mount -t tmpfs -o size=75% tmpfs $AUTOBUILD-tmpfs
-        dd if=/dev/zero of=$AUTOBUILD-tmpfs/ramfs bs=1M seek=4K count=1
+        mount -t tmpfs -o size=80% tmpfs $AUTOBUILD-tmpfs
+        dd if=/dev/zero of=$AUTOBUILD-tmpfs/ramfs bs=1M seek=6K count=1
         mkfs.ext4 -F $AUTOBUILD-tmpfs/ramfs
         mount $AUTOBUILD-tmpfs/ramfs $AUTOBUILD -o loop
     elif [ "{tmpfs}" == "True" ]; then
-        mount -t tmpfs -o size=75% tmpfs $AUTOBUILD
+        mount -t tmpfs -o size=80% tmpfs $AUTOBUILD
     fi
     chown {user}  $AUTOBUILD
    path: /usr/local/bin/prepare-autobuild-dir
