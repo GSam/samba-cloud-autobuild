@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 import random
 
-from common import add_common_args, process_common_args, sanitise_hostname
+from common import add_common_args, process_common_args, sanitise_hostname, run_nova_cmd
 from common import get_credentials, get_package_list, OPENRC_TABLE, SambaCloudError
 
 try:
@@ -89,9 +89,9 @@ def boot(flavor, image, yaml_file, server_name, key_name, region,
         subprocess.check_call(' '.join(args), shell=True)
 
 
-def find_good_net_id():
-    cmd = ['nova', 'tenant-network-list']
-    s = subprocess.check_output(cmd)
+def find_good_net_id(region):
+    s = run_nova_cmd(['tenant-network-list'],
+                     region=region)
     # we're looking for one like this:
     # | 10f83a57-2c8c-40c9-a472-a2ae10e2a65f | 10.59.0.0/24     | -    |
     # Let's assume it is the first one that isn't called "public-net"
@@ -153,7 +153,7 @@ def main():
         print >> sys.stderr, "YAML file is %s" % yaml_file
 
     if args.net_id == 'auto':
-        net_id = find_good_net_id()
+        net_id = find_good_net_id(args.region)
     else:
         net_id = args.net_id
 
