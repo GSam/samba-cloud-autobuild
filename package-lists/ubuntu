@@ -45,8 +45,8 @@ packages:
  - python-dnspython
  - python-novaclient
  - python-crypto
+ - realpath
+ - rng-tools
  - screen
  - xsltproc
  - zlib1g-dev
- - rng-tools
- - realpath
