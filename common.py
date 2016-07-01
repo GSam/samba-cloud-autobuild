@@ -23,7 +23,7 @@ OPENRC_TABLE = {
     'nz_wlg_2': '~/sambatest.catalyst.net.nz-openrc-wlg.sh'
 }
 
-DEFAULT_REGION = 'wlg'
+DEFAULT_REGION = os.environ.get('OS_REGION_NAME', 'wlg')
 
 class SambaCloudError(Exception):
     pass
