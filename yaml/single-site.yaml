@@ -329,7 +329,7 @@ resources:
                     sleep 10
                   done
 
-                  ip=$(ip -o -4 addr show dev eth0 |grep -oP '\d+\.\d+\.\d+\.\d+(?=/\d+)')
+                  ip=$(ip -o -4 addr show | grep -oP '10\.9\.\d+\.\d+(?=/\d+)')
 
                   /usr/local/samba/samba-tool dns add 10.9.0.10 _REALM_ $(hostname) A  $ip -Uadministrator%_PASSWORD_
 
