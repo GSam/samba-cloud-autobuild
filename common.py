@@ -23,6 +23,7 @@ OPENRC_TABLE = {
     'nz_wlg_2': '~/sambatest.catalyst.net.nz-openrc-wlg.sh'
 }
 
+DEFAULT_REGION = 'wlg'
 
 class SambaCloudError(Exception):
     pass
@@ -56,7 +57,7 @@ def get_package_list(name, form=str):
     return packages
 
 
-def run_nova_cmd(args, region="por", dry_run=False):
+def run_nova_cmd(args, region=DEFAULT_REGION, dry_run=False):
     open_rc = OPENRC_TABLE[region]
     args = ['.', open_rc, ';', 'nova'] + [quote(x) for x in args]
     str_args = ' '.join(args)
@@ -79,8 +80,8 @@ def add_common_args(parser):
                         help=("specify which flavour to use "
                               "(default: 2 CPUs, 4GB)"))
 
-    parser.add_argument('--region', default="por",
-                        help="'wlg' or 'por' (default 'por')")
+    parser.add_argument('--region', default=DEFAULT_REGION,
+                        help="'wlg' or 'por' (default '%s')" % DEFAULT_REGION)
 
     parser.add_argument('-b', '--branch', default='master',
                         help="git branch to use")
