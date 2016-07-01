@@ -32,7 +32,7 @@ def construct_parameters(args, credentials):
                                                     'subnet_count',
                                                     'use_samba_kcc',
                                                     'kcc_interval',
-                                                    'use_rodc')
+                                                    'has_rodc')
                        if arg_d[k] is not None])
 
     parameters.extend([('user', user),
@@ -87,8 +87,8 @@ def main():
                         help="Use the old KCC, not samba_kcc")
     parser.add_argument('--kcc-interval', type=int,
                         help="set the interval between KCC runs")
-    parser.add_argument('--use-rodc', action='store_true',
-                        help="Use RODC on server-1-0")
+    parser.add_argument('--has-rodc', action='store_true',
+                        help="the first DC will be read-only")
 
     args = parser.parse_args()
     if args.template_list:

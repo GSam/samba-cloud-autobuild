@@ -94,7 +94,7 @@ parameters:
     default: 0
     description: interval between KCC  runs (seconds)
 
-  use_rodc:
+  has_rodc:
     type: boolean
     default: false
     description: The first DC will be read-only
@@ -136,7 +136,7 @@ resources:
           stack_name: { get_param: "OS::stack_name" }
           use_samba_kcc: { get_param: use_samba_kcc }
           kcc_interval: { get_param: kcc_interval }
-          use_rodc: { get_param: use_rodc }
+          has_rodc: { get_param: has_rodc }
 
           router: {get_resource: router }
           private_net_cidr:
