@@ -136,6 +136,13 @@ def process_common_args(args):
         print "Use '-b master' if you want the master branch."
         sys.exit()
 
+    try:
+        repo_check_call = ['git', 'ls-remote', '--heads', '--exit-code', args.remote, args.branch]
+        subprocess.check_output(repo_check_call)
+    except:
+        print "ERROR: Specified git repository does not exist."
+        raise
+
     for nova_cmd in ("image_list",
                      "flavor_list"):
         if vars(args)[nova_cmd]:
