@@ -49,3 +49,4 @@ packages:
  - zlib1g-dev
  - ccache
  - rng-tools
+ - realpath
