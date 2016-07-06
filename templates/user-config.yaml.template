@@ -28,9 +28,35 @@ write_files:
 
  - content: |
     #!/bin/bash
+    [ {run_wintest} == "False" ] && exit 0
+    sudo apt-get -y install bind9
+    sudo ln -s /etc/apparmor.d/usr.sbin.named /etc/apparmor.d/disable/
+    sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.named
     sudo ~/samba/wintest/test-s4-howto.py --conf ~/samba/wintest/conf/bob.conf
 
    path: /usr/local/bin/start-wintest
+   permissions: '0755'
+
+ - content: |
+    #ps1_sysnative
+
+    # The Telnet server needs to be enabled
+    install-windowsfeature "telnet-server"
+    install-windowsfeature "telnet-client"
+    install-windowsfeature -name AD-Domain-Services -IncludeManagementTools
+
+    Set-ADUser -Identity Administrator -ChangePasswordAtNextLogon $false
+    wmic UserAccount set PasswordExpires=False
+    net user Administrator penguin12#
+
+    cmd /C netsh advfirewall set allprofiles state off
+    cmd /C tlntadmn config maxconn=1024
+
+    cmd /C net localgroup /add telnetclients "authenticated users"
+    cmd /C sc config tlntsvr start=auto
+    cmd /C sc start tlntsvr
+
+   path: /usr/local/bin/win-userdata
    permissions: '0755'
 
  - content: |
