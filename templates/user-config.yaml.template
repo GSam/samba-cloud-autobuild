@@ -16,6 +16,25 @@ package_upgrade: true
 write_files:
  - content: |
     #!/bin/bash
+    export OS_AUTH_URL="{OS_AUTH_URL}"
+    export OS_TENANT_ID="{OS_TENANT_ID}"
+    export OS_TENANT_NAME="{OS_TENANT_NAME}"
+    export OS_USERNAME="{OS_USERNAME}"
+    export OS_PASSWORD="{OS_PASSWORD}"
+    export OS_REGION_NAME="{OS_REGION_NAME}"
+    if [ -z "$OS_REGION_NAME" ]; then unset OS_REGION_NAME; fi
+   path: /usr/local/bin/openstack_creds
+   permissions: '0755'
+
+ - content: |
+    #!/bin/bash
+    sudo ~/samba/wintest/test-s4-howto.py --conf ~/samba/wintest/conf/bob.conf
+
+   path: /usr/local/bin/start-wintest
+   permissions: '0755'
+
+ - content: |
+    #!/bin/bash
     set -x
     set -e
     cd ~
@@ -192,6 +211,7 @@ write_files:
        /usr/local/bin/perf-record-build-samba
     else
        su {user} -l -c /usr/local/bin/build-samba
+       su {user} -l -c /usr/local/bin/start-wintest
     fi
     if [ $? ]; then
       /usr/local/bin/{onfail}-host
