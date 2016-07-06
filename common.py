@@ -121,6 +121,9 @@ def add_common_args(parser):
                         help=("run autobuild in a ramfs (use 8GB RAM)"))
 
     parser.add_argument('--skip-samba-build', action='store_true',
+                        help=("stop before building samba, do not autobuild"))
+
+    parser.add_argument('--skip-samba-autobuild', action='store_true',
                         help=("prepare the image for autobuild, then stop"))
 
     parser.add_argument('--no-secrets', action='store_true',

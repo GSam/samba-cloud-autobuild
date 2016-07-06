@@ -25,9 +25,9 @@ SERVER_NAME = "samba-build-%s-%s"
 def write_yaml_config(remote, branch, image, region, onfail, readahead,
                       maxtime, tmpfs=False, ramfs=False,
                       dont_fail_immediately=False,
-                      skip_samba_build=False, verbose_logs=False,
-                      no_secrets=False, server_name=None, flame_graphs=False,
-                      restrict_tests='', on_success=None):
+                      skip_samba_build=False, skip_samba_autobuild=False,
+                      verbose_logs=False, no_secrets=False, server_name=None,
+                      flame_graphs=False, restrict_tests='', on_success=None):
     if 'centos' in image:
         template = YAML_TEMPLATE
         user = 'centos'
@@ -61,6 +61,7 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
                  readahead=readahead, maxtime=maxtime, tmpfs=tmpfs,
                  ramfs=ramfs, user=user, package_list=package_list,
                  skip_samba_build=skip_samba_build,
+                 skip_samba_autobuild=skip_samba_autobuild,
                  dont_fail_immediately=int(dont_fail_immediately),
                  verbose=('--verbose' if verbose_logs else ''),
                  server_name=server_name, flame_graphs=flame_graphs,
@@ -75,7 +76,8 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
 
 
 def boot(flavor, image, yaml_file, server_name, key_name, region,
-         skip_samba_build=False, dry_run=False, net_id=None):
+         skip_samba_build=False, skip_samba_autobuild=False,
+         dry_run=False, net_id=None):
     open_rc = OPENRC_TABLE[region]
     if key_name is None:
         key_name = '$USER'  # maybe the environment here is better
@@ -166,6 +168,7 @@ def main():
                                   args.maxtime, args.tmpfs, args.ramfs,
                                   args.dont_fail_immediately,
                                   skip_samba_build=args.skip_samba_build,
+                                  skip_samba_autobuild=args.skip_samba_autobuild,
                                   verbose_logs=args.verbose_logs,
                                   no_secrets=args.no_secrets,
                                   server_name=server_name,

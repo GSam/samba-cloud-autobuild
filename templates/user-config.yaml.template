@@ -59,6 +59,8 @@ write_files:
     git remote add our_repo {remote}
     git fetch our_repo
     git checkout our_repo/{branch}
+
+    [ {skip_samba_autobuild} == "True" ] && exit 0
     export SMBD_MAXTIME={maxtime}
     export AUTOBUILD_NO_FAIL_IMMEDIATELY={dont_fail_immediately}
     CC="ccache gcc" ./script/autobuild.py --email-from=samba-dev@catalyst.net.nz \
