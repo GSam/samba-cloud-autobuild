@@ -30,6 +30,7 @@ write_files:
     #!/bin/bash
     [ {run_wintest} == "False" ] && exit 0
     sudo apt-get -y install bind9
+    sudo service bind9 stop
     sudo ln -s /etc/apparmor.d/usr.sbin.named /etc/apparmor.d/disable/
     sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.named
     sudo ~/samba/wintest/test-s4-howto.py --conf ~/samba/wintest/conf/bob.conf
