@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 
+# Use with something like:
+#
+# python test_latency.py  st/ad_dc_ntvfs/private/sam.ldb -U"$USERNAME%$PASSWORD" --workgroup=$DOMAIN >> latency.txt
+
 import optparse
 import sys
+sys.path.insert(0, 'bin/python')
+
 import os
 import unittest
 import samba
