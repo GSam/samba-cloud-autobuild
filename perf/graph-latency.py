@@ -16,8 +16,7 @@ def plot_exp_n(ax, n, scale):
 
 
 def plot(sequences, keys):
-    ax = plt.subplot(1, 1, 0)
-    
+    ax = plt.axes()
     for c, s, k in zip('rgby', sequences, keys):
         ax.plot(s, '%s.' % c, linewidth=0.5, label=k)
     return ax
