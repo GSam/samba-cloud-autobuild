@@ -36,8 +36,8 @@ def main():
             print line, e
 
     f.close()
-    
-    sequences = zip(*rows)
+
+    sequences = zip(*rows[:-1])
     ax = plot(sequences, keys)
     #plot_n_squared(ax, len(rows), 5.6e-5)
     #plot_exp_n(ax, len(rows), 5e-5)
