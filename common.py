@@ -104,8 +104,9 @@ def add_common_args(parser):
                         help="say a litle more about what is happening")
 
     parser.add_argument('--onfail', default="delete",
-                        help=("One of 'suspend|shelve|continue|"
-                              "delayed-delete|delete' (default 'delete')"))
+                        choices=['suspend', 'shelve', 'continue',
+                                 'delayed-delete', 'delete'],
+                        help=("Choose an action to run when the autobuild fails"))
 
     parser.add_argument('--readahead', default=8192, type=int,
                         help=("block device readahead (default 8192)"))
