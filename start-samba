@@ -27,7 +27,8 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
                       dont_fail_immediately=False, run_wintest=False,
                       skip_samba_build=False, skip_samba_autobuild=False,
                       verbose_logs=False, no_secrets=False, server_name=None,
-                      flame_graphs=False, restrict_tests='', on_success=None):
+                      flame_graphs=False, restrict_tests='', on_success=None,
+                      ident=''):
     if 'centos' in image:
         template = YAML_TEMPLATE
         user = 'centos'
@@ -67,6 +68,7 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
                  verbose=('--verbose' if verbose_logs else ''),
                  server_name=server_name, flame_graphs=flame_graphs,
                  restrict_tests=restrict_tests, on_success=on_success,
+                 generated_id=ident,
                  **credentials)
     f = tempfile.NamedTemporaryFile(suffix='.yaml',
                                     prefix='samba-cloud-autobuild-user-config-',
@@ -120,8 +122,9 @@ def find_good_net_id(region):
 def main():
     parser = argparse.ArgumentParser()
     add_common_args(parser)
+    ident = random.randint(0, 9999)
     default_server_suffix = "%s-%04d" % (os.environ.get('USER'),
-                                         random.randint(0, 9999))
+                                         ident)
     parser.add_argument('suffix', nargs='?',
                         default=default_server_suffix,
                         help="name the server with this suffix")
@@ -178,7 +181,8 @@ def main():
                                   server_name=server_name,
                                   flame_graphs=args.flame_graphs,
                                   restrict_tests=args.restrict_tests,
-                                  on_success=args.on_success)
+                                  on_success=args.on_success,
+                                  ident=ident)
 
     if args.verbose:
         print >> sys.stderr, "YAML file is %s" % yaml_file

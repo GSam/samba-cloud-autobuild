@@ -33,7 +33,7 @@ write_files:
     sudo service bind9 stop
     sudo ln -s /etc/apparmor.d/usr.sbin.named /etc/apparmor.d/disable/
     sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.named
-    sudo ~/samba/wintest/test-s4-howto.py --conf ~/samba/wintest/conf/bob.conf
+    sudo ~/samba/wintest/test-s4-howto.py --conf ~/samba/wintest/conf/bob.conf --ident "{generated_id}"
 
    path: /usr/local/bin/start-wintest
    permissions: '0755'
