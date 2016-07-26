@@ -113,6 +113,72 @@ write_files:
    permissions: '0755'
  - content: |
     #!/bin/bash
+    freq=97
+    echo "recording perf information at $freq Hz"
+    home=/home/{user}
+    dest=/home/{user}/autobuild
+
+    PERF_FILE=$dest/perf-{server_name}.perf
+    PERF_SCRIPT=$dest/perf-{server_name}.script
+    PERF_FOLDED=$dest/perf-{server_name}.folded
+    FLAME_FILE=$dest/flame-{server_name}.svg
+    ICICLE_FILE=$dest/icicle-{server_name}.svg
+
+    cd $home
+    sudo -u {user} git clone https://github.com/brendangregg/FlameGraph.git
+
+    apt-get -y install linux-tools-$(uname -r)
+    sudo perf record -F $freq -a  -g -o $PERF_FILE  -- su {user} -l -c /usr/local/bin/build-samba
+    sudo perf script -i $PERF_FILE > $PERF_SCRIPT
+    $home/FlameGraph/stackcollapse-perf.pl $PERF_SCRIPT > $PERF_FOLDED
+    $home/FlameGraph/flamegraph.pl --minwidth 0.2 --width 1060  $PERF_FOLDED > $FLAME_FILE
+    $home/FlameGraph/flamegraph.pl --reverse --inverted -colors=chain --minwidth 0.3 --width 1060 $PERF_FOLDED > $ICICLE_FILE
+
+    gzip -f $ICICLE_FILE
+    send-multipart-email '{server_name} flame graphs' $FLAME_FILE $ICICLE_FILE.gz
+   path: /usr/local/bin/perf-record-build-samba
+   permissions: '0755'
+ - content: |
+    #!/usr/bin/python
+    import sys
+    import smtplib
+    import email
+    import os
+    from email.mime.image import MIMEImage
+    from email.mime.multipart import MIMEMultipart as Message
+    from email.mime.text import MIMEText
+
+    server = 'smtp1.catalyst.net.nz'
+    recipient = 'samba-dev@catalyst.net.nz'
+    msg = Message()
+    msg['Subject'] = sys.argv[1]
+    msg['To'] = recipient
+    msg['From'] = recipient
+
+    for fn in sys.argv[2:]:
+        f = open(fn, 'rb')
+        a = MIMEImage(f.read(), 'svg+xml')
+        f.close()
+        save_fn = os.path.basename(fn).replace('.gz', 'z')
+        a.add_header('Content-Disposition','attachment', filename=save_fn)
+        msg.attach(a)
+
+    s = smtplib.SMTP(server)
+    s.sendmail(recipient, [recipient], str(msg))
+    s.quit()
+   path: /usr/local/bin/send-multipart-email
+   permissions: '0755'
+ - content: |
+    #!/bin/bash
+    if [ "{flame_graphs}" == "True" ]; then
+       /usr/local/bin/perf-record-build-samba
+    else
+       su {user} -l -c /usr/local/bin/build-samba
+    fi
+   path: /usr/local/bin/run-autobuild
+   permissions: '0755'
+ - content: |
+    #!/bin/bash
     sleep 5d
     /usr/local/bin/delete-host
    path: /usr/local/bin/delayed-delete-host
@@ -131,5 +197,5 @@ runcmd:
  - [ blockdev, --setra, {readahead}, /dev/vda]
  - [ /usr/local/bin/prepare-autobuild-dir]
  - [ su, {user}, -l, -c, /usr/local/bin/clone-samba]
- - [ su, {user}, -l, -c, /usr/local/bin/build-samba]
+ - /usr/local/bin/run-autobuild
  - [ su, {user}, -l, -c, /usr/local/bin/{onfail}-host]
