@@ -141,8 +141,7 @@ write_files:
     $home/FlameGraph/flamegraph.pl --minwidth 0.2 --width 1060  $PERF_FOLDED > $FLAME_FILE
     $home/FlameGraph/flamegraph.pl --reverse --inverted -colors=chain --minwidth 0.3 --width 1060 $PERF_FOLDED > $ICICLE_FILE
 
-    gzip -f $ICICLE_FILE
-    send-multipart-email '{server_name} flame graphs' $FLAME_FILE $ICICLE_FILE.gz
+    send-multipart-email '{server_name} flame graphs' $FLAME_FILE $ICICLE_FILE
    path: /usr/local/bin/perf-record-build-samba
    permissions: '0755'
 
@@ -167,7 +166,7 @@ write_files:
         f = open(fn, 'rb')
         a = MIMEImage(f.read(), 'svg+xml')
         f.close()
-        save_fn = os.path.basename(fn).replace('.gz', 'z')
+        save_fn = os.path.basename(fn)
         a.add_header('Content-Disposition','attachment', filename=save_fn)
         msg.attach(a)
 
