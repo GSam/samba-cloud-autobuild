@@ -27,6 +27,7 @@ write_files:
     git fetch catalyst
    path: /usr/local/bin/clone-samba
    permissions: '0755'
+
  - content: |
     #!/bin/bash
     set -x
@@ -46,6 +47,7 @@ write_files:
     chown {user}  $AUTOBUILD
    path: /usr/local/bin/prepare-autobuild-dir
    permissions: '0755'
+
  - content: |
     #!/bin/bash
     set -x
@@ -68,6 +70,7 @@ write_files:
     /usr/local/bin/delete-host
    path: /usr/local/bin/build-samba
    permissions: '0755'
+
  - content: |
     #!/bin/bash
     export OS_AUTH_URL="{OS_AUTH_URL}"
@@ -81,6 +84,7 @@ write_files:
     nova shelve $(hostname)
    path: /usr/local/bin/shelve-host
    permissions: '0755'
+
  - content: |
     #!/bin/bash
     export OS_AUTH_URL="{OS_AUTH_URL}"
@@ -94,6 +98,7 @@ write_files:
     nova suspend $(hostname)
    path: /usr/local/bin/suspend-host
    permissions: '0755'
+
  - content: |
     #!/bin/bash
     export OS_AUTH_URL="{OS_AUTH_URL}"
@@ -106,11 +111,13 @@ write_files:
     nova delete $(hostname)
    path: /usr/local/bin/delete-host
    permissions: '0755'
+
  - content: |
     #!/bin/bash
     echo "We failed! doing nothing"
    path: /usr/local/bin/continue-host
    permissions: '0755'
+
  - content: |
     #!/bin/bash
     freq=97
@@ -138,6 +145,7 @@ write_files:
     send-multipart-email '{server_name} flame graphs' $FLAME_FILE $ICICLE_FILE.gz
    path: /usr/local/bin/perf-record-build-samba
    permissions: '0755'
+
  - content: |
     #!/usr/bin/python
     import sys
@@ -168,6 +176,7 @@ write_files:
     s.quit()
    path: /usr/local/bin/send-multipart-email
    permissions: '0755'
+
  - content: |
     #!/bin/bash
     if [ "{flame_graphs}" == "True" ]; then
@@ -177,12 +186,14 @@ write_files:
     fi
    path: /usr/local/bin/run-autobuild
    permissions: '0755'
+
  - content: |
     #!/bin/bash
     sleep 5d
     /usr/local/bin/delete-host
    path: /usr/local/bin/delayed-delete-host
    permissions: '0755'
+
  - content:
     HRNGDEVICE=/dev/urandom
    path: /etc/default/rng-tools
