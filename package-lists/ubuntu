@@ -40,9 +40,13 @@ packages:
  - perl-modules
  - pkg-config
  - python-all-dev
+ - python-crypto
  - python-dev
  - python3-dev
  - python-dnspython
+ - python3-dnspython
+ - python-gpgme
+ - python3-gpgme
  - python-novaclient
  - python-crypto
  - realpath
