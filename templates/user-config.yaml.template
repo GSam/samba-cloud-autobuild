@@ -128,6 +128,8 @@ write_files:
     PERF_FILE=$dest/perf-{server_name}.perf
     PERF_SCRIPT=$dest/perf-{server_name}.script
     PERF_FOLDED=$dest/perf-{server_name}.folded
+    PERF_FOLDED=$dest/perf-{server_name}-reduced.folded
+    FLAME_FOLDED_FILE=$dest/flame-{server_name}-reduced.svg
     FLAME_FILE=$dest/flame-{server_name}.svg
     ICICLE_FILE=$dest/icicle-{server_name}.svg
 
@@ -141,7 +143,10 @@ write_files:
     $home/FlameGraph/flamegraph.pl --minwidth 0.2 --width 1060  $PERF_FOLDED > $FLAME_FILE
     $home/FlameGraph/flamegraph.pl --reverse --inverted -colors=chain --minwidth 0.3 --width 1060 $PERF_FOLDED > $ICICLE_FILE
 
-    send-multipart-email '{server_name} flame graphs' $FLAME_FILE $ICICLE_FILE
+    grep -P -v '^(git|cc|x86_64-linux-gnu-ld)'  $PERF_FOLDED > $PERF_REDUCED_FOLDED
+    $home/FlameGraph/flamegraph.pl --minwidth 0.2 --width 1060  $PERF_REDUCED_FOLDED > $FLAME_REDUCED_FILE
+
+    send-multipart-email '{server_name} flame graphs' $FLAME_FILE $ICICLE_FILE $FLAME_REDUCED_FILE
    path: /usr/local/bin/perf-record-build-samba
    permissions: '0755'
 
