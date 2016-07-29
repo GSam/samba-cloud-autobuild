@@ -129,9 +129,9 @@ write_files:
     PERF_SCRIPT=$dest/perf-{server_name}.script
     PERF_FOLDED=$dest/perf-{server_name}.folded
     PERF_REDUCED_FOLDED=$dest/perf-{server_name}-reduced.folded
-    FLAME_FOLDED_SVG=$dest/flame-{server_name}-reduced.svg
-    FLAME_SVG=$dest/flame-{server_name}.svg
-    ICICLE_SVG=$dest/icicle-{server_name}.svg
+    FLAME_REDUCED_SVG=$dest/flame-{server_name}-reduced.svg
+    FLAME_FULL_SVG=$dest/flame-{server_name}.svg
+    ICICLE_SVG=$dest/icicle-{server_name}-reduced.svg
 
     cd $home
     sudo -u {user} git clone https://github.com/brendangregg/FlameGraph.git
@@ -140,13 +140,14 @@ write_files:
     sudo perf record -F $freq -a  -g -o $PERF_FILE  -- su {user} -l -c /usr/local/bin/build-samba
     sudo perf script -f comm,pid,tid,cpu,time,event,ip,sym,dso,trace -i $PERF_FILE > $PERF_SCRIPT
     $home/FlameGraph/stackcollapse-perf.pl $PERF_SCRIPT > $PERF_FOLDED
-    $home/FlameGraph/flamegraph.pl --minwidth 0.2 --width 1060  $PERF_FOLDED > $FLAME_SVG
-    $home/FlameGraph/flamegraph.pl --reverse --inverted -colors=chain --minwidth 0.3 --width 1060 $PERF_FOLDED > $ICICLE_SVG
-
     grep -P -v '^(git|cc|x86_64-linux-gnu-ld|as|gcc)'  $PERF_FOLDED > $PERF_REDUCED_FOLDED
-    $home/FlameGraph/flamegraph.pl --minwidth 0.2 --width 1060  $PERF_REDUCED_FOLDED > $FLAME_REDUCED_SVG
 
-    send-multipart-email '{server_name} flame graphs' $FLAME_SVG $ICICLE_SVG $FLAME_REDUCED_SVG
+    $home/FlameGraph/flamegraph.pl --minwidth 0.2 --width 1060  $PERF_REDUCED_FOLDED > $FLAME_REDUCED_SVG
+    $home/FlameGraph/flamegraph.pl --minwidth 0.2 --width 1060  $PERF_FOLDED > $FLAME_FULL_SVG
+    $home/FlameGraph/flamegraph.pl --reverse --inverted -colors=chain --minwidth 0.3 --width 1060 $PERF_REDUCED_FOLDED > $ICICLE_SVG
+
+
+    send-multipart-email '{server_name} flame graphs'  $FLAME_REDUCED_SVG $ICICLE_SVG $FLAME_FULL_SVG
    path: /usr/local/bin/perf-record-build-samba
    permissions: '0755'
 
