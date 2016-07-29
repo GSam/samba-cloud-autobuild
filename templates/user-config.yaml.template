@@ -215,4 +215,4 @@ runcmd:
  - [ /usr/local/bin/prepare-autobuild-dir]
  - [ su, {user}, -l, -c, /usr/local/bin/clone-samba]
  - /usr/local/bin/run-autobuild
- - [ su, {user}, -l, -c, /usr/local/bin/{onfail}-host]
+ - [ echo /usr/local/bin/{onfail}-host | sudo -u {user} at 'now + 5 minutes' ]
