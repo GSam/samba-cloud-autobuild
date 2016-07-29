@@ -67,7 +67,8 @@ write_files:
                           --always-email --attach-logs \
                           --nocleanup --testbase=$HOME/autobuild --tail \
                           {restrict_tests} {verbose}
-    /usr/local/bin/delete-host
+    echo /usr/local/bin/{on_success}-host | at 'now + 5 minutes'
+
    path: /usr/local/bin/build-samba
    permissions: '0755'
 
