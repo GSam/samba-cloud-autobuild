@@ -138,7 +138,7 @@ write_files:
     sudo -u {user} git clone https://github.com/brendangregg/FlameGraph.git
 
     apt-get -y install linux-tools-$(uname -r)
-    sudo perf record -F $freq -a  -g -o $PERF_FILE  -- su {user} -l -c /usr/local/bin/build-samba
+    sudo perf record -F $freq -a  -g --call-graph dwarf -o $PERF_FILE  -- su {user} -l -c /usr/local/bin/build-samba
     sudo perf script -i $PERF_FILE > $PERF_SCRIPT
     $home/FlameGraph/stackcollapse-perf.pl $PERF_SCRIPT > $PERF_FOLDED
     grep -P -v '^(git|cc|x86_64-linux-gnu-ld|as|gcc)'  $PERF_FOLDED > $PERF_REDUCED_FOLDED
