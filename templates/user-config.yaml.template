@@ -28,6 +28,13 @@ write_files:
 
  - content: |
     #!/bin/bash
+    sudo apt-get -y install sed
+    sed -i -- 's/win_pass/{generated_password}/g; s/pass_1/{generated_password}1/g; s/pass_2/{generated_password}2/g; s/pass_3/{generated_password}3/g' /home/ubuntu/samba/wintest/conf/bob.conf
+   path: /usr/local/bin/edit-config
+   permissions: '0755'
+
+ - content: |
+    #!/bin/bash
     [ {run_wintest} == "False" ] && exit 0
     sudo apt-get -y install bind9
     sudo service bind9 stop
@@ -48,7 +55,7 @@ write_files:
 
     Set-ADUser -Identity Administrator -ChangePasswordAtNextLogon $false
     wmic UserAccount set PasswordExpires=False
-    net user Administrator penguin12#
+    net user Administrator {generated_password}
 
     cmd /C netsh advfirewall set allprofiles state off
     cmd /C tlntadmn config maxconn=1024
@@ -238,6 +245,7 @@ write_files:
        /usr/local/bin/perf-record-build-samba
     else
        su {user} -l -c /usr/local/bin/build-samba
+       su {user} -l -c /usr/local/bin/edit-config
        su {user} -l -c /usr/local/bin/start-wintest
     fi
     if [ $? ]; then

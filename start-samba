@@ -28,7 +28,7 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
                       skip_samba_build=False, skip_samba_autobuild=False,
                       verbose_logs=False, no_secrets=False, server_name=None,
                       flame_graphs=False, restrict_tests='', on_success=None,
-                      ident=''):
+                      ident='', password='penguin12#'):
     if 'centos' in image:
         template = YAML_TEMPLATE
         user = 'centos'
@@ -68,7 +68,7 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
                  verbose=('--verbose' if verbose_logs else ''),
                  server_name=server_name, flame_graphs=flame_graphs,
                  restrict_tests=restrict_tests, on_success=on_success,
-                 generated_id=ident,
+                 generated_id=("%04d" % ident), generated_password=password,
                  **credentials)
     f = tempfile.NamedTemporaryFile(suffix='.yaml',
                                     prefix='samba-cloud-autobuild-user-config-',
@@ -123,6 +123,8 @@ def main():
     parser = argparse.ArgumentParser()
     add_common_args(parser)
     ident = random.randint(0, 9999)
+    password = subprocess.check_output("pwgen -s 20", shell=True)[:20]
+
     default_server_suffix = "%s-%04d" % (os.environ.get('USER'),
                                          ident)
     parser.add_argument('suffix', nargs='?',
@@ -182,7 +184,7 @@ def main():
                                   flame_graphs=args.flame_graphs,
                                   restrict_tests=args.restrict_tests,
                                   on_success=args.on_success,
-                                  ident=ident)
+                                  ident=ident, password=password)
 
     if args.verbose:
         print >> sys.stderr, "YAML file is %s" % yaml_file
