@@ -119,6 +119,8 @@ write_files:
 
  - content: |
     #!/bin/bash
+    set -x
+    set -e
     freq=97
     echo "recording perf information at $freq Hz"
     home=/home/{user}
