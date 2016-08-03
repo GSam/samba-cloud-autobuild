@@ -126,7 +126,7 @@ class MatchRulesTests(samba.tests.TestCase):
             self.ldb.modify(m)
             end_mod = time.time()
 
-            delete_force(self.ldb, "cn=u%d,%s" % (group, self.ou_users))
+            delete_force(self.ldb, "cn=u%d,%s" % (i, self.ou_users))
             end = time.time()
             print end - start, end_add - start, end_mod - start_mod, end - end_mod
             i += 1            
