@@ -67,8 +67,6 @@ write_files:
                           --always-email --attach-logs \
                           --nocleanup --testbase=$HOME/autobuild --tail \
                           {restrict_tests} {verbose}
-    echo /usr/local/bin/{on_success}-host | at 'now + 5 minutes'
-
    path: /usr/local/bin/build-samba
    permissions: '0755'
 
@@ -185,10 +183,16 @@ write_files:
 
  - content: |
     #!/bin/bash
+    set -x
     if [ "{flame_graphs}" == "True" ]; then
        /usr/local/bin/perf-record-build-samba
     else
        su {user} -l -c /usr/local/bin/build-samba
+    fi
+    if [ $? ]; then
+      /usr/local/bin/{onfail}-host
+    else
+      /usr/local/bin/{on_success}-host
     fi
    path: /usr/local/bin/run-autobuild
    permissions: '0755'
@@ -204,7 +208,8 @@ write_files:
     HRNGDEVICE=/dev/urandom
    path: /etc/default/rng-tools
 
-# If the build succeeds, it deletes the host at the end of build-samba.  Otherwise, we run delete-host or shelve-host depending on what the caller wanted
+# run-autobuild will call the on-fail or on-success handlers depending on
+# the build process return codes.
 runcmd:
  - set -x
  - echo 0 > /proc/sys/kernel/yama/ptrace_scope
@@ -215,4 +220,3 @@ runcmd:
  - [ /usr/local/bin/prepare-autobuild-dir]
  - [ su, {user}, -l, -c, /usr/local/bin/clone-samba]
  - /usr/local/bin/run-autobuild
- - [ echo /usr/local/bin/{onfail}-host | sudo -u {user} at 'now + 5 minutes' ]
