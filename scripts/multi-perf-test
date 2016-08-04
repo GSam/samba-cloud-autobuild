@@ -1,0 +1,120 @@
+#!/usr/bin/python
+#!/usr/bin/python
+import argparse
+import os
+import sys
+import subprocess
+import tempfile
+import shutil
+import traceback
+
+class SambaGitTree(object):
+
+    def __init__(self, path, remote):
+        self.path = path
+        self.remote = remote
+        subprocess.check_call(['git', 'clone', remote, path])
+
+    def git(self, *args, **kwargs):
+        cmd = ['git', '-C', self.path]
+        cmd.extend(args)
+        if kwargs.get('output', False):
+            return subprocess.check_output(cmd)
+        subprocess.check_call(cmd)
+
+    def make(self, *args):
+        cmd = ['make', '-C', self.path]
+        cmd.extend(args)
+        subprocess.check_call(cmd)
+
+    def checkout(self, tag, clean=False):
+        self.git('checkout', tag)
+        if clean:
+            self.git('clean')
+
+    def build(self):
+        self.make('-j')
+
+    def test(self, tests='perftest'):
+        self.make('test', tests)
+
+    def list_branches(self, pattern=None):
+        # git branch -a | grep -oP 'origin/v4.+-stable'
+        # git branch -a --list origin/v4*-stable
+        args = ['branch', '-a']
+        if pattern is not None:
+            args += ['--list', pattern]
+        lines = self.git(*args, output=True)
+        return lines.split('\n')
+
+    def patch(self, patch):
+        cmd = ['patch', '-d', self.path, '-p1', '-i', patch]
+        subprocess.check_call(cmd)
+    
+
+def try_and_try_again(interactive, fn, *args, **kwargs):
+    while True:
+        try:
+            fn(*args, **kwargs)
+            return
+        except Exception, e:
+            if not interactive:
+                raise
+            print '-' * 72
+            traceback.print_exc(file=sys.stdout)
+            print '-' * 72
+            print "That didn't work. "
+            print "Hit return to try again"
+            print "or type q to skip this step"
+            if raw_input("") in 'qQ':
+                return
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('branches', nargs='*',
+                        help="test these branches/refspecs")
+    parser.add_argument('-d', '--working-dir', default=None,
+                        help="use this directory (default: a tmpdir)")
+    parser.add_argument('--test-releases', action='store_true',
+                        help="test stable release branches (from 4.0)")
+    parser.add_argument('-r', '--remote',
+                        default='git://git.samba.org/samba.git',
+                        help="git remote to use")
+    parser.add_argument('-p', '--patch',
+                        help="apply this patch to each tree")
+    parser.add_argument('-i', '--interactive', action='store_true',
+                        help="pause when build/patch fails (use ^Z/fg/return)")
+
+
+    args = parser.parse_args()
+
+    branches = args.branches
+    d = args.working_dir
+
+    try:
+        if d is None:
+            d = tempfile.mktemp()
+
+        print "using directory %r" % d
+
+        tree = SambaGitTree(d, args.remote)
+
+        if args.test_releases:
+            branches.extend(tree.list_branches('origin/v4*-stable'))
+
+        for b in branches:
+            tree.checkout(b)
+            if args.patch:
+                try_and_try_again(args.interactive, tree.patch, args.patch)
+
+            try_and_try_again(args.interactive, tree.build)
+
+            tree.test()
+
+    finally:
+        if args.working_dir is None:
+            shutil.rmtree(d)
+
+
+main()
