@@ -61,7 +61,7 @@ class SambaGitTree(object):
         return lines.split()
 
     def patch(self, patch):
-        cmd = ['patch', '-d', self.path, '-p1', '-i', patch]
+        cmd = ['patch', '-d', self.path, '-p1', '-N', '-i', patch]
         subprocess.check_call(cmd)
 
 
