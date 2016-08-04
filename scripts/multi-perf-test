@@ -27,6 +27,14 @@ class SambaGitTree(object):
         cmd.extend(args)
         subprocess.check_call(cmd)
 
+    def configure(self, *args):
+        # we nust set cwd to self.path AND use the full executable path
+        cmd = [os.path.join(self.path, 'configure.developer')]
+        cmd.extend(args)
+        env = os.environ.copy()
+        env['CFLAGS'] = '-Wno-error'
+        subprocess.check_call(cmd, cwd=self.path, env=env)
+
     def checkout(self, tag, clean=False):
         self.git('checkout', tag)
         if clean:
