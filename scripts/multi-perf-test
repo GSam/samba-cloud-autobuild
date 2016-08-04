@@ -33,6 +33,8 @@ class SambaGitTree(object):
         cmd.extend(args)
         env = os.environ.copy()
         env['CFLAGS'] = '-Wno-error'
+        env['ADDITIONAL_CFLAGS'] = '-Wno-error'
+        env['EXTRA_CFLAGS'] = '-Wno-error'
         subprocess.check_call(cmd, cwd=self.path, env=env)
 
     def checkout(self, tag, clean=False):
@@ -43,8 +45,11 @@ class SambaGitTree(object):
     def build(self):
         self.make('-j')
 
-    def test(self, tests='perftest'):
-        self.make('test', tests)
+    def perf_test(self, regex=None):
+        if regex is not None:
+            self.make('perftest', 'TESTS=%s' % regex)
+        else:
+            self.make('perftest')
 
     def list_branches(self, pattern=None):
         # git branch -a | grep -oP 'origin/v4.+-stable'
@@ -53,12 +58,15 @@ class SambaGitTree(object):
         if pattern is not None:
             args += ['--list', pattern]
         lines = self.git(*args, output=True)
-        return lines.split('\n')
+        return lines.split()
 
     def patch(self, patch):
         cmd = ['patch', '-d', self.path, '-p1', '-i', patch]
         subprocess.check_call(cmd)
-    
+
+
+class PerfTestException(Exception):
+    pass
 
 def try_and_try_again(interactive, fn, *args, **kwargs):
     while True:
@@ -71,21 +79,26 @@ def try_and_try_again(interactive, fn, *args, **kwargs):
             print '-' * 72
             traceback.print_exc(file=sys.stdout)
             print '-' * 72
-            print "That didn't work. "
-            print "Hit return to try again"
-            print "or type q to skip this step"
-            if raw_input("") in 'qQ':
+            print "That didn't work."
+            print "Hit return to try again (perhaps after ^Z/fg to fix things)"
+            print "or type 'q' to skip this step"
+            print "or type 'next' to skip this branch"
+            x = raw_input("> ")
+            if x in 'qQ':
                 return
-
+            elif x == 'next':
+                raise PerfTestException()
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('branches', nargs='*',
                         help="test these branches/refspecs")
     parser.add_argument('-d', '--working-dir', default=None,
                         help="use this directory (default: a tmpdir)")
-    parser.add_argument('--test-releases', action='store_true',
-                        help="test stable release branches (from 4.0)")
+    parser.add_argument('--test-releases', nargs='?',
+                        const='origin/v4-[0-9]*-stable',
+                        help=("test stable release branches from 4.0 or "
+                              "supplied pattern"))
     parser.add_argument('-r', '--remote',
                         default='git://git.samba.org/samba.git',
                         help="git remote to use")
@@ -93,7 +106,8 @@ def main():
                         help="apply this patch to each tree")
     parser.add_argument('-i', '--interactive', action='store_true',
                         help="pause when build/patch fails (use ^Z/fg/return)")
-
+    parser.add_argument('-t', '--test-regex',
+                        help="restrict tests with this regex")
 
     args = parser.parse_args()
 
@@ -109,16 +123,23 @@ def main():
         tree = SambaGitTree(d, args.remote)
 
         if args.test_releases:
-            branches.extend(tree.list_branches('origin/v4*-stable'))
+            branches.extend(tree.list_branches(args.test_releases))
 
         for b in branches:
+            print "trying branch %s in directory %s" % (b, tree.path)
+            tree.git('reset', '--hard')
+            tree.git('clean')
             tree.checkout(b)
-            if args.patch:
-                try_and_try_again(args.interactive, tree.patch, args.patch)
+            try:
+                if args.patch:
+                    try_and_try_again(args.interactive, tree.patch, args.patch)
 
-            try_and_try_again(args.interactive, tree.build)
-
-            tree.test()
+                try_and_try_again(args.interactive, tree.configure)
+                try_and_try_again(args.interactive, tree.build)
+            except PerfTestException:
+                print "aborting branch %s" % b
+                continue
+            tree.perf_test(args.test_regex)
 
     finally:
         if args.working_dir is None:
