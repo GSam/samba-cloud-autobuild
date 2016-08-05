@@ -1,0 +1,600 @@
+diff --git a/Makefile b/Makefile
+index 95681ae..5cc9077 100644
+--- a/Makefile
++++ b/Makefile
+@@ -16,6 +16,9 @@ uninstall:
+ test:
+ 	$(WAF) test $(TEST_OPTIONS)
+ 
++perftest:
++	$(WAF) test --perf-test $(TEST_OPTIONS)
++
+ help:
+ 	@echo NOTE: to run extended waf options use $(WAF_BINARY) or modify your PATH
+ 	$(WAF) --help
+diff --git a/selftest/filter-subunit b/selftest/filter-subunit
+index fe157a0..c3aba73 100755
+--- a/selftest/filter-subunit
++++ b/selftest/filter-subunit
+@@ -36,27 +36,35 @@ parser.add_option("--strip-passed-output", action="store_true",
+     help="Whether to strip output from tests that passed")
+ parser.add_option("--fail-immediately", action="store_true",
+     help="Whether to stop on the first error", default=False)
+-parser.add_option("--prefix", type="string",
++parser.add_option("--prefix", type="string", default='',
+     help="Add prefix to all test names")
+-parser.add_option("--suffix", type="string",
++parser.add_option("--suffix", type="string", default='',
+     help="Add suffix to all test names")
+ parser.add_option("--fail-on-empty", default=False,
+     action="store_true", help="Fail if there was no subunit output")
+ parser.add_option("--list", default=False,
+     action="store_true", help="Operate in list mode")
++parser.add_option("--perf-test-output", default=False,
++    action="store_true", help="orientate output for performance measurement")
+ opts, args = parser.parse_args()
+ 
+ if opts.list:
+-    prefix = opts.prefix
+-    suffix = opts.suffix
+-    if not prefix:
+-        prefix = ""
+-    if not suffix:
+-        suffix = ""
+     for l in sys.stdin:
+-         sys.stdout.write("%s%s%s\n" % (prefix, l.rstrip(), suffix))
++         sys.stdout.write("%s%s%s\n" % (opts.prefix, l.rstrip(), opts.suffix))
+     sys.exit(0)
+ 
++if opts.perf_test_output:
++    bad_options = []
++    for bad_opt in ('fail_immediately', 'strip_passed_output',
++                    'flapping', 'expected_failures'):
++        if getattr(opts, bad_opt):
++            bad_options.append(bad_opt)
++    if bad_options:
++        print >>sys.stderr, ("--perf-test-output is incompatible with --%s" %
++                             (', --'.join(x.replace('_', '-')
++                                          for x in bad_options)))
++        sys.exit(1)
++
+ if opts.expected_failures:
+     expected_failures = subunithelper.read_test_regexes(opts.expected_failures)
+ else:
+@@ -82,10 +90,15 @@ def handle_sigint(sig, stack):
+ signal.signal(signal.SIGINT, handle_sigint)
+ 
+ out = subunithelper.SubunitOps(sys.stdout)
+-msg_ops = subunithelper.FilterOps(out, opts.prefix, opts.suffix, expected_failures,
+-    opts.strip_passed_output,
+-    fail_immediately=opts.fail_immediately,
+-    flapping=flapping)
++
++if opts.perf_test_output:
++    msg_ops = subunithelper.PerfFilterOps(out, opts.prefix, opts.suffix)
++else:
++    msg_ops = subunithelper.FilterOps(out, opts.prefix, opts.suffix,
++                                      expected_failures,
++                                      opts.strip_passed_output,
++                                      fail_immediately=opts.fail_immediately,
++                                      flapping=flapping)
+ 
+ try:
+     ret = subunithelper.parse_results(msg_ops, statistics, sys.stdin)
+diff --git a/selftest/format-subunit-json b/selftest/format-subunit-json
+new file mode 100644
+index 0000000..d44918c
+--- /dev/null
++++ b/selftest/format-subunit-json
+@@ -0,0 +1,54 @@
++#!/usr/bin/env python
++# Copyright (C) 2008-2010 Jelmer Vernooij <jelmer@samba.org>
++# Copyright (C) 2016 Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
++# Published under the GNU GPL, v3 or later
++
++import optparse
++import os
++import signal
++import sys
++import json
++
++sys.path.insert(0, "bin/python")
++
++
++def json_formatter(src_f, dest_f):
++    """We're not even pretending to be a TestResult subclass; just read
++    from stdin and look for elapsed-time tags."""
++    results = {}
++
++    for line in src_f:
++        line = line.strip()
++        print >>sys.stderr, line
++        if line[:14] == 'elapsed-time: ':
++            name, time = line[14:].rsplit(':', 1)
++            results[name] = float(time)
++
++    json.dump(results, dest_f,
++              sort_keys=True, indent=2, separators=(',', ': '))
++
++
++def main():
++    parser = optparse.OptionParser("format-subunit-json [options]")
++    parser.add_option("--verbose", action="store_true",
++                      help="ignored, for compatibility")
++    parser.add_option("--immediate", action="store_true",
++                      help="ignored, for compatibility")
++    parser.add_option("--prefix", type="string", default=".",
++                      help="Prefix to write summary.json to")
++    opts, args = parser.parse_args()
++
++    fn = os.path.join(opts.prefix, "summary.json")
++    f = open(fn, 'w')
++    json_formatter(sys.stdin, f)
++    f.close()
++    print
++    print "A JSON file summarising these tests performance found in:"
++    print " ", fn
++
++
++def handle_sigint(sig, stack):
++    sys.exit(0)
++
++signal.signal(signal.SIGINT, handle_sigint)
++main()
+diff --git a/selftest/perf_tests.py b/selftest/perf_tests.py
+new file mode 100644
+index 0000000..fd4b819
+--- /dev/null
++++ b/selftest/perf_tests.py
+@@ -0,0 +1,36 @@
++#!/usr/bin/python
++
++# This script generates a list of testsuites that should be run to
++# test Samba performance.
++#
++# These tests are not intended to exercise aspect of Samba, but
++# perform common simple functions or to ascertain performance.
++#
++
++# The syntax for a testsuite is "-- TEST --" on a single line, followed
++# by the name of the test, the environment it needs and the command to run, all
++# three separated by newlines. All other lines in the output are considered
++# comments.
++
++from selftesthelpers import *
++
++samba4srcdir = source4dir()
++samba4bindir = bindir()
++
++planpythontestsuite("none", "samba.tests.blackbox.ndrdump")
++plantestsuite(
++    "samba4.blackbox.upgradeprovision.release-4-5-0-pre1", "none",
++    ["PYTHON=%s" % python,
++     os.path.join(bbdir, "dbcheck-oldrelease.sh"),
++     '$PREFIX_ABS/provision', 'release-4-5-0-pre1', configuration])
++planpythontestsuite("none", "samba.tests.upgradeprovision")
++planpythontestsuite("none", "samba.tests.xattr")
++planpythontestsuite("none", "samba.tests.ntacls")
++planpythontestsuite("none", "samba.tests.policy")
++plantestsuite_loadlist("samba4.ldap.perf_tests.python(ad_dc_ntvfs)",
++                       "ad_dc_ntvfs",
++                       [python, os.path.join(samba4srcdir,
++                                             "dsdb/tests/python/perf_tests.py"),
++                        '$SERVER', '-U"$USERNAME%$PASSWORD"',
++                        '--workgroup=$DOMAIN',
++                        '$LOADLIST', '$LISTOPT'])
+diff --git a/selftest/subunithelper.py b/selftest/subunithelper.py
+index 948256d..5ea74f3 100644
+--- a/selftest/subunithelper.py
++++ b/selftest/subunithelper.py
+@@ -17,6 +17,7 @@
+ 
+ __all__ = ['parse_results']
+ 
++import datetime
+ import re
+ import sys
+ from samba import subunit
+@@ -24,7 +25,11 @@ from samba.subunit.run import TestProtocolClient
+ from samba.subunit import iso8601
+ import unittest
+ 
+-VALID_RESULTS = ['success', 'successful', 'failure', 'fail', 'skip', 'knownfail', 'error', 'xfail', 'skip-testsuite', 'testsuite-failure', 'testsuite-xfail', 'testsuite-success', 'testsuite-error', 'uxsuccess', 'testsuite-uxsuccess']
++VALID_RESULTS = set(['success', 'successful', 'failure', 'fail', 'skip',
++                     'knownfail', 'error', 'xfail', 'skip-testsuite',
++                     'testsuite-failure', 'testsuite-xfail',
++                     'testsuite-success', 'testsuite-error',
++                     'uxsuccess', 'testsuite-uxsuccess'])
+ 
+ class TestsuiteEnabledTestResult(unittest.TestResult):
+ 
+@@ -283,14 +288,7 @@ class FilterOps(unittest.TestResult):
+         self._ops.startTest(test)
+ 
+     def _add_prefix(self, test):
+-        prefix = ""
+-        suffix = ""
+-        if self.prefix is not None:
+-            prefix = self.prefix
+-        if self.suffix is not None:
+-            suffix = self.suffix
+-
+-        return subunit.RemotedTestCase(prefix + test.id() + suffix)
++        return subunit.RemotedTestCase(self.prefix + test.id() + self.suffix)
+ 
+     def addError(self, test, err=None):
+         test = self._add_prefix(test)
+@@ -432,6 +430,70 @@ class FilterOps(unittest.TestResult):
+         self.fail_immediately = fail_immediately
+ 
+ 
++class PerfFilterOps(unittest.TestResult):
++
++    def progress(self, delta, whence):
++        pass
++
++    def output_msg(self, msg):
++        pass
++
++    def control_msg(self, msg):
++        pass
++
++    def start_testsuite(self, name):
++        self.suite_has_time = False
++
++    def end_testsuite(self, name, result, reason=None):
++        pass
++
++    def _add_prefix(self, test):
++        return subunit.RemotedTestCase(self.prefix + test.id() + self.suffix)
++
++    def time(self, time):
++        self.latest_time = time
++        #self._ops.output_msg("found time %s\n" % time)
++        self.suite_has_time = True
++
++    def get_time(self):
++        if self.suite_has_time:
++            return self.latest_time
++        return datetime.datetime.utcnow()
++
++    def startTest(self, test):
++        self.seen_output = True
++        test = self._add_prefix(test)
++        self.starts[test.id()] = self.get_time()
++
++    def addSuccess(self, test):
++        test = self._add_prefix(test)
++        tid = test.id()
++        if tid not in self.starts:
++            self._ops.addError(test, "%s succeeded without ever starting!" % tid)
++        delta = self.get_time() - self.starts[tid]
++        self._ops.output_msg("elapsed-time: %s: %f\n" % (tid, delta.total_seconds()))
++
++    def addFailure(self, test, err=''):
++        tid = test.id()
++        delta = self.get_time() - self.starts[tid]
++        self._ops.output_msg("failure: %s failed after %f seconds (%s)\n" %
++                             (tid, delta.total_seconds(), err))
++
++    def addError(self, test, err=''):
++        tid = test.id()
++        delta = self.get_time() - self.starts[tid]
++        self._ops.output_msg("error: %s failed after %f seconds (%s)\n" %
++                             (tid, delta.total_seconds(), err))
++
++    def __init__(self, out, prefix='', suffix=''):
++        self._ops = out
++        self.prefix = prefix
++        self.suffix = suffix
++        self.starts = {}
++        self.seen_output = False
++        self.suite_has_time = False
++
++
+ class PlainFormatter(TestsuiteEnabledTestResult):
+ 
+     def __init__(self, verbose, immediate, statistics,
+diff --git a/selftest/wscript b/selftest/wscript
+index 61ca0bd..35442f7 100644
+--- a/selftest/wscript
++++ b/selftest/wscript
+@@ -79,6 +79,8 @@ def set_options(opt):
+                   action="store_true", dest='SOCKET_WRAPPER_KEEP_PCAP', default=False)
+     gr.add_option('--random-order', dest='RANDOM_ORDER', default=False,
+                   action="store_true", help="Run testsuites in random order")
++    gr.add_option('--perf-test', dest='PERF_TEST', default=False,
++                  action="store_true", help="run performance tests only")
+ 
+ def configure(conf):
+     conf.env.SELFTEST_PREFIX = Options.options.SELFTEST_PREFIX
+@@ -111,7 +113,10 @@ def cmd_testonly(opt):
+ 
+     env.SUBUNIT_FORMATTER = os.getenv('SUBUNIT_FORMATTER')
+     if not env.SUBUNIT_FORMATTER:
+-        env.SUBUNIT_FORMATTER = '${PYTHON} -u ${srcdir}/selftest/format-subunit --prefix=${SELFTEST_PREFIX} --immediate'
++        if Options.options.PERF_TEST:
++            env.SUBUNIT_FORMATTER = '${PYTHON} -u ${srcdir}/selftest/format-subunit-json --prefix=${SELFTEST_PREFIX}'
++        else:
++            env.SUBUNIT_FORMATTER = '${PYTHON} -u ${srcdir}/selftest/format-subunit --prefix=${SELFTEST_PREFIX} --immediate'
+     env.FILTER_XFAIL = '${PYTHON} -u ${srcdir}/selftest/filter-subunit --expected-failures=${srcdir}/selftest/knownfail --flapping=${srcdir}/selftest/flapping'
+ 
+     if Options.options.FAIL_IMMEDIATELY:
+@@ -193,9 +198,13 @@ def cmd_testonly(opt):
+     if not os.path.isdir(env.SELFTEST_PREFIX):
+         os.makedirs(env.SELFTEST_PREFIX, int('755', 8))
+ 
+-    env.TESTLISTS = ('--testlist="${PYTHON} ${srcdir}/selftest/tests.py|" ' +
+-                     '--testlist="${PYTHON} ${srcdir}/source3/selftest/tests.py|" ' +
+-                     '--testlist="${PYTHON} ${srcdir}/source4/selftest/tests.py|"')
++    if Options.options.PERF_TEST:
++        env.TESTLISTS = '--testlist="${PYTHON} ${srcdir}/selftest/perf_tests.py|" '
++        env.FILTER_OPTIONS = '${PYTHON} -u ${srcdir}/selftest/filter-subunit  --perf-test-output'
++    else:
++        env.TESTLISTS = ('--testlist="${PYTHON} ${srcdir}/selftest/tests.py|" ' +
++                         '--testlist="${PYTHON} ${srcdir}/source3/selftest/tests.py|" ' +
++                         '--testlist="${PYTHON} ${srcdir}/source4/selftest/tests.py|"')
+ 
+     if CONFIG_SET(opt, 'AD_DC_BUILD_IS_ENABLED'):
+         env.SELFTEST_TARGET = "samba"
+diff --git a/source4/dsdb/tests/python/perf_tests.py b/source4/dsdb/tests/python/perf_tests.py
+new file mode 100644
+index 0000000..4fffd43
+--- /dev/null
++++ b/source4/dsdb/tests/python/perf_tests.py
+@@ -0,0 +1,212 @@
++#!/usr/bin/env python
++# -*- coding: utf-8 -*-
++import optparse
++import sys
++sys.path.insert(0, 'bin/python')
++
++import os
++import samba
++import samba.getopt as options
++
++from samba.tests.subunitrun import SubunitOptions, TestProgram
++
++from samba.samdb import SamDB
++from samba.auth import system_session
++from ldb import Message, MessageElement, Dn, LdbError
++from ldb import FLAG_MOD_ADD, FLAG_MOD_REPLACE, FLAG_MOD_DELETE
++from ldb import SCOPE_BASE, SCOPE_SUBTREE, SCOPE_ONELEVEL
++
++parser = optparse.OptionParser("perf_tests.py [options] <host>")
++sambaopts = options.SambaOptions(parser)
++parser.add_option_group(sambaopts)
++parser.add_option_group(options.VersionOptions(parser))
++
++# use command line creds if available
++credopts = options.CredentialsOptions(parser)
++parser.add_option_group(credopts)
++opts, args = parser.parse_args()
++subunitopts = SubunitOptions(parser)
++parser.add_option_group(subunitopts)
++
++if len(args) < 1:
++    parser.print_usage()
++    sys.exit(1)
++
++host = args[0]
++
++lp = sambaopts.get_loadparm()
++creds = credopts.get_credentials(lp)
++
++
++class PerfTestException(Exception):
++    pass
++
++
++class UserTests(samba.tests.TestCase):
++
++    def add_if_possible(self, *args, **kwargs):
++        """In these tests sometimes things are left in the database
++        deliberately, so we don't worry if we fail to add them a second
++        time."""
++        try:
++            self.ldb.add(*args, **kwargs)
++        except LdbError:
++            pass
++
++    def setUp(self):
++        super(UserTests, self).setUp()
++        self.lp = lp
++        self.ldb = SamDB(host, credentials=creds,
++                         session_info=system_session(lp), lp=lp)
++        self.base_dn = self.ldb.domain_dn()
++        self.ou = "OU=pid%s,%s" % (os.getpid(), self.base_dn)
++        self.ou_users = "OU=users,%s" % self.ou
++        self.ou_groups = "OU=groups,%s" % self.ou
++        self.ou_computers = "OU=computers,%s" % self.ou
++
++        for dn in (self.ou, self.ou_users, self.ou_groups,
++                   self.ou_computers):
++            self.add_if_possible({
++                "dn": dn,
++                "objectclass": "organizationalUnit"})
++
++    def tearDown(self):
++        super(UserTests, self).tearDown()
++
++    def _prepare_n_groups(self, n):
++        for i in range(n):
++            self.add_if_possible({
++                "dn": "cn=g%d,%s" % (i, self.ou_groups),
++                "objectclass": "group"})
++
++    def _add_users(self, start, end):
++        for i in range(start, end):
++            self.ldb.add({
++                "dn": "cn=u%d,%s" % (i, self.ou_users),
++                "objectclass": "user"})
++
++    def test_0_00_do_nothing(self):
++        # this gives us an idea of the overhead
++        pass
++
++    def test_0_01_adding_users_500(self):
++        self._add_users(0, 500)
++
++    def test_0_02_adding_users_1000(self):
++        self._add_users(500, 1000)
++
++    def test_0_03_adding_users_1500(self):
++        self._add_users(1000, 1500)
++
++    def test_0_04_adding_users_2000(self):
++        self._add_users(1500, 2000)
++
++    def _link_user_and_group(self, u, g):
++        m = Message()
++        m.dn = Dn(self.ldb, "CN=g%d,%s" % (g, self.ou_groups))
++        m["member"] = MessageElement("cn=u%d,%s" % (u, self.ou_users),
++                                     FLAG_MOD_ADD, "member")
++        self.ldb.modify(m)
++
++    def _unlink_user_and_group(self, u, g):
++        user = "cn=u%d,%s" % (u, self.ou_users)
++        group = "CN=g%d,%s" % (g, self.ou_groups)
++        m = Message()
++        m.dn = Dn(self.ldb, group)
++        m["member"] = MessageElement(user, FLAG_MOD_DELETE, "member")
++        self.ldb.modify(m)
++
++    def test_1_01_link_users_667(self):
++        self._prepare_n_groups(5)
++        for i in range(667):
++            g = i % 5
++            self._link_user_and_group(i, g)
++
++    def test_1_02_link_users_1333(self):
++        for i in range(667, 1333):
++            g = i % 5
++            self._link_user_and_group(i, g)
++
++    def test_1_03_link_users_2000(self):
++        for i in range(1333, 2000):
++            g = i % 5
++            self._link_user_and_group(i, g)
++
++    def test_2_01_link_users_again_1000(self):
++        for i in range(1000):
++            g = (i + 1) % 5
++            self._link_user_and_group(i, g)
++
++    def test_2_02_link_users_again_2000(self):
++        for i in range(1000, 2000):
++            g = (i + 1) % 5
++            self._link_user_and_group(i, g)
++
++    def test_3_01_link_users_again_1000_few_groups(self):
++        for i in range(1000):
++            g = (i + 2) % 3
++            if g not in (i % 5, (i + 1) % 5):
++                self._link_user_and_group(i, g)
++
++    def test_3_02_link_users_again_2000_few_groups(self):
++        for i in range(1000, 2000):
++            g = (i + 2) % 3
++            if g not in (i % 5, (i + 1) % 5):
++                self._link_user_and_group(i, g)
++
++    def test_4_01_remove_some_links(self):
++        for i in range(2000):
++            g = (i + 1) % 5
++            self._unlink_user_and_group(i, g)
++
++    def test_4_02_remove_some_more_links(self):
++        for i in range(2000):
++            g = i % 5
++            self._unlink_user_and_group(i, g)
++
++    def test_5_01_adding_users_after_links_2500(self):
++        self._add_users(2000, 2500)
++
++    def test_6_01_relink_users_1000(self):
++        for i in range(1000):
++            g = i % 5
++            self._link_user_and_group(i, g)
++
++    def test_6_01_relink_users_2000(self):
++        for i in range(1000, 2000):
++            g = i % 5
++            self._link_user_and_group(i, g)
++
++    def test_6_02_link_users_2500(self):
++        for i in range(2000, 2500):
++            g = i % 5
++            self._link_user_and_group(i, g)
++            g2 = (i + 1) % 5
++            self._link_user_and_group(i, g2)
++
++    def test_7_01_adding_users_after_relinks_3000(self):
++        self._add_users(2500, 3000)
++
++    def test_8_01_delete_a_group(self):
++        self.ldb.delete("cn=g0,%s" % self.ou_groups)
++
++    def test_9_01_delete_users_1000(self):
++        for i in range(1000):
++            self.ldb.delete("cn=u%d,%s" % (i, self.ou_users))
++
++    def test_9_02_delete_users_2000(self):
++        for i in range(1000, 2000):
++            self.ldb.delete("cn=u%d,%s" % (i, self.ou_users))
++
++    def test_9_03_delete_empty_groups(self):
++        for i in range(1, 5):
++            self.ldb.delete("cn=g%d,%s" % (i, self.ou_groups))
++
++
++if "://" not in host:
++    if os.path.isfile(host):
++        host = "tdb://%s" % host
++    else:
++        host = "ldap://%s" % host
++
++TestProgram(module=__name__, opts=subunitopts)
+diff --git a/testprogs/blackbox/subunit.sh b/testprogs/blackbox/subunit.sh
+index db7fb05..6923833 100755
+--- a/testprogs/blackbox/subunit.sh
++++ b/testprogs/blackbox/subunit.sh
+@@ -18,14 +18,22 @@
+ #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ #
+ 
++timestamp() {
++  # Yes, it looks like we could use `date +...`, but that doesn't
++  # have sub-second resolution on non-Gnu systems.
++  python -c "import datetime; print datetime.datetime.utcnow().strftime('time: %Y-%m-%d %H:%M:%S.%fZ')"
++}
++
+ subunit_start_test () {
+   # emit the current protocol start-marker for test $1
++  timestamp
+   echo "test: $1"
+ }
+ 
+ 
+ subunit_pass_test () {
+   # emit the current protocol test passed marker for test $1
++  timestamp
+   echo "success: $1"
+ }
+ 
+@@ -38,6 +46,7 @@ subunit_fail_test () {
+   # the error text.
+   # we use stdin because the failure message can be arbitrarily long, and this
+   # makes it convenient to write in scripts (using <<END syntax.
++  timestamp
+   echo "failure: $1 ["
+   cat -
+   echo "]"
+@@ -49,6 +58,7 @@ subunit_error_test () {
+   # the error text.
+   # we use stdin because the failure message can be arbitrarily long, and this
+   # makes it convenient to write in scripts (using <<END syntax.
++  timestamp
+   echo "error: $1 ["
+   cat -
+   echo "]"

@@ -14,7 +14,7 @@ git clone --mirror git://git.samba.org/samba.git samba-mirror.git
 # altogether, try something like:
 
 CC=gcc-4.9 ./scripts/multi-perf-test --test-releases='origin/v4-[3-9]*-stable' \\
-           -p perf-test.patch -i -r ~/src/samba-mirror.git -t perf_tests
+           -p perf/perf-test.patch -i -r ~/src/samba-mirror.git -t perf_tests
 
 """
 import argparse
