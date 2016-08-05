@@ -24,6 +24,7 @@ import subprocess
 import tempfile
 import shutil
 import traceback
+import json
 
 class SambaGitTree(object):
 
@@ -31,6 +32,7 @@ class SambaGitTree(object):
         self.path = path
         self.remote = remote
         subprocess.check_call(['git', 'clone', remote, path])
+        self.perf_data = {}
 
     def git(self, *args, **kwargs):
         cmd = ['git', '-C', self.path]
@@ -82,6 +84,16 @@ class SambaGitTree(object):
         subprocess.check_call(cmd)
 
 
+    def collect_perf_data(self, tag):
+        f = open(os.path.join(self.path, 'st/summary.json'))
+        self.perf_data[tag] = json.load(f)
+        f.close()
+
+    def write_json(self, f):
+        json.dump(self.perf_data, f,
+                  sort_keys=True, indent=2, separators=(',', ': '))
+
+
 class PerfTestException(Exception):
     pass
 
@@ -126,6 +138,9 @@ def main():
                         help="pause when build/patch fails (use ^Z/fg/return)")
     parser.add_argument('-t', '--test-regex',
                         help="restrict tests with this regex")
+    parser.add_argument('-o', '--output', default='samba-performance.json',
+                        type=argparse.FileType('w'),
+                        help="write data here")
 
     args = parser.parse_args()
 
@@ -158,10 +173,12 @@ def main():
                 print "aborting branch %s" % b
                 continue
             tree.perf_test(args.test_regex)
+            tree.collect_perf_data(b)
 
     finally:
+        tree.write_json(args.output)
+        args.output.close()
         if args.working_dir is None:
             shutil.rmtree(d)
-
 
 main()
