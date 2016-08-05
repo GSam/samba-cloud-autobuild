@@ -126,8 +126,8 @@ def main():
     parser.add_argument('-d', '--working-dir', default=None,
                         help="use this directory (default: a tmpdir)")
     parser.add_argument('--test-releases', nargs='?',
-                        const='origin/v4-[0-9]*-stable',
-                        help=("test stable release branches from 4.0 "
+                        const='origin/v4-[2-9]*-stable',
+                        help=("test stable release branches from 4.2 "
                               "(or the supplied pattern)"))
     parser.add_argument('-r', '--remote',
                         default='git://git.samba.org/samba.git',
