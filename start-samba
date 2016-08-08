@@ -28,7 +28,7 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
                       skip_samba_build=False, skip_samba_autobuild=False,
                       verbose_logs=False, no_secrets=False, server_name=None,
                       flame_graphs=False, restrict_tests='', on_success=None,
-                      ident='', password='penguin12#'):
+                      ident='', password='penguin12#', use_default_pass=False):
     if 'centos' in image:
         template = YAML_TEMPLATE
         user = 'centos'
@@ -69,6 +69,7 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
                  server_name=server_name, flame_graphs=flame_graphs,
                  restrict_tests=restrict_tests, on_success=on_success,
                  generated_id=("%04d" % ident), generated_password=password,
+                 use_default_pass = use_default_pass,
                  **credentials)
     f = tempfile.NamedTemporaryFile(suffix='.yaml',
                                     prefix='samba-cloud-autobuild-user-config-',
@@ -154,6 +155,9 @@ def main():
     parser.add_argument('--run-wintest', action='store_true',
                         help=("run wintest after building"))
 
+    parser.add_argument('--use-default-pass', action='store_true',
+                        help=("use a default (insecure) password for machines and samba"))
+
     args = parser.parse_args()
     process_common_args(args)
 
@@ -184,7 +188,8 @@ def main():
                                   flame_graphs=args.flame_graphs,
                                   restrict_tests=args.restrict_tests,
                                   on_success=args.on_success,
-                                  ident=ident, password=password)
+                                  ident=ident, password=password,
+                                  use_default_pass=args.use_default_pass)
 
     if args.verbose:
         print >> sys.stderr, "YAML file is %s" % yaml_file

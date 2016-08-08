@@ -28,8 +28,9 @@ write_files:
 
  - content: |
     #!/bin/bash
+    [ {use_default_pass} == "True" ] && exit 0
     sudo apt-get -y install sed
-    sed -i -- 's/win_pass/{generated_password}/g; s/pass_1/{generated_password}1/g; s/pass_2/{generated_password}2/g; s/pass_3/{generated_password}3/g' /home/ubuntu/samba/wintest/conf/bob.conf
+    sed -i -- 's/win_pass@1/{generated_password}/g; s/p@ssword_1/{generated_password}1/g; s/p@ssword_2/{generated_password}2/g; s/p@ssword_3/{generated_password}3/g' /home/ubuntu/samba/wintest/conf/bob.conf
    path: /usr/local/bin/edit-config
    permissions: '0755'
 
@@ -55,7 +56,13 @@ write_files:
 
     Set-ADUser -Identity Administrator -ChangePasswordAtNextLogon $false
     wmic UserAccount set PasswordExpires=False
-    net user Administrator {generated_password}
+
+    If("{use_default_pass}" -eq "True"){{
+        net user Administrator win_pass@1
+    }}
+    Else{{
+        net user Administrator {generated_password}
+    }}
 
     cmd /C netsh advfirewall set allprofiles state off
     cmd /C tlntadmn config maxconn=1024
