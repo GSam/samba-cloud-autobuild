@@ -1,0 +1,118 @@
+#!/usr/bin/python
+
+import json
+import matplotlib
+import matplotlib.pyplot as plt
+import sys
+import os
+import argparse
+import re
+
+def plot(sequences, keys):
+    ax = plt.axes()
+    for c, s, k in zip('rgby', sequences, keys):
+        ax.plot(s, '%s.' % c, linewidth=0.5, label=k)
+    return ax
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('-i', '--input-file',
+                        help="read JSON form here")
+    parser.add_argument('-o', '--output', default=None,
+                        help="write graph here")
+    parser.add_argument('-t', '--tidy-names', action='store_true',
+                        help="try to remove cruft from test/branch names")
+    parser.add_argument('-a', '--absolute-times', action='store_true',
+                        help="show absolute times, not relative times")
+
+    args = parser.parse_args()
+    f = open(args.input_file)
+    d = json.load(f)
+    f.close()
+    sequences = {}
+    for branch, tests in d.items():
+        for k, v in tests.items():
+            sequences.setdefault(k, []).append((branch, v))
+
+    for series in sequences.values():
+        series.sort()
+        if not args.absolute_times:
+            scale = 1.0 / (series[0][1] or 1.0)        
+            series[:] = [(k, v * scale) for k, v in series]
+        
+
+    matplotlib.rcParams.update({'font.size': 10,
+                                #'figure.edgecolor': '#ff0000',
+                                'figure.facecolor': '#ffffff',
+    })
+    
+    #colormap = plt.cm.spectral
+    #plt.gca().set_color_cycle(colormap(i) for i in np.linspace(0, 1.9, 20))
+    labels = []
+    fig = plt.figure()
+    #import pdb
+    #pdb.set_trace()
+    #ax = fig.add_subplot(111)
+
+    items = sequences.items()
+    items.sort(key=lambda x: x[1][-1], reverse=True)
+
+    #print items
+    locations = [x[1][-1][1] for x in items]
+    print locations
+
+    for i in range(10):
+        for i in range(len(locations) - 1):
+            a = locations[i]
+            b = locations[i + 1]
+            if a - b < 0.05:
+                locations[i] += 0.01
+                locations[i + 1] -= 0.005
+
+    for x, loc in zip(items, locations):
+        test, seq = x
+        plt.plot([x[1] for x in seq], '-')
+        if args.tidy_names:
+            test = test[:test.rindex('(')][test.rindex('.') + 1:]
+        labels.append(test)
+        if False:        
+            plt.text(len(seq) - 1, seq[-1][1], test)
+        else:
+            plt.annotate(test, (len(seq) - 1, seq[-1][1]),
+                         (len(seq) - 0.5, loc),                         
+                         arrowprops={#'width': 0.5,
+                                     'color': '#666666',
+                                     'arrowstyle': "->"},
+                         )
+            
+    plt.grid(True)
+    plt.plot([len(seq) + 1], [0])
+
+    xlabels = [x[0] for x in seq]
+    if args.tidy_names:
+        xlabels = [re.sub(r'(remotes/)?(origin/)?', '', x) for x in xlabels]
+    #plt.xticks([x[0] for x in seq])
+    plt.xticks(range(len(seq) + 1), xlabels + [''])
+    plt.margins(x=0.1)
+    #plt.subplots_adjust(right=0.6)
+    #ax.axis('off')
+    print fig.axes
+    ax = fig.axes[0]
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+
+    #plt.legend(labels, loc='lower left', frameon=False, borderpad=0, fontsize=9)
+    fig.patch.set_visible(False)
+    if not args.output:
+        plt.show()
+    else:
+        plt.savefig(args.output, dpi=150, transparent=True,
+                    frameon=True,
+                    facecolor=fig.get_facecolor(), edgecolor='none')
+
+    
+
+main()
