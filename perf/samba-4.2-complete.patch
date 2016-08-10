@@ -1008,3 +1008,108 @@ index 7e37ecc..34a980d 100644
 -- 
 2.7.4
 
+From c7c4c926f59f2b32b3f4e6dd73140d82b26c4940 Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Wed, 10 Aug 2016 15:17:59 +1200
+Subject: [PATCH 1/3] samba v4.2 needs "dc" not "ad_dc_ntvfs"
+
+---
+ selftest/perf_tests.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/selftest/perf_tests.py b/selftest/perf_tests.py
+index fd4b819..3ca98db 100644
+--- a/selftest/perf_tests.py
++++ b/selftest/perf_tests.py
+@@ -28,7 +28,7 @@ planpythontestsuite("none", "samba.tests.xattr")
+ planpythontestsuite("none", "samba.tests.ntacls")
+ planpythontestsuite("none", "samba.tests.policy")
+ plantestsuite_loadlist("samba4.ldap.perf_tests.python(ad_dc_ntvfs)",
+-                       "ad_dc_ntvfs",
++                       "dc",
+                        [python, os.path.join(samba4srcdir,
+                                              "dsdb/tests/python/perf_tests.py"),
+                         '$SERVER', '-U"$USERNAME%$PASSWORD"',
+-- 
+2.7.4
+
+
+From 4a07d96f9f4dcda4f3f5e19eb5ea36c1eed50763 Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Wed, 10 Aug 2016 15:18:28 +1200
+Subject: [PATCH 2/3] samba v4.2 needs "testtools.test_result", not "unittest"
+
+---
+ selftest/subunithelper.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/selftest/subunithelper.py b/selftest/subunithelper.py
+index efaff74..83ca17a 100644
+--- a/selftest/subunithelper.py
++++ b/selftest/subunithelper.py
+@@ -432,7 +432,7 @@ class FilterOps(testtools.testresult.TestResult):
+         self.fail_immediately = fail_immediately
+ 
+ 
+-class PerfFilterOps(unittest.TestResult):
++class PerfFilterOps(testtools.testresult.TestResult):
+ 
+     def progress(self, delta, whence):
+         pass
+-- 
+2.7.4
+
+
+From 73f789a8ff16cd30f4d4ba64cd977893278fa7eb Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Wed, 10 Aug 2016 15:24:35 +1200
+Subject: [PATCH 3/3] samba v4.2 subunithelper: explicitly set prefix to ""
+
+---
+ selftest/subunithelper.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/selftest/subunithelper.py b/selftest/subunithelper.py
+index 83ca17a..aa2c806 100644
+--- a/selftest/subunithelper.py
++++ b/selftest/subunithelper.py
+@@ -489,8 +489,8 @@ class PerfFilterOps(testtools.testresult.TestResult):
+ 
+     def __init__(self, out, prefix='', suffix=''):
+         self._ops = out
+-        self.prefix = prefix
+-        self.suffix = suffix
++        self.prefix = prefix or ''
++        self.suffix = suffix or ''
+         self.starts = {}
+         self.seen_output = False
+         self.suite_has_time = False
+-- 
+2.7.4
+
+From 98c5d6c790e34ade2231d7dbe4b420a363344ca2 Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Wed, 10 Aug 2016 16:27:26 +1200
+Subject: [PATCH] use 'smbtorture' in place of 'smbtorture4'
+
+without trying to understand
+---
+ selftest/selftesthelpers.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/selftest/selftesthelpers.py b/selftest/selftesthelpers.py
+index 0ec2137..ee5fbc5 100644
+--- a/selftest/selftesthelpers.py
++++ b/selftest/selftesthelpers.py
+@@ -193,7 +193,7 @@ samba3srcdir = source3dir()
+ bbdir = os.path.join(srcdir(), "testprogs/blackbox")
+ configuration = "--configfile=$SMB_CONF_PATH"
+ 
+-smbtorture4 = binpath("smbtorture4")
++smbtorture4 = binpath("smbtorture")
+ smbtorture4_testsuite_list = subprocess.Popen([smbtorture4, "--list-suites"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate("")[0].splitlines()
+ 
+ smbtorture4_options = [
+-- 
+2.7.4
+
