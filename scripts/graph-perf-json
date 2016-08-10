@@ -1,11 +1,10 @@
 #!/usr/bin/python
+"""Plot the results of multi-perf-test"""
 
 import json
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib import cm
-import sys
-import os
 import argparse
 import re
 
@@ -17,7 +16,7 @@ matplotlib.rcParams.update({'font.size': 10,
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+                    formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-i', '--input-file',
                         help="read JSON form here")
     parser.add_argument('-o', '--output', default=None,
@@ -96,11 +95,9 @@ def main():
         else:
             plt.annotate(test, (len(seq) - 1, seq[-1][1]),
                          (len(seq) - 0.5, loc),
-                         arrowprops={#'width': 0.5,
-                                     #'color': colour,
-                                     'color': '#666666',
+                         arrowprops={'color': '#666666',
                                      'arrowstyle': "->",
-                                     'relpos':(0.0, 0.5),
+                                     'relpos': (0.0, 0.5),
                          },
                          color=colour,
                          )
@@ -111,12 +108,10 @@ def main():
     xlabels = [x[0] for x in seq]
     if args.tidy_names:
         xlabels = [re.sub(r'(remotes/)?(origin/)?', '', x) for x in xlabels]
-    #plt.xticks([x[0] for x in seq])
+
     plt.xticks(range(len(seq) + 1), xlabels + [''])
     plt.margins(x=0.1)
-    #plt.subplots_adjust(right=0.6)
-    #ax.axis('off')
-    print fig.axes
+
     ax = fig.axes[0]
     ax.spines['right'].set_visible(False)
     ax.spines['left'].set_visible(False)
@@ -131,7 +126,6 @@ def main():
         plt.savefig(args.output, dpi=150, transparent=True,
                     frameon=True,
                     facecolor=fig.get_facecolor(), edgecolor='none')
-
 
 
 main()
