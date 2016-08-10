@@ -79,11 +79,13 @@ class SambaGitTree(object):
         lines = self.git(*args, output=True)
         return lines.split()
 
-    def patch(self, patch):
+    def patch(self, patch, patch_not_am=False):
         patch = os.path.abspath(patch)
-        cmd = ['patch', '-d', self.path, '-p1', '-N', '-i', patch]
-        subprocess.check_call(cmd)
-
+        if patch_not_am:
+            cmd = ['patch', '-d', self.path, '-p1', '-N', '-i', patch]
+            subprocess.check_call(cmd)
+        else:
+            self.git('am', patch)
 
     def collect_perf_data(self, tag):
         f = open(os.path.join(self.path, 'st/summary.json'))
@@ -137,6 +139,8 @@ def main():
                         help="apply this patch to each tree")
     parser.add_argument('-i', '--interactive', action='store_true',
                         help="pause when build/patch fails (use ^Z/fg/return)")
+    parser.add_argument('--use-patch-not-git-am', action='store_true',
+                        help="patch using patch, not git am")
     parser.add_argument('-t', '--test-regex',
                         help="restrict tests with this regex")
     parser.add_argument('-o', '--output', default='samba-performance.json',
@@ -166,7 +170,8 @@ def main():
             tree.checkout(b)
             try:
                 if args.patch:
-                    try_and_try_again(args.interactive, tree.patch, args.patch)
+                    try_and_try_again(args.interactive, tree.patch, args.patch,
+                                      args.use_patch_not_git_am)
 
                 try_and_try_again(args.interactive, tree.configure)
                 try_and_try_again(args.interactive, tree.build)
