@@ -85,7 +85,7 @@ class SambaGitTree(object):
             cmd = ['patch', '-d', self.path, '-p1', '-N', '-i', patch]
             subprocess.check_call(cmd)
         else:
-            self.git('am', patch)
+            self.git('am', '-3', patch)
 
     def collect_perf_data(self, tag):
         f = open(os.path.join(self.path, 'st/summary.json'))
