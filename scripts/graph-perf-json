@@ -38,7 +38,7 @@ def find_spaced_label_locations(items):
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
                     formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('-i', '--input-file',
+    parser.add_argument('-i', '--input-file', action='append',
                         help="read JSON form here")
     parser.add_argument('-o', '--output', default=None,
                         help="write graph here")
@@ -50,9 +50,12 @@ def main():
                         help="only allow tests matching this regex")
 
     args = parser.parse_args()
-    f = open(args.input_file)
-    d = json.load(f)
-    f.close()
+    d = {}
+    for fn in args.input_file:
+        f = open(fn)
+        d.update(json.load(f))
+        f.close()
+
     sequences = {}
     for branch, tests in d.items():
         for k, v in tests.items():
