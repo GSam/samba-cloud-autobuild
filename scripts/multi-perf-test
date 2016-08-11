@@ -13,8 +13,9 @@ git clone --mirror git://git.samba.org/samba.git samba-mirror.git
 
 # altogether, try something like:
 
-CC=gcc-4.9 ./scripts/multi-perf-test --test-releases='origin/v4-[3-9]*-stable' \\
-           -p perf/perf-test.patch -i -r ~/src/samba-mirror.git -t perf_tests
+CC=gcc-4.9 ./scripts/multi-perf-test  -p perf/perf-test.patch \\
+                    --test-releases='origin/v4-[3-9]*-stable' \\
+                    -i -r ~/src/samba-mirror.git -t perf_tests
 
 """
 import argparse
@@ -100,12 +101,13 @@ class SambaGitTree(object):
 class PerfTestException(Exception):
     pass
 
+
 def try_and_try_again(interactive, fn, *args, **kwargs):
     while True:
         try:
             fn(*args, **kwargs)
             return
-        except Exception, e:
+        except Exception:
             if not interactive:
                 raise
             print '-' * 72
@@ -121,9 +123,10 @@ def try_and_try_again(interactive, fn, *args, **kwargs):
             elif x == 'next':
                 raise PerfTestException()
 
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+                        formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('branches', nargs='*',
                         help="test these branches/refspecs")
     parser.add_argument('-d', '--working-dir', default=None,
