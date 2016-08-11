@@ -197,11 +197,12 @@ def main():
             tree.checkout(b)
             try:
                 if args.patch:
-                    try_and_try_again(args.interactive, tree.patch, args.patch,
-                                      args.use_patch_not_git_am,
-                                      args.ignore_whitespace)
+                    patch = args.patch
                 elif args.auto_patch:
                     patch = tree.guess_the_right_patch(b)
+                else:
+                    patch = None
+                if patch:
                     print >> sys.stderr, "using patch %s" % patch
                     try_and_try_again(args.interactive, tree.patch, patch,
                                       args.use_patch_not_git_am,
