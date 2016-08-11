@@ -26,6 +26,15 @@ import tempfile
 import shutil
 import traceback
 import json
+import re
+
+HERE = os.path.dirname(__file__)
+
+PATCHES = {
+    'samba-4-2': os.path.join(HERE, '../perf/samba-4.2-complete.patch'),
+    'samba': os.path.join(HERE, '../perf/perf-test.patch'),
+}
+
 
 class SambaGitTree(object):
 
@@ -101,6 +110,11 @@ class SambaGitTree(object):
         json.dump(self.perf_data, f,
                   sort_keys=True, indent=2, separators=(',', ': '))
 
+    def guess_the_right_patch(self, revision):
+        if re.search(r'4-[012]', revision):
+            return PATCHES['samba-4-2']
+        return PATCHES['samba']
+
 
 class PerfTestException(Exception):
     pass
@@ -146,6 +160,8 @@ def main():
                         help="git remote to use")
     parser.add_argument('-p', '--patch',
                         help="apply this patch to each tree")
+    parser.add_argument('-P', '--auto-patch', action='store_true',
+                        help="try to automatically apply the right patch")
     parser.add_argument('-i', '--interactive', action='store_true',
                         help="pause when build/patch fails (use ^Z/fg/return)")
     parser.add_argument('--use-patch-not-git-am', action='store_true',
@@ -182,6 +198,12 @@ def main():
             try:
                 if args.patch:
                     try_and_try_again(args.interactive, tree.patch, args.patch,
+                                      args.use_patch_not_git_am,
+                                      args.ignore_whitespace)
+                elif args.auto_patch:
+                    patch = tree.guess_the_right_patch(b)
+                    print >> sys.stderr, "using patch %s" % patch
+                    try_and_try_again(args.interactive, tree.patch, patch,
                                       args.use_patch_not_git_am,
                                       args.ignore_whitespace)
 
