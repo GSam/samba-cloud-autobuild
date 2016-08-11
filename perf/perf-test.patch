@@ -1,7 +1,7 @@
 From 7bc89acae239827e3cf66dcbbc3724ce6bade89a Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Fri, 29 Jul 2016 15:35:00 +1200
-Subject: [PATCH 1/9] selftest/filter-subunit: --perf-test-output option for
+Subject: [PATCH 01/10] selftest/filter-subunit: --perf-test-output option for
  timing tests
 
 This reduces test output to the time it takes to succeed.
@@ -248,7 +248,7 @@ index 61ca0bd..04e58d7 100644
 From e59fd0e74412c3609c66e115264ff0040726a297 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Wed, 3 Aug 2016 16:03:57 +1200
-Subject: [PATCH 2/9] blackbox tests: add timestamps for subunut tests
+Subject: [PATCH 02/10] blackbox tests: add timestamps for subunut tests
 
 Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 ---
@@ -306,7 +306,7 @@ index db7fb05..70fe2d7 100755
 From b3b1520d82dca2a861cf4b85e84822fe1f65f3f0 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Wed, 3 Aug 2016 16:13:03 +1200
-Subject: [PATCH 3/9] make perftest: remove irrelevant filter options
+Subject: [PATCH 03/10] make perftest: remove irrelevant filter options
 
 options like --expected-failures won't work with --perf-test-output
 
@@ -336,7 +336,7 @@ index 04e58d7..52861df 100644
 From e817cccbff79d7c4881d5c3d0ee047039e549a5a Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Wed, 3 Aug 2016 16:27:16 +1200
-Subject: [PATCH 4/9] use python for subunit.sh timing
+Subject: [PATCH 04/10] use python for subunit.sh timing
 
 ---
  testprogs/blackbox/subunit.sh | 7 +++----
@@ -367,7 +367,7 @@ index 70fe2d7..6923833 100755
 From ff8bece7bf0e15d9090a05197ad1a696c85585f6 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Wed, 3 Aug 2016 17:53:46 +1200
-Subject: [PATCH 5/9] begin a samba4 perf test
+Subject: [PATCH 05/10] begin a samba4 perf test
 
 ---
  selftest/perf_tests.py                  |  10 +-
@@ -629,7 +629,7 @@ index 0000000..7e37ecc
 From b4f55038775aebbcb08b18ca3165ecab408d5bb2 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Thu, 4 Aug 2016 15:35:46 +1200
-Subject: [PATCH 6/9] Add a format-jsubunit-json script
+Subject: [PATCH 06/10] Add a format-jsubunit-json script
 
 ---
  selftest/format-subunit-json | 53 ++++++++++++++++++++++++++++++++++++++++++++
@@ -702,7 +702,7 @@ index 0000000..b863750
 From 7c2c8d6c3131ad62e42f7085a7b6d5fd3cdd8379 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Thu, 4 Aug 2016 17:19:18 +1200
-Subject: [PATCH 7/9] selftest/wscript: use the json formatter with perftest
+Subject: [PATCH 07/10] selftest/wscript: use the json formatter with perftest
 
 ---
  selftest/wscript | 5 ++++-
@@ -731,7 +731,7 @@ index 52861df..35442f7 100644
 From 7e45116c3588fa00405ec85da8bcc7b03327d747 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Thu, 4 Aug 2016 17:19:51 +1200
-Subject: [PATCH 8/9] selftest/format-subunit-json prints to stderr
+Subject: [PATCH 08/10] selftest/format-subunit-json prints to stderr
 
 ---
  selftest/format-subunit-json | 1 +
@@ -756,7 +756,7 @@ index b863750..d44918c 100644
 From 20389d91ee4221ca566c61730eeb4a8bfb1a922c Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Wed, 10 Aug 2016 14:50:39 +1200
-Subject: [PATCH 9/9] rework perf tests to be less ad-hoc
+Subject: [PATCH 09/10] rework perf tests to be less ad-hoc
 
 ---
  source4/dsdb/tests/python/perf_tests.py | 168 ++++++++++++++++++--------------
@@ -1005,6 +1005,74 @@ index 7e37ecc..34a980d 100644
  
  
  if "://" not in host:
+-- 
+2.7.4
+
+
+From 0c3a80f4e3bb935e3e763900243214a98612b375 Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Thu, 11 Aug 2016 12:09:45 +1200
+Subject: [PATCH 10/10] dsdb perf tests: try to work on ancient Samba
+
+---
+ source4/dsdb/tests/python/perf_tests.py | 29 +++++++++++++++++++++++++----
+ 1 file changed, 25 insertions(+), 4 deletions(-)
+
+diff --git a/source4/dsdb/tests/python/perf_tests.py b/source4/dsdb/tests/python/perf_tests.py
+index 34a980d..ba2c6f2 100644
+--- a/source4/dsdb/tests/python/perf_tests.py
++++ b/source4/dsdb/tests/python/perf_tests.py
+@@ -9,7 +9,18 @@ import samba
+ import samba.getopt as options
+ import random
+ 
+-from samba.tests.subunitrun import SubunitOptions, TestProgram
++# We try to use the test infrastructure of Samba 4.3+, but if it
++# doesn't work, we are probably in a back-ported patch and trying to
++# run on 4.1 or something.
++try:
++    from samba.tests.subunitrun import SubunitOptions, TestProgram
++    ANCIENT_SAMBA = False
++except ImportError:
++    ANCIENT_SAMBA = True
++    samba.ensure_external_module("testtools", "testtools")
++    samba.ensure_external_module("subunit", "subunit/python")
++    from subunit.run import SubunitTestRunner
++    import unittest
+ 
+ from samba.samdb import SamDB
+ from samba.auth import system_session
+@@ -22,12 +33,15 @@ sambaopts = options.SambaOptions(parser)
+ parser.add_option_group(sambaopts)
+ parser.add_option_group(options.VersionOptions(parser))
+ 
++if not ANCIENT_SAMBA:
++    subunitopts = SubunitOptions(parser)
++    parser.add_option_group(subunitopts)
++
+ # use command line creds if available
+ credopts = options.CredentialsOptions(parser)
+ parser.add_option_group(credopts)
+ opts, args = parser.parse_args()
+-subunitopts = SubunitOptions(parser)
+-parser.add_option_group(subunitopts)
++
+ 
+ if len(args) < 1:
+     parser.print_usage()
+@@ -233,4 +247,11 @@ if "://" not in host:
+     else:
+         host = "ldap://%s" % host
+ 
+-TestProgram(module=__name__, opts=subunitopts)
++
++if ANCIENT_SAMBA:
++    runner = SubunitTestRunner()
++    if not runner.run(unittest.makeSuite(UserTests)).wasSuccessful():
++        sys.exit(1)
++    sys.exit(0)
++else:
++    TestProgram(module=__name__, opts=subunitopts)
 -- 
 2.7.4
 
