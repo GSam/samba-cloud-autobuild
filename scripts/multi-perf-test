@@ -31,8 +31,9 @@ import re
 HERE = os.path.dirname(__file__)
 
 PATCHES = {
-    'samba-4-2': os.path.join(HERE, '../perf/samba-4.2-complete.patch'),
-    'samba': os.path.join(HERE, '../perf/perf-test.patch'),
+    'samba-4-2': [os.path.join(HERE, '../perf/perf-test.patch'),
+                  os.path.join(HERE, '../perf/samba-4.2-perf.patch')],
+    'samba': [os.path.join(HERE, '../perf/perf-test.patch')],
 }
 
 
@@ -110,7 +111,7 @@ class SambaGitTree(object):
         json.dump(self.perf_data, f,
                   sort_keys=True, indent=2, separators=(',', ': '))
 
-    def guess_the_right_patch(self, revision):
+    def guess_the_right_patches(self, revision):
         if re.search(r'4-[012]', revision):
             return PATCHES['samba-4-2']
         return PATCHES['samba']
@@ -158,10 +159,10 @@ def main():
     parser.add_argument('-r', '--remote',
                         default='git://git.samba.org/samba.git',
                         help="git remote to use")
-    parser.add_argument('-p', '--patch',
+    parser.add_argument('-p', '--patch', action='append',
                         help="apply this patch to each tree")
-    parser.add_argument('-P', '--auto-patch', action='store_true',
-                        help="try to automatically apply the right patch")
+    parser.add_argument('--no-auto-patch', action='store_true',
+                        help="don't try to apply necessary perf test patches")
     parser.add_argument('-i', '--interactive', action='store_true',
                         help="pause when build/patch fails (use ^Z/fg/return)")
     parser.add_argument('--use-patch-not-git-am', action='store_true',
@@ -196,13 +197,12 @@ def main():
             tree.git('clean')
             tree.checkout(b)
             try:
+                patches = []
+                if not args.no_auto_patch:
+                    patches.extend(tree.guess_the_right_patches(b))
                 if args.patch:
-                    patch = args.patch
-                elif args.auto_patch:
-                    patch = tree.guess_the_right_patch(b)
-                else:
-                    patch = None
-                if patch:
+                    patches.extend(args.patch)
+                for patch in patches:
                     print >> sys.stderr, "using patch %s" % patch
                     try_and_try_again(args.interactive, tree.patch, patch,
                                       args.use_patch_not_git_am,
