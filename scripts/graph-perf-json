@@ -12,6 +12,27 @@ matplotlib.rcParams.update({'font.size': 10,
                             'figure.facecolor': '#ffffff',
 })
 
+def find_spaced_label_locations(items):
+    locations = [x[1][-1][1] for x in items]
+    min_spacing = (locations[0] - locations[-1]) / (len(locations) * 2.0 + 2)
+    location_top = locations[0] + min_spacing
+    location_bottom = locations[-1] - min_spacing
+    for j in range(100):
+        max_overlap = 0
+        for i in range(len(locations) - 1):
+            gap = locations[i] - locations[i + 1]
+            if gap < min_spacing:
+                step = min_spacing - gap
+                if locations[i] < location_top:
+                    locations[i] += step
+                if locations[i + 1] > location_bottom:
+                    locations[i + 1] -= step
+                max_overlap = max(step, max_overlap)
+
+        if max_overlap < 1e-6:
+            break
+
+    return locations
 
 
 def main():
@@ -49,39 +70,16 @@ def main():
             scale = 1.0 / (series[0][1] or 1.0)
             series[:] = [(k, v * scale) for k, v in series]
 
-
     labels = []
     fig = plt.figure()
 
     items = sequences.items()
     items.sort(key=lambda x: x[1][-1], reverse=True)
 
+    locations = find_spaced_label_locations(items)
+
     scale = 1.0 / len(items)
     colours = set(cm.brg(x * scale) for x in range(len(items)))
-
-    #print items
-    locations = [x[1][-1][1] for x in items]
-    print locations
-    min_spacing = (locations[0] - locations[-1]) / (len(locations) * 2.0)
-    print min_spacing
-    location_top = locations[0] + min_spacing
-    location_bottom = locations[-1] - min_spacing
-    for j in range(100):
-        max_overlap = 0
-        for i in range(len(locations) - 1):
-            # locations is in descending order
-            gap = locations[i] - locations[i + 1]
-            if gap < min_spacing:
-                step = min_spacing - gap
-                if locations[i] < location_top:
-                    locations[i] += step
-                if locations[i + 1] > location_bottom:
-                    locations[i + 1] -= step
-                max_overlap = max(step, max_overlap)
-        locations.sort(reverse=True)
-        print j, max_overlap
-        if max_overlap < 1e-6:
-            break
 
     for x, loc, colour in zip(items, locations, colours):
         test, seq = x
