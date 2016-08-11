@@ -80,11 +80,15 @@ class SambaGitTree(object):
         lines = self.git(*args, output=True)
         return lines.split()
 
-    def patch(self, patch, patch_not_am=False):
+    def patch(self, patch, patch_not_am=False, ignore_whitespace=False):
         patch = os.path.abspath(patch)
         if patch_not_am:
             cmd = ['patch', '-d', self.path, '-p1', '-N', '-i', patch]
+            if ignore_whitespace:
+                cmd.append('--ignore-whitespace')
             subprocess.check_call(cmd)
+        elif ignore_whitespace:
+            self.git('am', '--ignore-whitespace', '-3', patch)
         else:
             self.git('am', '-3', patch)
 
@@ -146,6 +150,8 @@ def main():
                         help="pause when build/patch fails (use ^Z/fg/return)")
     parser.add_argument('--use-patch-not-git-am', action='store_true',
                         help="patch using patch, not git am")
+    parser.add_argument('-l', '--ignore-whitespace', action='store_true',
+                        help="ignore whitespace differences in patch")
     parser.add_argument('-t', '--test-regex',
                         help="restrict tests with this regex")
     parser.add_argument('-o', '--output', default='samba-performance.json',
@@ -176,7 +182,8 @@ def main():
             try:
                 if args.patch:
                     try_and_try_again(args.interactive, tree.patch, args.patch,
-                                      args.use_patch_not_git_am)
+                                      args.use_patch_not_git_am,
+                                      args.ignore_whitespace)
 
                 try_and_try_again(args.interactive, tree.configure)
                 try_and_try_again(args.interactive, tree.build)
