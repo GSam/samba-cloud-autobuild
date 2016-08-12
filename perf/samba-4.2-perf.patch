@@ -50,33 +50,6 @@ index efaff74..83ca17a 100644
 2.7.4
 
 
-From 73f789a8ff16cd30f4d4ba64cd977893278fa7eb Mon Sep 17 00:00:00 2001
-From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
-Date: Wed, 10 Aug 2016 15:24:35 +1200
-Subject: [PATCH 3/3] samba v4.2 subunithelper: explicitly set prefix to ""
-
----
- selftest/subunithelper.py | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/selftest/subunithelper.py b/selftest/subunithelper.py
-index 83ca17a..aa2c806 100644
---- a/selftest/subunithelper.py
-+++ b/selftest/subunithelper.py
-@@ -489,8 +489,8 @@ class PerfFilterOps(testtools.testresult.TestResult):
- 
-     def __init__(self, out, prefix='', suffix=''):
-         self._ops = out
--        self.prefix = prefix
--        self.suffix = suffix
-+        self.prefix = prefix or ''
-+        self.suffix = suffix or ''
-         self.starts = {}
-         self.seen_output = False
-         self.suite_has_time = False
--- 
-2.7.4
-
 From 98c5d6c790e34ade2231d7dbe4b420a363344ca2 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Wed, 10 Aug 2016 16:27:26 +1200

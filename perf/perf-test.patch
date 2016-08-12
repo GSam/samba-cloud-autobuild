@@ -1,7 +1,75 @@
-From 7bc89acae239827e3cf66dcbbc3724ce6bade89a Mon Sep 17 00:00:00 2001
+From d92f28ba30728246ccfc7b9c8cfe0ec635a6cfe7 Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Tue, 2 Aug 2016 11:00:27 +1200
+Subject: [PATCH 01/11] filter-subunit: default to empty affixes, saving
+ verbose checks
+
+Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+---
+ selftest/filter-subunit   | 12 +++---------
+ selftest/subunithelper.py |  9 +--------
+ 2 files changed, 4 insertions(+), 17 deletions(-)
+
+diff --git a/selftest/filter-subunit b/selftest/filter-subunit
+index fe157a0..857b842 100755
+--- a/selftest/filter-subunit
++++ b/selftest/filter-subunit
+@@ -36,9 +36,9 @@ parser.add_option("--strip-passed-output", action="store_true",
+     help="Whether to strip output from tests that passed")
+ parser.add_option("--fail-immediately", action="store_true",
+     help="Whether to stop on the first error", default=False)
+-parser.add_option("--prefix", type="string",
++parser.add_option("--prefix", type="string", default='',
+     help="Add prefix to all test names")
+-parser.add_option("--suffix", type="string",
++parser.add_option("--suffix", type="string", default='',
+     help="Add suffix to all test names")
+ parser.add_option("--fail-on-empty", default=False,
+     action="store_true", help="Fail if there was no subunit output")
+@@ -47,14 +47,8 @@ parser.add_option("--list", default=False,
+ opts, args = parser.parse_args()
+ 
+ if opts.list:
+-    prefix = opts.prefix
+-    suffix = opts.suffix
+-    if not prefix:
+-        prefix = ""
+-    if not suffix:
+-        suffix = ""
+     for l in sys.stdin:
+-         sys.stdout.write("%s%s%s\n" % (prefix, l.rstrip(), suffix))
++         sys.stdout.write("%s%s%s\n" % (opts.prefix, l.rstrip(), opts.suffix))
+     sys.exit(0)
+ 
+ if opts.expected_failures:
+diff --git a/selftest/subunithelper.py b/selftest/subunithelper.py
+index 441bafa..a3bb30b 100644
+--- a/selftest/subunithelper.py
++++ b/selftest/subunithelper.py
+@@ -287,14 +287,7 @@ class FilterOps(unittest.TestResult):
+         self._ops.startTest(test)
+ 
+     def _add_prefix(self, test):
+-        prefix = ""
+-        suffix = ""
+-        if self.prefix is not None:
+-            prefix = self.prefix
+-        if self.suffix is not None:
+-            suffix = self.suffix
+-
+-        return subunit.RemotedTestCase(prefix + test.id() + suffix)
++        return subunit.RemotedTestCase(self.prefix + test.id() + self.suffix)
+ 
+     def addError(self, test, err=None):
+         test = self._add_prefix(test)
+-- 
+2.7.4
+
+
+From 3e556ce8e3acb9a4f4b9f51c3132facd2f973505 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Fri, 29 Jul 2016 15:35:00 +1200
-Subject: [PATCH 01/10] selftest/filter-subunit: --perf-test-output option for
+Subject: [PATCH 02/11] selftest/filter-subunit: --perf-test-output option for
  timing tests
 
 This reduces test output to the time it takes to succeed.
@@ -129,7 +197,7 @@ index 0000000..9e0d4ad
 +                        '--workgroup=$DOMAIN',
 +                        '$LOADLIST', '$LISTOPT'])
 diff --git a/selftest/subunithelper.py b/selftest/subunithelper.py
-index a3bb30b..5ea74f3 100644
+index a3bb30b..6fe0755 100644
 --- a/selftest/subunithelper.py
 +++ b/selftest/subunithelper.py
 @@ -17,6 +17,7 @@
@@ -201,8 +269,8 @@ index a3bb30b..5ea74f3 100644
 +
 +    def __init__(self, out, prefix='', suffix=''):
 +        self._ops = out
-+        self.prefix = prefix
-+        self.suffix = suffix
++        self.prefix = prefix or ''
++        self.suffix = suffix or ''
 +        self.starts = {}
 +        self.seen_output = False
 +        self.suite_has_time = False
@@ -245,10 +313,10 @@ index 61ca0bd..04e58d7 100644
 2.7.4
 
 
-From e59fd0e74412c3609c66e115264ff0040726a297 Mon Sep 17 00:00:00 2001
+From c2dcd03605f16bc511dcac78f291175b4a033aa3 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Wed, 3 Aug 2016 16:03:57 +1200
-Subject: [PATCH 02/10] blackbox tests: add timestamps for subunut tests
+Subject: [PATCH 03/11] blackbox tests: add timestamps for subunut tests
 
 Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 ---
@@ -303,10 +371,10 @@ index db7fb05..70fe2d7 100755
 2.7.4
 
 
-From b3b1520d82dca2a861cf4b85e84822fe1f65f3f0 Mon Sep 17 00:00:00 2001
+From 82e82dbf93a93ffea9ee152847690d70232dfe06 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Wed, 3 Aug 2016 16:13:03 +1200
-Subject: [PATCH 03/10] make perftest: remove irrelevant filter options
+Subject: [PATCH 04/11] make perftest: remove irrelevant filter options
 
 options like --expected-failures won't work with --perf-test-output
 
@@ -333,10 +401,10 @@ index 04e58d7..52861df 100644
 2.7.4
 
 
-From e817cccbff79d7c4881d5c3d0ee047039e549a5a Mon Sep 17 00:00:00 2001
+From 5f091475fbd9e97f524e6c3d85c2038e78f2721d Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Wed, 3 Aug 2016 16:27:16 +1200
-Subject: [PATCH 04/10] use python for subunit.sh timing
+Subject: [PATCH 05/11] use python for subunit.sh timing
 
 ---
  testprogs/blackbox/subunit.sh | 7 +++----
@@ -364,10 +432,10 @@ index 70fe2d7..6923833 100755
 2.7.4
 
 
-From ff8bece7bf0e15d9090a05197ad1a696c85585f6 Mon Sep 17 00:00:00 2001
+From 108fb392b92c1a6f9f1d71038d33274e8433b9f1 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Wed, 3 Aug 2016 17:53:46 +1200
-Subject: [PATCH 05/10] begin a samba4 perf test
+Subject: [PATCH 06/11] begin a samba4 perf test
 
 ---
  selftest/perf_tests.py                  |  10 +-
@@ -626,10 +694,10 @@ index 0000000..7e37ecc
 2.7.4
 
 
-From b4f55038775aebbcb08b18ca3165ecab408d5bb2 Mon Sep 17 00:00:00 2001
+From b78c886bf9bd21d3d5722f7095819cb73fb1107e Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Thu, 4 Aug 2016 15:35:46 +1200
-Subject: [PATCH 06/10] Add a format-jsubunit-json script
+Subject: [PATCH 07/11] Add a format-jsubunit-json script
 
 ---
  selftest/format-subunit-json | 53 ++++++++++++++++++++++++++++++++++++++++++++
@@ -699,10 +767,10 @@ index 0000000..b863750
 2.7.4
 
 
-From 7c2c8d6c3131ad62e42f7085a7b6d5fd3cdd8379 Mon Sep 17 00:00:00 2001
+From 44e087f9d3a30bc3b8a35f91728c5da85f198030 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Thu, 4 Aug 2016 17:19:18 +1200
-Subject: [PATCH 07/10] selftest/wscript: use the json formatter with perftest
+Subject: [PATCH 08/11] selftest/wscript: use the json formatter with perftest
 
 ---
  selftest/wscript | 5 ++++-
@@ -728,10 +796,10 @@ index 52861df..35442f7 100644
 2.7.4
 
 
-From 7e45116c3588fa00405ec85da8bcc7b03327d747 Mon Sep 17 00:00:00 2001
+From 7398146b16d632bcb64eb04801d3632fc775b3b9 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Thu, 4 Aug 2016 17:19:51 +1200
-Subject: [PATCH 08/10] selftest/format-subunit-json prints to stderr
+Subject: [PATCH 09/11] selftest/format-subunit-json prints to stderr
 
 ---
  selftest/format-subunit-json | 1 +
@@ -753,10 +821,10 @@ index b863750..d44918c 100644
 2.7.4
 
 
-From 20389d91ee4221ca566c61730eeb4a8bfb1a922c Mon Sep 17 00:00:00 2001
+From ac8660a867823da6b59f49819031f1016595e1a6 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Wed, 10 Aug 2016 14:50:39 +1200
-Subject: [PATCH 09/10] rework perf tests to be less ad-hoc
+Subject: [PATCH 10/11] rework perf tests to be less ad-hoc
 
 ---
  source4/dsdb/tests/python/perf_tests.py | 168 ++++++++++++++++++--------------
@@ -1009,20 +1077,20 @@ index 7e37ecc..34a980d 100644
 2.7.4
 
 
-From 0c3a80f4e3bb935e3e763900243214a98612b375 Mon Sep 17 00:00:00 2001
+From 46519549b334496bb7d0d96bab21ef219501ec79 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Thu, 11 Aug 2016 12:09:45 +1200
-Subject: [PATCH 10/10] dsdb perf tests: try to work on ancient Samba
+Subject: [PATCH 11/11] dsdb perf tests: try to work on ancient Samba
 
 ---
- source4/dsdb/tests/python/perf_tests.py | 29 +++++++++++++++++++++++++----
- 1 file changed, 25 insertions(+), 4 deletions(-)
+ source4/dsdb/tests/python/perf_tests.py | 32 ++++++++++++++++++++++++++++----
+ 1 file changed, 28 insertions(+), 4 deletions(-)
 
 diff --git a/source4/dsdb/tests/python/perf_tests.py b/source4/dsdb/tests/python/perf_tests.py
-index 34a980d..ba2c6f2 100644
+index 34a980d..a0f2eb9 100644
 --- a/source4/dsdb/tests/python/perf_tests.py
 +++ b/source4/dsdb/tests/python/perf_tests.py
-@@ -9,7 +9,18 @@ import samba
+@@ -9,7 +9,21 @@ import samba
  import samba.getopt as options
  import random
  
@@ -1030,6 +1098,9 @@ index 34a980d..ba2c6f2 100644
 +# We try to use the test infrastructure of Samba 4.3+, but if it
 +# doesn't work, we are probably in a back-ported patch and trying to
 +# run on 4.1 or something.
++#
++# Don't copy this horror into ordinary tests -- it is special for
++# performance tests that want to apply to old versions.
 +try:
 +    from samba.tests.subunitrun import SubunitOptions, TestProgram
 +    ANCIENT_SAMBA = False
@@ -1042,7 +1113,7 @@ index 34a980d..ba2c6f2 100644
  
  from samba.samdb import SamDB
  from samba.auth import system_session
-@@ -22,12 +33,15 @@ sambaopts = options.SambaOptions(parser)
+@@ -22,12 +36,15 @@ sambaopts = options.SambaOptions(parser)
  parser.add_option_group(sambaopts)
  parser.add_option_group(options.VersionOptions(parser))
  
@@ -1060,7 +1131,7 @@ index 34a980d..ba2c6f2 100644
  
  if len(args) < 1:
      parser.print_usage()
-@@ -233,4 +247,11 @@ if "://" not in host:
+@@ -233,4 +250,11 @@ if "://" not in host:
      else:
          host = "ldap://%s" % host
  
