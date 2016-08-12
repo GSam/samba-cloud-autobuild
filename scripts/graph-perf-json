@@ -12,27 +12,108 @@ matplotlib.rcParams.update({'font.size': 10,
                             'figure.facecolor': '#ffffff',
 })
 
-def find_spaced_label_locations(items):
-    locations = [x[1][-1][1] for x in items]
-    min_spacing = (locations[0] - locations[-1]) / (len(locations) * 2.0 + 2)
-    location_top = locations[0] + min_spacing
-    location_bottom = locations[-1] - min_spacing
+
+def find_spaced_label_locations(locations):
+    locations.sort(reverse=True)
+    top = locations[0][0]
+    bottom = locations[-1][0]
+
+    min_spacing = (top -bottom) / (len(locations) * 2.0 + 2)
+    top += min_spacing
+    bottom -= min_spacing
     for j in range(100):
         max_overlap = 0
         for i in range(len(locations) - 1):
-            gap = locations[i] - locations[i + 1]
+            a = locations[i][0]
+            b = locations[i + 1][0]
+            gap = a - b
             if gap < min_spacing:
                 step = min_spacing - gap
-                if locations[i] < location_top:
-                    locations[i] += step
-                if locations[i + 1] > location_bottom:
-                    locations[i + 1] -= step
+                if a < top:
+                    locations[i][0] += step
+                if b > bottom:
+                    locations[i + 1][0] -= step
                 max_overlap = max(step, max_overlap)
 
         if max_overlap < 1e-6:
             break
 
-    return locations
+    return {k: v for v, k in locations}
+
+
+def always(x):
+    return True
+
+
+def get_sequences(input_files, filter_re, absolute_times=False,
+                  tidy_names=True):
+    data = {}
+    for fn in input_files:
+        f = open(fn)
+        d = json.load(f)
+        f.close()
+        if tidy_names:
+            _d = {}
+            for k, v in d.items():
+                _k = re.sub(r'(remotes/)?(origin/)?', '', k)
+                _d[_k] = {}
+                for test, time in v.items():
+                    test = test[:test.rindex('(')][test.rindex('.') + 1:]
+                    _d[_k][test] = time
+            d = _d
+        data.update(d)
+
+    sequence_names = set()
+    for v in data.values():
+        sequence_names.update(v.keys())
+
+    # XXX this works with samba-v4-* tags, not with random hashes!
+    x_labels = sorted(data)
+
+    if filter_re is not None:
+        accept = re.compile(filter_re).search
+    else:
+        accept = always
+
+    sequences = {k: [] for k in sequence_names if accept(k)}
+    for branch in x_labels:
+        tests = data[branch]
+        for k, seq in sequences.items():
+            v = tests.get(k, None)
+            seq.append(v)
+
+
+    last_points = {}
+    label_locations = []
+    for test, series in sequences.items():
+        for i in range(len(series) - 1, -1, -1):
+            v = series[i]
+            if v is not None:
+                last_val = v
+                break
+        else:
+            print >> sys.stderr, "no values for %s; removing it" % test
+            del sequences[test]
+            continue
+
+        if not absolute_times:
+            for v in series:
+                if v is not None:
+                    break
+            first_val = v
+            scale = 1.0 / (first_val or 1.0)
+            series[:] = [(x * scale if x is not None else None)
+                         for x in series]
+
+            last_val *= scale
+
+        last_points[test] = (i, last_val)
+        label_locations.append([last_val, test])
+
+
+    location_map = find_spaced_label_locations(label_locations)
+
+    return x_labels, sequences, location_map, last_points
 
 
 def main():
@@ -48,67 +129,45 @@ def main():
                         help="show absolute times, not relative times")
     parser.add_argument('-f', '--filter-tests',
                         help="only allow tests matching this regex")
+    parser.add_argument('--log-scale', action='store_true',
+                        help="plot the Y axis in log scale")
 
     args = parser.parse_args()
-    d = {}
-    for fn in args.input_file:
-        f = open(fn)
-        d.update(json.load(f))
-        f.close()
 
-    sequences = {}
-    for branch, tests in d.items():
-        for k, v in tests.items():
-            sequences.setdefault(k, []).append((branch, v))
+    xlabels, sequences, location_map, last_points = get_sequences(args.input_file,
+                                                                  args.filter_tests,
+                                                                  args.absolute_times,
+                                                                  args.tidy_names)
 
-    if args.filter_tests is not None:
-        accept = re.compile(args.filter_tests).search
-        for k in sequences.keys():
-            if not accept(k):
-                del sequences[k]
-
-    for series in sequences.values():
-        series.sort()
-        if not args.absolute_times:
-            scale = 1.0 / (series[0][1] or 1.0)
-            series[:] = [(k, v * scale) for k, v in series]
+    if args.log_scale:
+        plot = plt.semilogy
+    else:
+        plot = plt.plot
 
     labels = []
     fig = plt.figure()
 
-    items = sequences.items()
-    items.sort(key=lambda x: x[1][-1], reverse=True)
+    scale = 1.0 / len(sequences)
+    colours = set(cm.brg(x * scale) for x in range(len(sequences)))
 
-    locations = find_spaced_label_locations(items)
-
-    scale = 1.0 / len(items)
-    colours = set(cm.brg(x * scale) for x in range(len(items)))
-
-    for x, loc, colour in zip(items, locations, colours):
-        test, seq = x
-        plt.plot([x[1] for x in seq], '-', color=colour)
-        plt.plot([x[1] for x in seq], '.', color=colour)
-        if args.tidy_names:
-            test = test[:test.rindex('(')][test.rindex('.') + 1:]
+    for test, colour in zip(sequences, colours):
+        seq = sequences[test]
+        loc = location_map[test]
+        last_point = last_points[test]
+        plot(seq, '-', color=colour)
+        plot(seq, '.', color=colour)
         labels.append(test)
-        if False:
-            plt.text(len(seq) - 1, seq[-1][1], test)
-        else:
-            plt.annotate(test, (len(seq) - 1, seq[-1][1]),
-                         (len(seq) - 0.5, loc),
-                         arrowprops={'color': '#666666',
-                                     'arrowstyle': "->",
-                                     'relpos': (0.0, 0.5),
-                         },
-                         color=colour,
-                         )
+        plt.annotate(test, last_point,
+                     (len(seq) - 0.5, loc),
+                     arrowprops={'color': '#666666',
+                                 'arrowstyle': "->",
+                                 'relpos': (0.0, 0.5),
+                     },
+                     color=colour,
+        )
 
     plt.grid(True)
-    plt.plot([len(seq) + 1], [0])
-
-    xlabels = [x[0] for x in seq]
-    if args.tidy_names:
-        xlabels = [re.sub(r'(remotes/)?(origin/)?', '', x) for x in xlabels]
+    plot([len(seq) + 1], [0])
 
     plt.xticks(range(len(seq) + 1), xlabels + [''])
     plt.margins(x=0.1)
