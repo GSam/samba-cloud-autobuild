@@ -30,13 +30,14 @@ import re
 HERE = os.path.dirname(__file__)
 
 PATCHES = {
-    'samba-4-0': [os.path.join(HERE, '../perf/samba-4-0-pidl.patch'),
+    'samba-4-0': [os.path.join(HERE, '../perf/samba-4.5-perf.patch'),
+                  os.path.join(HERE, '../perf/samba-4.2-perf.patch'),
+                  os.path.join(HERE, '../perf/samba-4-0-pidl.patch'),
                   os.path.join(HERE, '../perf/samba-4-0-gnutls.patch'),
-                  os.path.join(HERE, '../perf/perf-test.patch'),
+                  ],
+    'samba-4-2': [os.path.join(HERE, '../perf/samba-4.5-perf.patch'),
                   os.path.join(HERE, '../perf/samba-4.2-perf.patch')],
-    'samba-4-2': [os.path.join(HERE, '../perf/perf-test.patch'),
-                  os.path.join(HERE, '../perf/samba-4.2-perf.patch')],
-    'samba-4-5': [os.path.join(HERE, '../perf/perf-test.patch')],
+    'samba-4-5': [os.path.join(HERE, '../perf/samba-4.5-perf.patch')],
 }
 
 
