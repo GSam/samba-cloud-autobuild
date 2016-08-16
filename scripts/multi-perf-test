@@ -221,7 +221,7 @@ def main():
                 continue
             try:
                 tree.perf_test(args.test_regex)
-            except CalledProcessError, e:
+            except subprocess.CalledProcessError, e:
                 print >> sys.stderr, "perf test failed: %s" % e
 
             tree.collect_perf_data(b)
