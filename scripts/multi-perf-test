@@ -36,7 +36,7 @@ PATCHES = {
                   os.path.join(HERE, '../perf/samba-4.2-perf.patch')],
     'samba-4-2': [os.path.join(HERE, '../perf/perf-test.patch'),
                   os.path.join(HERE, '../perf/samba-4.2-perf.patch')],
-    'samba': [os.path.join(HERE, '../perf/perf-test.patch')],
+    'samba-4-5': [os.path.join(HERE, '../perf/perf-test.patch')],
 }
 
 
@@ -115,11 +115,12 @@ class SambaGitTree(object):
                   sort_keys=True, indent=2, separators=(',', ': '))
 
     def guess_the_right_patches(self, revision):
+        # FIXME: increase cleverness in the face of arbitrary commits
         if re.search(r'4-[0]', revision):
             return PATCHES['samba-4-0']
         if re.search(r'4-[12]', revision):
             return PATCHES['samba-4-2']
-        return PATCHES['samba']
+        return PATCHES['samba-4-5']
 
 
 class PerfTestException(Exception):
