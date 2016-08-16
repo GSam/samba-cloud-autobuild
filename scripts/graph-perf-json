@@ -9,7 +9,10 @@ import argparse
 import re
 
 matplotlib.rcParams.update({'font.size': 10,
-                            'figure.facecolor': '#ffffff',
+                            'savefig.facecolor': '#ffffff',
+                            'savefig.edgecolor': '#ffffff',
+                            'figure.autolayout': True,
+
 })
 
 
@@ -18,7 +21,7 @@ def find_spaced_label_locations(locations):
     top = locations[0][0]
     bottom = locations[-1][0]
 
-    min_spacing = (top -bottom) / (len(locations) * 2.0 + 2)
+    min_spacing = (2 * top - bottom) / (len(locations) * 4.0 + 2)
     top += min_spacing
     bottom -= min_spacing
     for j in range(100):
@@ -144,7 +147,6 @@ def main():
     else:
         plot = plt.plot
 
-    labels = []
     fig = plt.figure()
 
     scale = 1.0 / len(sequences)
@@ -156,7 +158,6 @@ def main():
         last_point = last_points[test]
         plot(seq, '-', color=colour)
         plot(seq, '.', color=colour)
-        labels.append(test)
         plt.annotate(test, last_point,
                      (len(seq) - 0.5, loc),
                      arrowprops={'color': '#666666',
@@ -167,25 +168,23 @@ def main():
         )
 
     plt.grid(True)
-    plot([len(seq) + 1], [0])
+    plot([len(xlabels)], [0])
 
-    plt.xticks(range(len(seq) + 1), xlabels + [''])
+    plt.xticks(range(len(xlabels)), xlabels)
     plt.margins(x=0.1)
-
     ax = fig.axes[0]
-    ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_visible(False)
-    ax.spines['top'].set_visible(False)
-    ax.spines['bottom'].set_visible(False)
+    ax.set_xlim([-0.25, len(xlabels) * 3 // 2])
 
-    #plt.legend(labels, loc='lower left', frameon=False, borderpad=0, fontsize=9)
-    fig.patch.set_visible(False)
     if not args.output:
         plt.show()
     else:
-        plt.savefig(args.output, dpi=150, transparent=True,
+        fig.set_size_inches(10, 10)
+        plt.savefig(args.output,
+                    dpi=100,
                     frameon=True,
-                    facecolor=fig.get_facecolor(), edgecolor='none')
+                    pad_inches=1,
+                    facecolor='#ffffff',
+                    edgecolor='#ffffff')
 
 
 main()
