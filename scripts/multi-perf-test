@@ -188,7 +188,7 @@ def main():
 
     try:
         if d is None:
-            d = tempfile.mktemp()
+            d = tempfile.mkdtemp()
 
         print "using directory %r" % d
 
