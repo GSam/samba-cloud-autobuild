@@ -219,7 +219,11 @@ def main():
             except PerfTestException:
                 print "aborting branch %s" % b
                 continue
-            tree.perf_test(args.test_regex)
+            try:
+                tree.perf_test(args.test_regex)
+            except CalledProcessError, e:
+                print >> sys.stderr, "perf test failed: %s" % e
+
             tree.collect_perf_data(b)
 
     finally:
