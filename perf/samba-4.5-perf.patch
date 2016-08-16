@@ -1,4 +1,415 @@
-0001-make-perftest-for-performance-testing.patch
-0002-selftest-wscript-format-perftest-as-json.patch
-0003-blackbox-tests-add-timestamps-for-subunit-tests.patch
-0004-use-python-for-subunit.sh-timing.patch
+From 63a9057a6a8b71b4f772ab304a500364fb77ac4b Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Wed, 17 Aug 2016 10:56:50 +1200
+Subject: [PATCH 1/4] make perftest: for performance testing
+
+This runs a selection of subunit tests and reduces the output to only
+the time it takes to run each test.
+
+The tests are listed in selftest/perf_tests.py.
+
+Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+---
+ Makefile                  |  3 +++
+ selftest/filter-subunit   | 27 +++++++++++++++++---
+ selftest/perf_tests.py    | 26 +++++++++++++++++++
+ selftest/subunithelper.py | 65 +++++++++++++++++++++++++++++++++++++++++++++++
+ selftest/wscript          | 12 ++++++---
+ 5 files changed, 126 insertions(+), 7 deletions(-)
+ create mode 100644 selftest/perf_tests.py
+
+diff --git a/Makefile b/Makefile
+index 95681ae..5cc9077 100644
+--- a/Makefile
++++ b/Makefile
+@@ -16,6 +16,9 @@ uninstall:
+ test:
+ 	$(WAF) test $(TEST_OPTIONS)
+ 
++perftest:
++	$(WAF) test --perf-test $(TEST_OPTIONS)
++
+ help:
+ 	@echo NOTE: to run extended waf options use $(WAF_BINARY) or modify your PATH
+ 	$(WAF) --help
+diff --git a/selftest/filter-subunit b/selftest/filter-subunit
+index 857b842..c3aba73 100755
+--- a/selftest/filter-subunit
++++ b/selftest/filter-subunit
+@@ -44,6 +44,8 @@ parser.add_option("--fail-on-empty", default=False,
+     action="store_true", help="Fail if there was no subunit output")
+ parser.add_option("--list", default=False,
+     action="store_true", help="Operate in list mode")
++parser.add_option("--perf-test-output", default=False,
++    action="store_true", help="orientate output for performance measurement")
+ opts, args = parser.parse_args()
+ 
+ if opts.list:
+@@ -51,6 +53,18 @@ if opts.list:
+          sys.stdout.write("%s%s%s\n" % (opts.prefix, l.rstrip(), opts.suffix))
+     sys.exit(0)
+ 
++if opts.perf_test_output:
++    bad_options = []
++    for bad_opt in ('fail_immediately', 'strip_passed_output',
++                    'flapping', 'expected_failures'):
++        if getattr(opts, bad_opt):
++            bad_options.append(bad_opt)
++    if bad_options:
++        print >>sys.stderr, ("--perf-test-output is incompatible with --%s" %
++                             (', --'.join(x.replace('_', '-')
++                                          for x in bad_options)))
++        sys.exit(1)
++
+ if opts.expected_failures:
+     expected_failures = subunithelper.read_test_regexes(opts.expected_failures)
+ else:
+@@ -76,10 +90,15 @@ def handle_sigint(sig, stack):
+ signal.signal(signal.SIGINT, handle_sigint)
+ 
+ out = subunithelper.SubunitOps(sys.stdout)
+-msg_ops = subunithelper.FilterOps(out, opts.prefix, opts.suffix, expected_failures,
+-    opts.strip_passed_output,
+-    fail_immediately=opts.fail_immediately,
+-    flapping=flapping)
++
++if opts.perf_test_output:
++    msg_ops = subunithelper.PerfFilterOps(out, opts.prefix, opts.suffix)
++else:
++    msg_ops = subunithelper.FilterOps(out, opts.prefix, opts.suffix,
++                                      expected_failures,
++                                      opts.strip_passed_output,
++                                      fail_immediately=opts.fail_immediately,
++                                      flapping=flapping)
+ 
+ try:
+     ret = subunithelper.parse_results(msg_ops, statistics, sys.stdin)
+diff --git a/selftest/perf_tests.py b/selftest/perf_tests.py
+new file mode 100644
+index 0000000..d49bdf4
+--- /dev/null
++++ b/selftest/perf_tests.py
+@@ -0,0 +1,26 @@
++#!/usr/bin/python
++
++# This script generates a list of testsuites that should be run to
++# test Samba performance.
++#
++# These tests are not intended to exercise aspect of Samba, but
++# perform common simple functions or to ascertain performance.
++#
++
++# The syntax for a testsuite is "-- TEST --" on a single line, followed
++# by the name of the test, the environment it needs and the command to run, all
++# three separated by newlines. All other lines in the output are considered
++# comments.
++
++from selftesthelpers import *
++
++samba4srcdir = source4dir()
++samba4bindir = bindir()
++
++plantestsuite_loadlist("samba4.ldap.ad_dc_performance.python(ad_dc_ntvfs)",
++                       "ad_dc_ntvfs",
++                       [python, os.path.join(samba4srcdir,
++                                             "dsdb/tests/python/ad_dc_performance.py"),
++                        '$SERVER', '-U"$USERNAME%$PASSWORD"',
++                        '--workgroup=$DOMAIN',
++                        '$LOADLIST', '$LISTOPT'])
+diff --git a/selftest/subunithelper.py b/selftest/subunithelper.py
+index a3bb30b..6fe0755 100644
+--- a/selftest/subunithelper.py
++++ b/selftest/subunithelper.py
+@@ -17,6 +17,7 @@
+ 
+ __all__ = ['parse_results']
+ 
++import datetime
+ import re
+ import sys
+ from samba import subunit
+@@ -429,6 +430,70 @@ class FilterOps(unittest.TestResult):
+         self.fail_immediately = fail_immediately
+ 
+ 
++class PerfFilterOps(unittest.TestResult):
++
++    def progress(self, delta, whence):
++        pass
++
++    def output_msg(self, msg):
++        pass
++
++    def control_msg(self, msg):
++        pass
++
++    def start_testsuite(self, name):
++        self.suite_has_time = False
++
++    def end_testsuite(self, name, result, reason=None):
++        pass
++
++    def _add_prefix(self, test):
++        return subunit.RemotedTestCase(self.prefix + test.id() + self.suffix)
++
++    def time(self, time):
++        self.latest_time = time
++        #self._ops.output_msg("found time %s\n" % time)
++        self.suite_has_time = True
++
++    def get_time(self):
++        if self.suite_has_time:
++            return self.latest_time
++        return datetime.datetime.utcnow()
++
++    def startTest(self, test):
++        self.seen_output = True
++        test = self._add_prefix(test)
++        self.starts[test.id()] = self.get_time()
++
++    def addSuccess(self, test):
++        test = self._add_prefix(test)
++        tid = test.id()
++        if tid not in self.starts:
++            self._ops.addError(test, "%s succeeded without ever starting!" % tid)
++        delta = self.get_time() - self.starts[tid]
++        self._ops.output_msg("elapsed-time: %s: %f\n" % (tid, delta.total_seconds()))
++
++    def addFailure(self, test, err=''):
++        tid = test.id()
++        delta = self.get_time() - self.starts[tid]
++        self._ops.output_msg("failure: %s failed after %f seconds (%s)\n" %
++                             (tid, delta.total_seconds(), err))
++
++    def addError(self, test, err=''):
++        tid = test.id()
++        delta = self.get_time() - self.starts[tid]
++        self._ops.output_msg("error: %s failed after %f seconds (%s)\n" %
++                             (tid, delta.total_seconds(), err))
++
++    def __init__(self, out, prefix='', suffix=''):
++        self._ops = out
++        self.prefix = prefix or ''
++        self.suffix = suffix or ''
++        self.starts = {}
++        self.seen_output = False
++        self.suite_has_time = False
++
++
+ class PlainFormatter(TestsuiteEnabledTestResult):
+ 
+     def __init__(self, verbose, immediate, statistics,
+diff --git a/selftest/wscript b/selftest/wscript
+index 61ca0bd..52861df 100644
+--- a/selftest/wscript
++++ b/selftest/wscript
+@@ -79,6 +79,8 @@ def set_options(opt):
+                   action="store_true", dest='SOCKET_WRAPPER_KEEP_PCAP', default=False)
+     gr.add_option('--random-order', dest='RANDOM_ORDER', default=False,
+                   action="store_true", help="Run testsuites in random order")
++    gr.add_option('--perf-test', dest='PERF_TEST', default=False,
++                  action="store_true", help="run performance tests only")
+ 
+ def configure(conf):
+     conf.env.SELFTEST_PREFIX = Options.options.SELFTEST_PREFIX
+@@ -193,9 +195,13 @@ def cmd_testonly(opt):
+     if not os.path.isdir(env.SELFTEST_PREFIX):
+         os.makedirs(env.SELFTEST_PREFIX, int('755', 8))
+ 
+-    env.TESTLISTS = ('--testlist="${PYTHON} ${srcdir}/selftest/tests.py|" ' +
+-                     '--testlist="${PYTHON} ${srcdir}/source3/selftest/tests.py|" ' +
+-                     '--testlist="${PYTHON} ${srcdir}/source4/selftest/tests.py|"')
++    if Options.options.PERF_TEST:
++        env.TESTLISTS = '--testlist="${PYTHON} ${srcdir}/selftest/perf_tests.py|" '
++        env.FILTER_OPTIONS = '${PYTHON} -u ${srcdir}/selftest/filter-subunit  --perf-test-output'
++    else:
++        env.TESTLISTS = ('--testlist="${PYTHON} ${srcdir}/selftest/tests.py|" ' +
++                         '--testlist="${PYTHON} ${srcdir}/source3/selftest/tests.py|" ' +
++                         '--testlist="${PYTHON} ${srcdir}/source4/selftest/tests.py|"')
+ 
+     if CONFIG_SET(opt, 'AD_DC_BUILD_IS_ENABLED'):
+         env.SELFTEST_TARGET = "samba"
+-- 
+2.7.4
+
+
+From 896034f1795725b6248b729e1f2bc2de87de5194 Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Thu, 4 Aug 2016 15:35:46 +1200
+Subject: [PATCH 2/4] selftest/wscript: format perftest as json
+
+This makes it easier to use with common web-based graphing systems.
+---
+ selftest/format-subunit-json | 54 ++++++++++++++++++++++++++++++++++++++++++++
+ selftest/wscript             |  5 +++-
+ 2 files changed, 58 insertions(+), 1 deletion(-)
+ create mode 100644 selftest/format-subunit-json
+
+diff --git a/selftest/format-subunit-json b/selftest/format-subunit-json
+new file mode 100644
+index 0000000..d44918c
+--- /dev/null
++++ b/selftest/format-subunit-json
+@@ -0,0 +1,54 @@
++#!/usr/bin/env python
++# Copyright (C) 2008-2010 Jelmer Vernooij <jelmer@samba.org>
++# Copyright (C) 2016 Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
++# Published under the GNU GPL, v3 or later
++
++import optparse
++import os
++import signal
++import sys
++import json
++
++sys.path.insert(0, "bin/python")
++
++
++def json_formatter(src_f, dest_f):
++    """We're not even pretending to be a TestResult subclass; just read
++    from stdin and look for elapsed-time tags."""
++    results = {}
++
++    for line in src_f:
++        line = line.strip()
++        print >>sys.stderr, line
++        if line[:14] == 'elapsed-time: ':
++            name, time = line[14:].rsplit(':', 1)
++            results[name] = float(time)
++
++    json.dump(results, dest_f,
++              sort_keys=True, indent=2, separators=(',', ': '))
++
++
++def main():
++    parser = optparse.OptionParser("format-subunit-json [options]")
++    parser.add_option("--verbose", action="store_true",
++                      help="ignored, for compatibility")
++    parser.add_option("--immediate", action="store_true",
++                      help="ignored, for compatibility")
++    parser.add_option("--prefix", type="string", default=".",
++                      help="Prefix to write summary.json to")
++    opts, args = parser.parse_args()
++
++    fn = os.path.join(opts.prefix, "summary.json")
++    f = open(fn, 'w')
++    json_formatter(sys.stdin, f)
++    f.close()
++    print
++    print "A JSON file summarising these tests performance found in:"
++    print " ", fn
++
++
++def handle_sigint(sig, stack):
++    sys.exit(0)
++
++signal.signal(signal.SIGINT, handle_sigint)
++main()
+diff --git a/selftest/wscript b/selftest/wscript
+index 52861df..35442f7 100644
+--- a/selftest/wscript
++++ b/selftest/wscript
+@@ -113,7 +113,10 @@ def cmd_testonly(opt):
+ 
+     env.SUBUNIT_FORMATTER = os.getenv('SUBUNIT_FORMATTER')
+     if not env.SUBUNIT_FORMATTER:
+-        env.SUBUNIT_FORMATTER = '${PYTHON} -u ${srcdir}/selftest/format-subunit --prefix=${SELFTEST_PREFIX} --immediate'
++        if Options.options.PERF_TEST:
++            env.SUBUNIT_FORMATTER = '${PYTHON} -u ${srcdir}/selftest/format-subunit-json --prefix=${SELFTEST_PREFIX}'
++        else:
++            env.SUBUNIT_FORMATTER = '${PYTHON} -u ${srcdir}/selftest/format-subunit --prefix=${SELFTEST_PREFIX} --immediate'
+     env.FILTER_XFAIL = '${PYTHON} -u ${srcdir}/selftest/filter-subunit --expected-failures=${srcdir}/selftest/knownfail --flapping=${srcdir}/selftest/flapping'
+ 
+     if Options.options.FAIL_IMMEDIATELY:
+-- 
+2.7.4
+
+
+From 59ad791114e89d164169bebf2e797f5d6e2b7759 Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Wed, 3 Aug 2016 16:03:57 +1200
+Subject: [PATCH 3/4] blackbox tests: add timestamps for subunit tests
+
+Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+---
+ testprogs/blackbox/subunit.sh | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/testprogs/blackbox/subunit.sh b/testprogs/blackbox/subunit.sh
+index db7fb05..70fe2d7 100755
+--- a/testprogs/blackbox/subunit.sh
++++ b/testprogs/blackbox/subunit.sh
+@@ -18,14 +18,23 @@
+ #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ #
+ 
++timestamp() {
++  # mark the start time. With Gnu date, you get nanoseconds from %N
++  # (here truncated to microseconds with %6N), but not on BSDs,
++  # Solaris, etc, which will apparently leave either %N or N at the end.
++  date -u +'time: %Y-%m-%d %H:%M:%S.%6NZ' | sed 's/%\?NZ$/000000Z/'
++}
++
+ subunit_start_test () {
+   # emit the current protocol start-marker for test $1
++  timestamp
+   echo "test: $1"
+ }
+ 
+ 
+ subunit_pass_test () {
+   # emit the current protocol test passed marker for test $1
++  timestamp
+   echo "success: $1"
+ }
+ 
+@@ -38,6 +47,7 @@ subunit_fail_test () {
+   # the error text.
+   # we use stdin because the failure message can be arbitrarily long, and this
+   # makes it convenient to write in scripts (using <<END syntax.
++  timestamp
+   echo "failure: $1 ["
+   cat -
+   echo "]"
+@@ -49,6 +59,7 @@ subunit_error_test () {
+   # the error text.
+   # we use stdin because the failure message can be arbitrarily long, and this
+   # makes it convenient to write in scripts (using <<END syntax.
++  timestamp
+   echo "error: $1 ["
+   cat -
+   echo "]"
+-- 
+2.7.4
+
+
+From 44f4eeeb28dc7af37ab24a2fad26456660301a23 Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Wed, 3 Aug 2016 16:27:16 +1200
+Subject: [PATCH 4/4] use python for subunit.sh timing
+
+---
+ testprogs/blackbox/subunit.sh | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/testprogs/blackbox/subunit.sh b/testprogs/blackbox/subunit.sh
+index 70fe2d7..6923833 100755
+--- a/testprogs/blackbox/subunit.sh
++++ b/testprogs/blackbox/subunit.sh
+@@ -19,10 +19,9 @@
+ #
+ 
+ timestamp() {
+-  # mark the start time. With Gnu date, you get nanoseconds from %N
+-  # (here truncated to microseconds with %6N), but not on BSDs,
+-  # Solaris, etc, which will apparently leave either %N or N at the end.
+-  date -u +'time: %Y-%m-%d %H:%M:%S.%6NZ' | sed 's/%\?NZ$/000000Z/'
++  # Yes, it looks like we could use `date +...`, but that doesn't
++  # have sub-second resolution on non-Gnu systems.
++  python -c "import datetime; print datetime.datetime.utcnow().strftime('time: %Y-%m-%d %H:%M:%S.%fZ')"
+ }
+ 
+ subunit_start_test () {
+-- 
+2.7.4
+

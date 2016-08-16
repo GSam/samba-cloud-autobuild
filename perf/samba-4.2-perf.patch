@@ -1,7 +1,7 @@
-From ebb782e915f3803e109ebec10d6743dc7efd24c9 Mon Sep 17 00:00:00 2001
+From b87b0681acf0937941c04888b1b77182e0c0e13d Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Wed, 17 Aug 2016 09:30:58 +1200
-Subject: [PATCH 1/2] perf-tests <= samba-4-2: s/ad_dc_ntvfs/dc/
+Subject: [PATCH] perf-tests <= samba-4-2: s/ad_dc_ntvfs/dc/
 
 Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 ---
@@ -21,58 +21,6 @@ index d49bdf4..b50ca06 100644
                         [python, os.path.join(samba4srcdir,
                                               "dsdb/tests/python/ad_dc_performance.py"),
                          '$SERVER', '-U"$USERNAME%$PASSWORD"',
--- 
-2.7.4
-
-From 4a07d96f9f4dcda4f3f5e19eb5ea36c1eed50763 Mon Sep 17 00:00:00 2001
-From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
-Date: Wed, 10 Aug 2016 15:18:28 +1200
-Subject: [PATCH 2/3] samba v4.2 needs "testtools.test_result", not "unittest"
-
----
- selftest/subunithelper.py | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/selftest/subunithelper.py b/selftest/subunithelper.py
-index efaff74..83ca17a 100644
---- a/selftest/subunithelper.py
-+++ b/selftest/subunithelper.py
-@@ -432,7 +432,7 @@ class FilterOps(testtools.testresult.TestResult):
-         self.fail_immediately = fail_immediately
- 
- 
--class PerfFilterOps(unittest.TestResult):
-+class PerfFilterOps(testtools.testresult.TestResult):
- 
-     def progress(self, delta, whence):
-         pass
--- 
-2.7.4
-
-
-From 98c5d6c790e34ade2231d7dbe4b420a363344ca2 Mon Sep 17 00:00:00 2001
-From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
-Date: Wed, 10 Aug 2016 16:27:26 +1200
-Subject: [PATCH] use 'smbtorture' in place of 'smbtorture4'
-
-without trying to understand
----
- selftest/selftesthelpers.py | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/selftest/selftesthelpers.py b/selftest/selftesthelpers.py
-index 0ec2137..ee5fbc5 100644
---- a/selftest/selftesthelpers.py
-+++ b/selftest/selftesthelpers.py
-@@ -193,7 +193,7 @@ samba3srcdir = source3dir()
- bbdir = os.path.join(srcdir(), "testprogs/blackbox")
- configuration = "--configfile=$SMB_CONF_PATH"
- 
--smbtorture4 = binpath("smbtorture4")
-+smbtorture4 = binpath("smbtorture")
- smbtorture4_testsuite_list = subprocess.Popen([smbtorture4, "--list-suites"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate("")[0].splitlines()
- 
- smbtorture4_options = [
 -- 
 2.7.4
 
