@@ -140,7 +140,7 @@ def process_common_args(args):
         repo_check_call = ['git', 'ls-remote', '--heads', '--exit-code', args.remote, args.branch]
         subprocess.check_output(repo_check_call)
     except:
-        print "ERROR: Specified git repository does not exist."
+        print "ERROR: Specified git repository or branch does not exist."
         raise
 
     for nova_cmd in ("image_list",
