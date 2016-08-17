@@ -24,3 +24,55 @@ index d49bdf4..b50ca06 100644
 -- 
 2.7.4
 
+From 4a07d96f9f4dcda4f3f5e19eb5ea36c1eed50763 Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Wed, 10 Aug 2016 15:18:28 +1200
+Subject: [PATCH 2/3] samba v4.2 needs "testtools.test_result", not "unittest"
+
+---
+ selftest/subunithelper.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/selftest/subunithelper.py b/selftest/subunithelper.py
+index efaff74..83ca17a 100644
+--- a/selftest/subunithelper.py
++++ b/selftest/subunithelper.py
+@@ -432,7 +432,7 @@ class FilterOps(testtools.testresult.TestResult):
+         self.fail_immediately = fail_immediately
+ 
+ 
+-class PerfFilterOps(unittest.TestResult):
++class PerfFilterOps(testtools.testresult.TestResult):
+ 
+     def progress(self, delta, whence):
+         pass
+-- 
+2.7.4
+
+
+From 98c5d6c790e34ade2231d7dbe4b420a363344ca2 Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Wed, 10 Aug 2016 16:27:26 +1200
+Subject: [PATCH] use 'smbtorture' in place of 'smbtorture4'
+
+without trying to understand
+---
+ selftest/selftesthelpers.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/selftest/selftesthelpers.py b/selftest/selftesthelpers.py
+index 0ec2137..ee5fbc5 100644
+--- a/selftest/selftesthelpers.py
++++ b/selftest/selftesthelpers.py
+@@ -193,7 +193,7 @@ samba3srcdir = source3dir()
+ bbdir = os.path.join(srcdir(), "testprogs/blackbox")
+ configuration = "--configfile=$SMB_CONF_PATH"
+ 
+-smbtorture4 = binpath("smbtorture4")
++smbtorture4 = binpath("smbtorture")
+ smbtorture4_testsuite_list = subprocess.Popen([smbtorture4, "--list-suites"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate("")[0].splitlines()
+ 
+ smbtorture4_options = [
+-- 
+2.7.4
+
