@@ -11,7 +11,7 @@ import collections
 import time
 
 import config
-from common import filter_by_date, count_lines
+from email_utils import filter_by_date, count_lines, draw_histogram
 
 CACHE = os.path.join(os.path.dirname(__file__), 'cache/autobuild')
 
@@ -84,6 +84,9 @@ def main():
                         help=("restrict to filenames containing dates "
                               "> this (YYYY-MM-DD)"))
 
+    parser.add_argument('--histogram', action='store_true',
+                        help=("draw a graph of monthly counts"))
+
     args = parser.parse_args()
 
     if args.print_links:
@@ -91,6 +94,15 @@ def main():
         sys.exit()
 
     update_stdout_cache()
+
+    if args.histogram:
+        draw_histogram(fn_re=args.file_regex,
+                       line_re=args.line_regex,
+                       cache=CACHE,
+                       since=args.since,
+                       filter_re=args.filter_line)
+        sys.exit()
+
     count_lines(fn_re=args.file_regex,
                 line_re=args.line_regex,
                 cache=CACHE,

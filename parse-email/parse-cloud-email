@@ -13,7 +13,7 @@ import tarfile
 import cStringIO
 
 import config
-from common import filter_by_date, count_lines
+from email_utils import filter_by_date, count_lines
 
 CACHE = os.path.join(os.path.dirname(__file__), 'cache/cloud')
 
