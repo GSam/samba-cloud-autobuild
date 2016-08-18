@@ -141,7 +141,7 @@ write_files:
     sudo perf record -F $freq -a  -g --call-graph dwarf -o $PERF_FILE  -- su {user} -l -c /usr/local/bin/build-samba
     sudo perf script -i $PERF_FILE > $PERF_SCRIPT
     $home/FlameGraph/stackcollapse-perf.pl $PERF_SCRIPT > $PERF_FOLDED
-    grep -P -v '^(git|cc|x86_64-linux-gnu-ld|as|gcc)'  $PERF_FOLDED > $PERF_REDUCED_FOLDED
+    grep -P -v '^(?:git|cc|x86_64-linux-gnu-ld|ld|as|gcc|xsltproc|swapper|systemd-journal|collect2)' $PERF_FOLDED > $PERF_REDUCED_FOLDED
 
     $home/FlameGraph/flamegraph.pl --minwidth 0.2 --width 1060  $PERF_REDUCED_FOLDED > $FLAME_REDUCED_SVG
     $home/FlameGraph/flamegraph.pl --minwidth 0.2 --width 1060  $PERF_FOLDED > $FLAME_FULL_SVG
