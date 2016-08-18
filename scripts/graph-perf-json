@@ -16,14 +16,17 @@ matplotlib.rcParams.update({'font.size': 10,
 })
 
 
-def find_spaced_label_locations(locations):
+def find_spaced_label_locations(locations, max_value):
     locations.sort(reverse=True)
-    top = locations[0][0]
-    bottom = locations[-1][0]
+    top = (locations[0][0] + max_value) * 0.5
+    bottom = locations[-1][0] * 0.5
 
-    min_spacing = (2 * top - bottom) / (len(locations) * 4.0 + 2)
+    min_spacing = (2 * top - bottom) / (len(locations) * 3.0 + 2)
     top += min_spacing
     bottom -= min_spacing
+    if bottom < min_spacing:
+        bottom = min_spacing
+
     for j in range(100):
         max_overlap = 0
         for i in range(len(locations) - 1):
@@ -88,6 +91,7 @@ def get_sequences(input_files, filter_re, absolute_times=False,
 
     last_points = {}
     label_locations = []
+    max_value = 0.0
     for test, series in sequences.items():
         for i in range(len(series) - 1, -1, -1):
             v = series[i]
@@ -113,8 +117,9 @@ def get_sequences(input_files, filter_re, absolute_times=False,
         last_points[test] = (i, last_val)
         label_locations.append([last_val, test])
 
+        max_value = max(max(series), max_value)
 
-    location_map = find_spaced_label_locations(label_locations)
+    location_map = find_spaced_label_locations(label_locations, max_value)
 
     return x_labels, sequences, location_map, last_points
 
