@@ -69,7 +69,11 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
                 _k = re.sub(r'(remotes/)?(origin/)?', '', k)
                 _d[_k] = {}
                 for test, time in v.items():
-                    test = test[:test.rindex('(')][test.rindex('.') + 1:]
+                    test = test[:test.rfind('(')]
+                    test = test[test.rfind('.') + 1:]
+                    test = test.replace('_', ' ')
+                    if test[:5] == 'test ':
+                        test = test[5:]
                     _d[_k][test] = time
             d = _d
         data.update(d)
