@@ -52,6 +52,7 @@ def always(x):
 
 
 def get_sequences(input_files, filter_re, absolute_times=False,
+                  norm_index=0,
                   tidy_names=True):
     data = {}
     for fn in input_files:
@@ -104,7 +105,7 @@ def get_sequences(input_files, filter_re, absolute_times=False,
             continue
 
         if not absolute_times:
-            for v in series:
+            for v in series[norm_index:]:
                 if v is not None:
                     break
             first_val = v
@@ -135,6 +136,8 @@ def main():
                         help="try to remove cruft from test/branch names")
     parser.add_argument('-a', '--absolute-times', action='store_true',
                         help="show absolute times, not relative times")
+    parser.add_argument('--norm-index', default=0, type=int,
+                        help="normalise to this revision (default 0 == first)")
     parser.add_argument('-f', '--filter-tests',
                         help="only allow tests matching this regex")
     parser.add_argument('--log-scale', action='store_true',
@@ -145,6 +148,7 @@ def main():
     xlabels, sequences, location_map, last_points = get_sequences(args.input_file,
                                                                   args.filter_tests,
                                                                   args.absolute_times,
+                                                                  args.norm_index,
                                                                   args.tidy_names)
 
     if args.log_scale:
