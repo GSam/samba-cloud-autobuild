@@ -52,5 +52,6 @@ packages:
  - realpath
  - rng-tools
  - screen
+ - tshark
  - xsltproc
  - zlib1g-dev
