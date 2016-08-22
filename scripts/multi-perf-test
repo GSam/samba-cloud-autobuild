@@ -44,6 +44,18 @@ PATCHES = {
 }
 
 
+def enperf(cmd, tag):
+    perf_file = 'perf-%s.perf' % tag
+    cmd[:0] = ['perf', 'record',
+               '-F97',
+               '-a',
+               '-g',
+               '--call-graph', 'dwarf',
+               '-o', perf_file,
+               '--']
+    return cmd
+
+
 class SambaGitTree(object):
 
     def __init__(self, path, remote):
@@ -59,9 +71,13 @@ class SambaGitTree(object):
             return subprocess.check_output(cmd)
         subprocess.check_call(cmd)
 
-    def make(self, *args):
+    def make(self, *args, **kwargs):
         cmd = ['make', '-C', self.path]
         cmd.extend(args)
+        perf_tag = kwargs.get('perf_tag')
+        if perf_tag is not None:
+            enperf(cmd, perf_tag)
+
         subprocess.check_call(cmd)
 
     def configure(self, *args):
@@ -82,11 +98,11 @@ class SambaGitTree(object):
     def build(self):
         self.make('-j')
 
-    def perf_test(self, regex=None):
+    def perf_test(self, regex=None, perf_tag=None):
         if regex is not None:
-            self.make('perftest', 'TESTS=%s' % regex)
+            self.make('perftest', 'TESTS=%s' % regex, perf_tag=perf_tag)
         else:
-            self.make('perftest')
+            self.make('perftest', perf_tag=perf_tag)
 
     def list_branches(self, pattern=None):
         # git branch -a | grep -oP 'origin/v4.+-stable'
@@ -179,6 +195,8 @@ def main():
                         help="patch using git am")
     parser.add_argument('-l', '--ignore-whitespace', action='store_true',
                         help="ignore whitespace differences in patch")
+    parser.add_argument('--run-perf', action='store_true',
+                        help="collect linux perf data during each run")
     parser.add_argument('-t', '--test-regex',
                         help="restrict tests with this regex")
     parser.add_argument('-o', '--output', default='samba-performance.json',
@@ -223,8 +241,12 @@ def main():
             except PerfTestException:
                 print "aborting branch %s" % b
                 continue
+
             try:
-                tree.perf_test(args.test_regex)
+                if args.run_perf:
+                    tree.perf_test(args.test_regex, b)
+                else:
+                    tree.perf_test(args.test_regex)
             except subprocess.CalledProcessError, e:
                 print >> sys.stderr, "perf test failed: %s" % e
 
