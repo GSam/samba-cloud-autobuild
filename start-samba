@@ -21,12 +21,14 @@ YAML_TEMPLATE_1204 = os.path.join(HERE, 'templates/user-config-12.04.yaml.templa
 
 SERVER_NAME = "samba-build-%s-%s"
 
+EMAIL_RECIPIENT = 'samba-dev@catalyst.net.nz'
 
 def write_yaml_config(remote, branch, image, region, onfail, readahead,
                       maxtime, tmpfs=False, ramfs=False,
                       dont_fail_immediately=False, run_wintest=False,
                       skip_samba_build=False, skip_samba_autobuild=False,
                       verbose_logs=False, no_secrets=False, server_name=None,
+                      email_recipient=EMAIL_RECIPIENT,
                       flame_graphs=False, restrict_tests='', on_success=None,
                       ident='', password='penguin12#', use_default_pass=False):
     if 'centos' in image:
@@ -70,6 +72,7 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
                  restrict_tests=restrict_tests, on_success=on_success,
                  generated_id=("%04d" % ident), generated_password=password,
                  use_default_pass = use_default_pass,
+                 email_recipient=email_recipient,
                  **credentials)
     f = tempfile.NamedTemporaryFile(suffix='.yaml',
                                     prefix='samba-cloud-autobuild-user-config-',
@@ -148,6 +151,9 @@ def main():
     parser.add_argument('--restrict-tests', default='',
                         help="only run tests matching this regex")
 
+    parser.add_argument('--email-recipient', default=EMAIL_RECIPIENT,
+                        help="send email here [%s]" % EMAIL_RECIPIENT)
+
     parser.add_argument('--on-success', default="delete",
                         help=("One of 'suspend|shelve|continue|"
                               "delayed-delete|delete' (default 'delete')"))
@@ -187,9 +193,10 @@ def main():
                                   server_name=server_name,
                                   flame_graphs=args.flame_graphs,
                                   restrict_tests=args.restrict_tests,
-                                  on_success=args.on_success,
                                   ident=ident, password=password,
                                   use_default_pass=args.use_default_pass)
+                                  email_recipient=args.email_recipient,
+                                  on_success=args.on_success)
 
     if args.verbose:
         print >> sys.stderr, "YAML file is %s" % yaml_file

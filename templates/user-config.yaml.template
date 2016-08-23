@@ -123,8 +123,8 @@ write_files:
     [ {skip_samba_autobuild} == "True" ] && exit 0
     export SMBD_MAXTIME={maxtime}
     export AUTOBUILD_NO_FAIL_IMMEDIATELY={dont_fail_immediately}
-    CC="ccache gcc" ./script/autobuild.py --email-from=samba-dev@catalyst.net.nz \
-                          --email=samba-dev@catalyst.net.nz \
+    CC="ccache gcc" ./script/autobuild.py --email-from={email_recipient} \
+                          --email={email_recipient} \
                           --email-server=smtp1.catalyst.net.nz \
                           --always-email --attach-logs \
                           --nocleanup --testbase=$HOME/autobuild --tail \
@@ -225,7 +225,7 @@ write_files:
     from email.mime.text import MIMEText
 
     server = 'smtp1.catalyst.net.nz'
-    recipient = 'samba-dev@catalyst.net.nz'
+    recipient = '{email_recipient}'
     msg = Message()
     msg['Subject'] = sys.argv[1]
     msg['To'] = recipient
