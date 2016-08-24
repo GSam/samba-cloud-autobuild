@@ -54,18 +54,6 @@ PATCHES = {
 }
 
 
-def enperf(cmd, tag):
-    perf_file = 'perf-%s.perf' % tag
-    cmd[:0] = ['perf', 'record',
-               '-F97',
-               '-a',
-               '-g',
-               '--call-graph', 'dwarf',
-               '-o', perf_file,
-               '--']
-    return cmd
-
-
 class SambaGitTree(object):
 
     def __init__(self, path, remote):
@@ -81,12 +69,23 @@ class SambaGitTree(object):
             return subprocess.check_output(cmd)
         subprocess.check_call(cmd)
 
+    def enperf(self, cmd, tag):
+        self.perf_file = os.path.join(self.path, 'perf-%s.perf' % tag)
+        cmd[:0] = ['perf', 'record',
+                   '-F97',
+                   '-a',
+                   '-g',
+                   '--call-graph', 'dwarf',
+                   '-o', self.perf_file,
+                   '--']
+        return cmd
+
     def make(self, *args, **kwargs):
         cmd = ['make', '-C', self.path]
         cmd.extend(args)
         perf_tag = kwargs.get('perf_tag')
         if perf_tag is not None:
-            enperf(cmd, perf_tag)
+            self.enperf(cmd, perf_tag)
 
         subprocess.check_call(cmd)
 
