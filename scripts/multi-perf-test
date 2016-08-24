@@ -4,18 +4,28 @@ branches or revisions and collate the results.
 
 Some tips:
 
-# make a local full mirror of upstream, making subsequent fetches faster:
-git clone --mirror git://git.samba.org/samba.git samba-mirror.git
+Make a local full mirror of upstream, making subsequent fetches faster:
 
-# set the CC variable to something old enough to compile the oldest
-# branch you're considering. Newer gcc versions will find more
-# warnings that turn into errors with configure.developer's -Werror
+   git clone --mirror git://git.samba.org/samba.git samba-mirror.git
 
-# altogether, try something like:
+Set the CC variable to something old enough to compile the oldest
+branch you're considering. Newer gcc versions will find more warnings
+that turn into errors with configure.developer's -Werror
 
-CC=gcc-4.9 ./scripts/multi-perf-test  -o perf-test.json \\
-                    -i -r ~/src/samba-mirror.git -t perf_tests -l \\
-                    --use-patch-not-git-am
+Altogether, for all 4.x releases, try something like:
+
+    CC=gcc-4.9 ./scripts/multi-perf-test  -o perf-test.json \\
+                     -i -r ~/src/samba-mirror.git -t perf_tests -l \\
+                     --use-patch-not-git-am
+
+For a testing a few recent releases, in a branch that contains the
+perf_test patches, preserving the working directory for later
+analysis:
+
+    ./scripts/multi-perf-test  --no-auto-patch -i -r ~/src/samba-mirror.git \\
+                     -o ldb-talloc.json --preserve-tmp-dir    \\
+                     2d0458a d9e5a46 a00403f e9b58fb f10abee
+
 """
 import argparse
 import os
