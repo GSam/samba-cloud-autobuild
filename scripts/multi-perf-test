@@ -62,7 +62,7 @@ class SambaGitTree(object):
         self.path = path
         self.remote = remote
         subprocess.check_call(['git', 'clone', remote, path])
-        self.perf_data = {}
+        self.perf_data = []
 
     def git(self, *args, **kwargs):
         cmd = ['git', '-C', self.path]
@@ -127,7 +127,7 @@ class SambaGitTree(object):
 
     def collect_perf_data(self, tag):
         f = open(os.path.join(self.path, 'st/summary.json'))
-        self.perf_data[tag] = json.load(f)
+        self.perf_data.append([tag, json.load(f)])
         f.close()
 
     def write_json(self, f):
@@ -217,7 +217,9 @@ def main():
         tree = SambaGitTree(d, args.remote)
 
         if args.test_releases:
-            branches.extend(tree.list_branches(args.test_releases))
+            # let's assume the named branches are newer thant the old releases
+            # (because we have to assume something).
+            branches = tree.list_branches(args.test_releases) + branches
 
         for b in branches:
             print "trying branch %s in directory %s" % (b, tree.path)

@@ -56,16 +56,24 @@ def never(x):
 
 
 def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
-                  norm_index=0,
-                  tidy_names=True):
+                  norm_index=0, sort_refs=False, tidy_names=True):
     data = {}
+    x_labels = []
     for fn in input_files:
         f = open(fn)
         d = json.load(f)
         f.close()
+
+        if isinstance(d, dict):
+            d = d.items()
+            print "hello"
+            if not sort_refs:
+                print >> sys.stderr, "WARNING: load order randomised by dict"
+        x_labels += [k for k, v in d]
+
         if tidy_names:
             _d = {}
-            for k, v in d.items():
+            for k, v in d:
                 _k = re.sub(r'(remotes/)?(origin/)?', '', k)
                 _d[_k] = {}
                 for test, time in v.items():
@@ -78,12 +86,17 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
             d = _d
         data.update(d)
 
+    if len(data) != len(x_labels):
+        raise ValueError("the same commit label was used twice, "
+                         "which we can't cope with... yet")
+
     sequence_names = set()
     for v in data.values():
         sequence_names.update(v.keys())
 
-    # XXX this works with samba-v4-* tags, not with random hashes!
-    x_labels = sorted(data)
+    if sort_refs:
+        # XXX this works with samba-v4-* tags, not with random hashes!
+        x_labels.sort()
 
     if filter_re is not None:
         accept = re.compile(filter_re).search
@@ -101,7 +114,6 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
         for k, seq in sequences.items():
             v = tests.get(k, None)
             seq.append(v)
-
 
     last_points = {}
     label_locations = []
@@ -157,6 +169,8 @@ def main():
                         help="ignore tests matching this regex")
     parser.add_argument('--log-scale', action='store_true',
                         help="plot the Y axis in log scale")
+    parser.add_argument('--sort-refs', action='store_true',
+                        help="sort the x axis labels (default: use load order)")
 
     args = parser.parse_args()
 
@@ -165,6 +179,7 @@ def main():
                                                                   args.exclude_tests,
                                                                   args.absolute_times,
                                                                   args.norm_index,
+                                                                  args.sort_refs,
                                                                   args.tidy_names)
 
     if args.log_scale:
