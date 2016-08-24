@@ -80,6 +80,33 @@ class SambaGitTree(object):
                    '--']
         return cmd
 
+    def make_flame_graphs(self, bindir, dest='.'):
+        #perf script -i $f > $f.perf-script;
+        #~/src/FlameGraph/stackcollapse-perf.pl $f.perf-script > $f.folded;
+        #~/src/FlameGraph/flamegraph.pl --minwidth 0.2 --width 1060 $f.folded > $f.svg
+
+        collapse = os.path.join(bindir, 'stackcollapse-perf.pl')
+        flamegraph = os.path.join(bindir, 'flamegraph.pl')
+
+        perf_script = '%s.script' % self.perf_file
+        perf_folded = '%s.folded' % self.perf_file
+        svg = '%s.svg' % self.perf_file
+
+        with open(perf_script, 'w') as f:
+            cmd = ['perf', 'script', '-i', self.perf_file]
+            subprocess.check_call(cmd, stdout=f)
+
+        with  open(perf_folded, 'w') as f:
+            cmd = [collapse, perf_script]
+            subprocess.check_call(cmd, stdout=f)
+
+        with open(svg, 'w') as f:
+            cmd = [flamegraph, '--minwidth', '0.2', '--width', '1060',
+                   '--hash', perf_folded]
+            subprocess.check_call(cmd, stdout=f)
+
+        shutil.move(svg, dest)
+
     def make(self, *args, **kwargs):
         cmd = ['make', '-C', self.path]
         cmd.extend(args)
@@ -206,6 +233,8 @@ def main():
                         help="ignore whitespace differences in patch")
     parser.add_argument('--run-perf', action='store_true',
                         help="collect linux perf data during each run")
+    parser.add_argument('--flame-graph-path',
+                        help="find Flamegraph binaries here (implies --run-perf)")
     parser.add_argument('-t', '--test-regex',
                         help="restrict tests with this regex")
     parser.add_argument('-o', '--output', default='samba-performance.json',
@@ -216,6 +245,9 @@ def main():
 
     branches = args.branches
     d = args.working_dir
+
+    if args.flame_graph_path is not None:
+        args.run_perf = True
 
     try:
         if d is None:
@@ -262,6 +294,9 @@ def main():
                 print >> sys.stderr, "perf test failed: %s" % e
 
             tree.collect_perf_data(b)
+
+            if args.flame_graph_path:
+                tree.make_flame_graphs(args.flame_graph_path)
 
     finally:
         tree.write_json(args.output)
