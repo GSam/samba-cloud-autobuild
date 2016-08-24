@@ -205,10 +205,9 @@ write_files:
     $home/FlameGraph/stackcollapse-perf.pl $PERF_SCRIPT > $PERF_FOLDED
     grep -P -v '^(?:git|cc|x86_64-linux-gnu-ld|ld|as|gcc|xsltproc|swapper|systemd-journal|collect2)' $PERF_FOLDED > $PERF_REDUCED_FOLDED
 
-    $home/FlameGraph/flamegraph.pl --minwidth 0.2 --width 1060  $PERF_REDUCED_FOLDED > $FLAME_REDUCED_SVG
-    $home/FlameGraph/flamegraph.pl --minwidth 0.2 --width 1060  $PERF_FOLDED > $FLAME_FULL_SVG
-    $home/FlameGraph/flamegraph.pl --reverse --inverted -colors=chain --minwidth 0.3 --width 1060 $PERF_REDUCED_FOLDED > $ICICLE_SVG
-
+    $home/FlameGraph/flamegraph.pl --minwidth 0.2 --width 1060 --hash  $PERF_REDUCED_FOLDED > $FLAME_REDUCED_SVG
+    $home/FlameGraph/flamegraph.pl --minwidth 0.2 --width 1060 --hash  $PERF_FOLDED > $FLAME_FULL_SVG
+    $home/FlameGraph/flamegraph.pl --reverse --inverted -colors=chain --hash --minwidth 0.3 --width 1060 $PERF_REDUCED_FOLDED > $ICICLE_SVG
 
     send-multipart-email '{server_name} flame graphs'  $FLAME_REDUCED_SVG $ICICLE_SVG $FLAME_FULL_SVG
    path: /usr/local/bin/perf-record-build-samba
