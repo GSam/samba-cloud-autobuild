@@ -128,11 +128,7 @@ class SambaGitTree(object):
         if self.verbosity:
             cmd += ['-v'] * self.verbosity
         cmd.extend(args)
-        env = os.environ.copy()
-        env['CFLAGS'] = '-Wno-error'
-        env['ADDITIONAL_CFLAGS'] = '-Wno-error'
-        env['EXTRA_CFLAGS'] = '-Wno-error'
-        subprocess.check_call(cmd, cwd=self.path, env=env)
+        subprocess.check_call(cmd, cwd=self.path)
 
     def checkout(self, tag, clean=False):
         self.git('checkout', tag)
