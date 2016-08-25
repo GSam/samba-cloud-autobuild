@@ -56,11 +56,12 @@ PATCHES = {
 
 class SambaGitTree(object):
 
-    def __init__(self, path, remote):
+    def __init__(self, path, remote, verbosity):
         self.path = path
         self.remote = remote
         subprocess.check_call(['git', 'clone', remote, path])
         self.perf_data = []
+        self.verbosity = verbosity
 
     def git(self, *args, **kwargs):
         cmd = ['git', '-C', self.path]
@@ -109,6 +110,8 @@ class SambaGitTree(object):
 
     def make(self, *args, **kwargs):
         cmd = ['make', '-C', self.path]
+        if self.verbosity:
+            cmd += ['-v'] * self.verbosity
         cmd.extend(args)
         perf_tag = kwargs.get('perf_tag')
         if perf_tag is not None:
@@ -119,6 +122,8 @@ class SambaGitTree(object):
     def configure(self, *args):
         # we nust set cwd to self.path AND use the full executable path
         cmd = [os.path.join(self.path, 'configure.developer')]
+        if self.verbosity:
+            cmd += ['-v'] * self.verbosity
         cmd.extend(args)
         env = os.environ.copy()
         env['CFLAGS'] = '-Wno-error'
@@ -235,6 +240,8 @@ def main():
                         help="collect linux perf data during each run")
     parser.add_argument('--flame-graph-path',
                         help="find Flamegraph binaries here (implies --run-perf)")
+    parser.add_argument('--verbose', '-v', action='count',
+                        help='increase verbosity of subprocesses (-v -v -v for more)')
     parser.add_argument('-t', '--test-regex',
                         help="restrict tests with this regex")
     parser.add_argument('-o', '--output', default='samba-performance.json',
@@ -255,7 +262,7 @@ def main():
 
         print "using directory %r" % d
 
-        tree = SambaGitTree(d, args.remote)
+        tree = SambaGitTree(d, args.remote, args.verbose)
 
         if args.test_releases:
             # let's assume the named branches are newer thant the old releases
