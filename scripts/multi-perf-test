@@ -124,7 +124,8 @@ class SambaGitTree(object):
 
     def configure(self, *args):
         # we nust set cwd to self.path AND use the full executable path
-        cmd = [os.path.join(self.path, 'configure.developer')]
+        cmd = [os.path.join(self.path, 'configure.developer'),
+               '--abi-check-disable']
         if self.verbosity:
             cmd += ['-v'] * self.verbosity
         cmd.extend(args)
