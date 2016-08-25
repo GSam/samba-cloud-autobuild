@@ -69,6 +69,19 @@ def never(x):
     return False
 
 
+def tidy_revision_name(s):
+    return re.sub(r'(remotes/)?(origin/)?', '', s)
+
+
+def tidy_test_name(s):
+    s = s[:s.rfind('(')]
+    s = s[s.rfind('.') + 1:]
+    s = s.replace('_', ' ')
+    if s[:5] == 'test ':
+        s = s[5:]
+    return s
+
+
 def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
                   norm_index=0, sort_refs=False, tidy_names=True):
     data = {}
@@ -78,31 +91,23 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
         d = json.load(f)
         f.close()
 
-        if isinstance(d, dict):
+        if isinstance(d, dict): #XXX deprecated remove this soon
             d = d.items()
             print "hello"
             if not sort_refs:
                 print >> sys.stderr, "WARNING: load order randomised by dict"
-        x_labels += [k for k, v in d]
 
-        if tidy_names:
-            _d = {}
-            for k, v in d:
-                _k = re.sub(r'(remotes/)?(origin/)?', '', k)
-                _d[_k] = {}
-                for test, time in v.items():
-                    test = test[:test.rfind('(')]
-                    test = test[test.rfind('.') + 1:]
-                    test = test.replace('_', ' ')
-                    if test[:5] == 'test ':
-                        test = test[5:]
-                    _d[_k][test] = time
-            d = _d
-        data.update(d)
+        seen_labels = set(x_labels)
+        x_labels += [k for k, v in d if k not in seen_labels]
 
-    if len(data) != len(x_labels):
-        raise ValueError("the same commit label was used twice, "
-                         "which we can't cope with... yet")
+        for k, v in d:
+            if tidy_names:
+                k = tidy_revision_name(k)
+            rev_times = data.setdefault(k, {})
+            for test, time in v.items():
+                if tidy_names:
+                    test = tidy_test_name(test)
+                rev_times.setdefault(test, []).append(time)
 
     sequence_names = set()
     for v in data.values():
@@ -127,6 +132,8 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
         tests = data[branch]
         for k, seq in sequences.items():
             v = tests.get(k, None)
+            if isinstance(v, list):
+                v = min(v)
             seq.append(v)
 
     last_points = {}
