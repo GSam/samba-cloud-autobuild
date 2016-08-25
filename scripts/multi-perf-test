@@ -14,7 +14,7 @@ that turn into errors with configure.developer's -Werror
 
 Altogether, for all 4.x releases, try something like:
 
-    CC=gcc-4.9 ./scripts/multi-perf-test  -o perf-test.json \\
+    CFLAGS=-O2 CC=gcc-4.9 ./scripts/multi-perf-test  -o perf-test.json \\
                      -i -r ~/src/samba-mirror.git -t perf_tests -l \\
                      --use-patch-not-git-am
 
