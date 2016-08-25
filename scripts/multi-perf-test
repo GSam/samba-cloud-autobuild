@@ -105,8 +105,11 @@ class SambaGitTree(object):
             cmd = [flamegraph, '--minwidth', '0.2', '--width', '1060',
                    '--hash', perf_folded]
             subprocess.check_call(cmd, stdout=f)
-
-        shutil.move(svg, dest)
+        try:
+            shutil.move(svg, dest)
+        except shutil.Error, e:
+            print >> sys.stderr, e
+            print >> sys.stderr, "leaving svg at %s" % svg
 
     def make(self, *args, **kwargs):
         cmd = ['make', '-C', self.path]
