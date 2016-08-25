@@ -17,7 +17,7 @@ matplotlib.rcParams.update({'font.size': 10,
 })
 
 
-def find_commit_message(git_tree, commit):
+def find_commit_message(git_tree, commit, maxlen=75):
     cmd = ['git', '-C', git_tree,
            'log', '--pretty=oneline', '--abbrev-commit', '-n1', commit]
     try:
@@ -25,7 +25,10 @@ def find_commit_message(git_tree, commit):
     except subprocess.CalledProcessError, e:
         print >> sys.stderr, "commit name %s not found?: %s" % (commit, e)
         return commit
-    return s.strip()[:70]
+    s = s.strip()
+    if len(s) > maxlen:
+        s = s[:maxlen - 3] + '...'
+    return s
 
 def find_spaced_label_locations(locations, max_value):
     locations.sort(reverse=True)
