@@ -247,6 +247,8 @@ def main():
     parser.add_argument('-o', '--output', default='samba-performance.json',
                         type=argparse.FileType('w'),
                         help="write data here")
+    parser.add_argument('--best-of', metavar='N', type=int, default=1,
+                        help="run this many times")
 
     args = parser.parse_args()
 
@@ -269,41 +271,42 @@ def main():
             # (because we have to assume something).
             branches = tree.list_branches(args.test_releases) + branches
 
-        for b in branches:
-            print "trying branch %s in directory %s" % (b, tree.path)
-            tree.git('reset', '--hard')
-            tree.git('clean')
-            tree.checkout(b)
-            try:
-                patches = []
-                if not args.no_auto_patch:
-                    patches.extend(tree.guess_the_right_patches(b))
-                if args.patch:
-                    patches.extend(args.patch)
-                for patch in patches:
-                    print >> sys.stderr, "using patch %s" % patch
-                    try_and_try_again(args.interactive, tree.patch, patch,
-                                      not args.use_git_am_not_patch,
-                                      args.ignore_whitespace)
+        for i in range(args.best_of):
+            for b in branches:
+                print "trying branch %s in directory %s" % (b, tree.path)
+                tree.git('reset', '--hard')
+                tree.git('clean')
+                tree.checkout(b)
+                try:
+                    patches = []
+                    if not args.no_auto_patch:
+                        patches.extend(tree.guess_the_right_patches(b))
+                    if args.patch:
+                        patches.extend(args.patch)
+                    for patch in patches:
+                        print >> sys.stderr, "using patch %s" % patch
+                        try_and_try_again(args.interactive, tree.patch, patch,
+                                          not args.use_git_am_not_patch,
+                                          args.ignore_whitespace)
 
-                try_and_try_again(args.interactive, tree.configure)
-                try_and_try_again(args.interactive, tree.build)
-            except PerfTestException:
-                print "aborting branch %s" % b
-                continue
+                    try_and_try_again(args.interactive, tree.configure)
+                    try_and_try_again(args.interactive, tree.build)
+                except PerfTestException:
+                    print "aborting branch %s" % b
+                    continue
 
-            try:
-                if args.run_perf:
-                    tree.perf_test(args.test_regex, b)
-                else:
-                    tree.perf_test(args.test_regex)
-            except subprocess.CalledProcessError, e:
-                print >> sys.stderr, "perf test failed: %s" % e
+                try:
+                    if args.run_perf:
+                        tree.perf_test(args.test_regex, b)
+                    else:
+                        tree.perf_test(args.test_regex)
+                except subprocess.CalledProcessError, e:
+                    print >> sys.stderr, "perf test failed: %s" % e
 
-            tree.collect_perf_data(b)
+                tree.collect_perf_data(b)
 
-            if args.flame_graph_path:
-                tree.make_flame_graphs(args.flame_graph_path)
+                if args.flame_graph_path:
+                    tree.make_flame_graphs(args.flame_graph_path)
 
     finally:
         tree.write_json(args.output)
