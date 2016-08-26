@@ -30,12 +30,13 @@ def find_commit_message(git_tree, commit, maxlen=75):
         s = s[:maxlen - 3] + '...'
     return s
 
+
 def find_spaced_label_locations(locations, max_value):
     locations.sort(reverse=True)
-    top = (locations[0][0] + max_value) * 0.5
-    bottom = locations[-1][0] * 0.5
+    top = max_value
+    bottom = locations[-1][0] * 0.25
 
-    min_spacing = (2 * top - bottom) / (len(locations) * 3.0 + 2)
+    min_spacing = (2 * top - bottom) / (len(locations) * 3 + 1.0)
     top += min_spacing
     bottom -= min_spacing
     if bottom < min_spacing:
