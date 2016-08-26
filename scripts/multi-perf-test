@@ -293,7 +293,8 @@ def main():
 
                 try:
                     if args.run_perf:
-                        tree.perf_test(args.test_regex, b)
+                        perf_tag = re.sub(r'[^\w]', '-', b)
+                        tree.perf_test(args.test_regex, perf_tag)
                     else:
                         tree.perf_test(args.test_regex)
                 except subprocess.CalledProcessError, e:
