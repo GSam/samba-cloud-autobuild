@@ -45,6 +45,7 @@ PATCHES = {
                   os.path.join(HERE, '../perf/samba-4.2-perf.patch'),
                   os.path.join(HERE, '../perf/samba-4-0-pidl.patch'),
                   os.path.join(HERE, '../perf/samba-4-0-gnutls.patch'),
+                  os.path.join(HERE, '../perf/samba-4.0-ccan-memset.patch'),
                   ],
     'samba-4-2': [os.path.join(HERE, '../perf/samba-4.5-ad_dc.patch'),
                   os.path.join(HERE, '../perf/samba-4.5-perf.patch'),
