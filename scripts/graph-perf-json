@@ -193,17 +193,19 @@ def main():
     parser.add_argument('--sort-refs', action='store_true',
                         help="sort the x axis labels (default: use load order)")
     parser.add_argument('--label-commits-from-git-tree',
-                        help="label revisions with commit messages using this tree")
+                        help=("label revisions with commit messages"
+                              " using this tree"))
 
     args = parser.parse_args()
 
-    xlabels, sequences, location_map, last_points = get_sequences(args.input_file,
-                                                                  args.filter_tests,
-                                                                  args.exclude_tests,
-                                                                  args.absolute_times,
-                                                                  args.norm_index,
-                                                                  args.sort_refs,
-                                                                  args.tidy_names)
+    (xlabels, sequences,
+     location_map, last_points) = get_sequences(args.input_file,
+                                                args.filter_tests,
+                                                args.exclude_tests,
+                                                args.absolute_times,
+                                                args.norm_index,
+                                                args.sort_refs,
+                                                args.tidy_names)
 
     if args.log_scale:
         plot = plt.semilogy
@@ -233,11 +235,11 @@ def main():
     plt.grid(True)
     plot([len(xlabels)], [0])
 
-
     if args.label_commits_from_git_tree is not None:
         xlabels = [find_commit_message(args.label_commits_from_git_tree, x)
                    for x in xlabels]
-        plt.xticks(range(len(xlabels)), xlabels, rotation=-12, va='top', ha='left')
+        plt.xticks(range(len(xlabels)), xlabels, rotation=-12, va='top',
+                   ha='left')
     else:
         plt.xticks(range(len(xlabels)), xlabels)
 
