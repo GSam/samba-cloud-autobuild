@@ -1,0 +1,388 @@
+heat_template_version: 2014-10-16
+
+description: >
+  A template to create Windows and Samba RODCs in a single site
+
+parameters:
+  key_name:
+    type: string
+    description: Name of an existing key pair to use for the server
+    constraints:
+      - custom_constraint: nova.keypair
+
+  flavor:
+    type: string
+    description: Flavor for the server to be created
+    default: c1.c2r4
+    constraints:
+      - custom_constraint: nova.flavor
+
+  unix_image:
+    type: string
+    default: ubuntu-16.04-x86_64
+    description: Image ID or image name to use for Samba server
+    constraints:
+      - custom_constraint: glance.image
+
+  windows_image:
+    type: string
+    default: windows-server-2012r2-x86_64
+    description: Image ID or image name to use for the Windows servers
+    constraints:
+      - custom_constraint: glance.image
+
+  remote:
+    default: git://git.catalyst.net.nz/samba.git
+    type: string
+    description: URL of git remote
+
+  branch:
+    type: string
+    description: git branch to use
+
+  samba_realm:
+    type: string
+    default: "SAMDOM.EXAMPLE.COM"
+    description: Realm for the samba DCs
+
+  samba_domain:
+    type: string
+    default: "SAMDOM"
+    description: Domain for the samba DCs
+
+  samba_password:
+    type: string
+    default: "penguin12#"
+    description: Password for the samba DCs
+
+  windows_rodc_password:
+    type: string
+    default: "puffin12#"
+    description: Password for the samba DCs
+
+  windows_rwdc_password:
+    type: string
+    default: "pelican12#"
+    description: Password for the samba DCs
+
+  package_list:
+    type: comma_delimited_list
+    description: package to install
+
+
+resources:
+  rwdc:
+    type: OS::Nova::Server
+    properties:
+      key_name: { get_param: key_name }
+      image: { get_param: windows_image }
+      flavor: { get_param: flavor }
+      name:
+        rwdc
+      user_data_format: RAW
+      user_data:
+        get_resource: windows_rwdc_init
+      block_device_mapping_v2:
+        source:
+          image
+        id:
+          8c431b2b-1d89-4137-8b79-f288bfe65c9a
+        dest: volume
+        shutdown: remove
+        bootindex: 0
+        size: 70
+
+  rodc-windows:
+    type: OS::Nova::Server
+    properties:
+      key_name: { get_param: key_name }
+      image: { get_param: windows_image }
+      flavor: { get_param: flavor }
+      name:
+        rodc-windows
+      user_data_format: RAW
+      user_data:
+        get_resource: windows_rodc_init
+      block_device_mapping_v2:
+        source:
+          image
+        id:
+          8c431b2b-1d89-4137-8b79-f288bfe65c9a
+        dest: volume
+        shutdown: remove
+        bootindex: 0
+        size: 70
+
+  windows_rodc_init:
+    type: OS::Heat::MultipartMime
+    properties:
+      parts:
+      - config: {get_resource: prepare_windows_rodc}
+
+  windows_rwdc_init:
+    type: OS::Heat::MultipartMime
+    properties:
+      parts:
+      - config: {get_resource: prepare_windows_rwdc}
+
+  rodc-samba:
+    type: OS::Nova::Server
+    properties:
+      key_name: { get_param: key_name }
+      image: { get_param: unix_image }
+      flavor: { get_param: flavor }
+      name:
+        rodc-samba
+      user_data_format: RAW
+      user_data:
+        get_resource: samba_init
+
+  samba_init:
+    type: OS::Heat::MultipartMime
+    properties:
+      parts:
+      - config: {get_resource: get_packages}
+      - config: {get_resource: prepare_samba}
+
+  get_packages:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        packages:
+          {get_param: package_list}
+
+  prepare_samba:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        write_files:
+          - path: /run/shm/samba-scripts/clone-samba
+            permissions: '0755'
+            content: |
+              #!/bin/bash
+              set -x
+              set -e
+              cd ~
+              git clone git://git.catalyst.net.nz/samba.git
+              cd samba
+              git remote add catalyst git://git.catalyst.net.nz/samba.git
+              git remote add abartlet git://git.samba.org/abartlet/samba.git
+              git remote set-url origin git://git.samba.org/samba.git
+              git fetch catalyst
+
+          - path: /run/shm/samba-scripts/build-samba
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  set -e
+                  cd ~/samba
+                  git remote rm our_repo && echo "removed old remote"
+                  git remote add our_repo _REMOTE_
+                  git fetch our_repo
+                  git checkout our_repo/_BRANCH_
+                  ./configure.developer
+                  make
+                  sudo make install
+                params:
+                  _REMOTE_: {get_param: remote}
+                  _BRANCH_: {get_param: branch}
+
+          - path: /run/shm/samba-scripts/join-dc
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  for i in {1..100}; do
+                    host samdom.example.com && break
+                    sleep 10
+                  done
+
+                  echo -e '[libdefaults]\ndns_lookup_realm = false\ndns_lookup_kdc = true\ndefault_realm = _REALM_' > /etc/krb5.conf
+
+                  for i in {1..10}; do
+                    /usr/local/samba/bin/smbclient -L _REALM_ -U% && break
+                    sleep 10
+                  done
+
+                  if [[ "$(hostname)" == '_NAME_-1-0' && _RODC_ == 'True' ]]; then
+                    /usr/local/samba/bin/samba-tool domain join _REALM_ RODC -UAdministrator \
+                      --password='_PASSWORD_' --realm=_REALM_ -d 3
+                  else
+                    /usr/local/samba/bin/samba-tool domain join _REALM_ DC -UAdministrator \
+                      --password='_PASSWORD_' --realm=_REALM_ -d 3
+                  fi
+
+                  /usr/local/samba/sbin/samba
+                  for i in {1..10}; do
+                    /usr/local/samba/bin/smbclient //$(hostname)/netlogon -P -c 'ls' && break
+                    sleep 10
+                  done
+
+                  ip=$(ip -o -4 addr show | grep -oP '10\.9\.\d+\.\d+(?=/\d+)')
+
+                  /usr/local/samba/bin/samba-tool dns add 10.9.0.10 _REALM_ $(hostname) A  $ip -Uadministrator%_PASSWORD_
+
+                params:
+                  _USER_: {get_param: user}
+                  _REALM_:  {get_param: samba_realm}
+                  _DOMAIN_:  {get_param: samba_domain}
+                  _PASSWORD_:  {get_param: samba_password}
+                  _NAME_: {get_param: stack_name}
+                  _RODC_: {get_param: has_rodc}
+
+          - path: /run/shm/samba-scripts/wait-for-dns
+            permissions: '0755'
+            content: |
+              # Wait for the DNS server to come up
+              /bin/ping -w 300 -c 1 10.9.0.10
+              for i in {1..100}; do
+                /usr/bin/host catalyst.net.nz 10.9.0.10 && break
+                /bin/sleep 10
+              done
+
+          - path: /run/shm/samba-scripts/mangle-dns
+            permissions: '0755'
+            content: |
+              #!/bin/bash -x
+              # put localhost in resolv.conf
+              # resolvconf(8) wants to look after it via symlinks and so forth.
+              # To be sure we nuke its copies too.
+
+              cat /etc/resolv.conf >  /etc/resolv.conf.old
+              printf 'nameserver 10.9.0.10\n' > /etc/resolv.conf.new
+              printf 'search samdom.example.com\n' >> /etc/resolv.conf.new
+              mv /etc/resolv.conf.new /etc/resolv.conf
+              chattr +i  /etc/resolv.conf
+
+          - path: /run/shm/samba-scripts/run
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  echo this is /run/shm/samba-scripts/run
+
+                  echo PATH="/usr/local/samba/bin:$PATH" >> /etc/profile
+                  echo PATH="/usr/local/samba/bin:$PATH" >> /root/.profile
+                  su _USER_ -l -c echo PATH="/usr/local/samba/bin:$PATH" >> /home/_USER_/.profile
+                  echo PYTHONPATH=/usr/local/samba/lib/python2.7 > /root/.profile
+                  su _USER_ -l -c echo PYTHONPATH=/usr/local/samba/lib/python2.7 >> /home/_USER_/.profile
+
+                  su _USER_ -l -c /run/shm/samba-scripts/clone-samba
+                  su _USER_ -l -c /run/shm/samba-scripts/build-samba
+
+                  if [[ "$(hostname)" == '_NAME_-0-0' ]]; then
+                     /run/shm/samba-scripts/mangle-dns
+                     /run/shm/samba-scripts/provision-dc
+                  else
+                     /run/shm/samba-scripts/wait-for-dns
+                     /run/shm/samba-scripts/mangle-dns
+                     /run/shm/samba-scripts/join-dc
+                  fi
+                params:
+                  _NAME_: { get_param: stack_name }
+                  _USER_: {get_param: user}
+
+
+
+  prepare_windows_rwdc:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        runcmd:
+          - dcpromo.bat
+        write_files:
+          - path: answers.txt
+            content:
+              str_replace:
+                [DCInstall]
+                ; New forest promotion
+                ReplicaOrNewDomain=Domain
+                NewDomain=Forest
+                NewDomainDNSName=_REALM_
+                ForestLevel=_FUNCTION_LEVEL_INT_
+                DomainNetbiosName=_DOMAIN_
+                DomainLevel=_FUNCTION_LEVEL_INT_
+                InstallDNS=Yes
+                ConfirmGc=Yes
+                CreateDNSDelegation=No
+                DatabasePath="C:\Windows\NTDS"
+                LogPath="C:\Windows\NTDS"
+                SYSVOLPath="C:\Windows\SYSVOL"
+                ; Set SafeModeAdminPassword to the correct value prior to using the unattend file
+                SafeModeAdminPassword=_WIN_PASS_
+                ; Run-time flags (optional)
+                RebootOnCompletion=No
+              params:
+                _FUNCTION_LEVEL_INT_: 4
+                _REALM_:  {get_param: samba_realm}
+                _DOMAIN_:  {get_param: samba_domain}
+                _PASSWORD_:  {get_param: windows_rwdc_password}
+          - path: dcpromo.bat
+            content:
+              dcpromo /answer:answers.txt
+          - path: misc.ps1
+            content:
+              str_replace:
+                #ps1_sysnative
+
+                # The Telnet server needs to be enabled
+                install-windowsfeature "telnet-server"
+                install-windowsfeature "telnet-client"
+                install-windowsfeature -name AD-Domain-Services -IncludeManagementTools
+
+                Set-ADUser -Identity Administrator -ChangePasswordAtNextLogon $false
+                wmic UserAccount set PasswordExpires=False
+                net user Administrator _PASSWORD_
+                cmd /C netsh advfirewall set allprofiles state off
+                cmd /C tlntadmn config maxconn=1024
+
+                cmd /C net localgroup /add telnetclients "authenticated users"
+                cmd /C sc config tlntsvr start=auto
+                cmd /C sc start tlntsvr
+              params:
+                _PASSWORD_:  {get_param: windows_rwdc_password}
+
+
+
+
+  prepare_windows_rodc:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        write_files:
+          - path: answers.txt
+            content:
+              str_replace:
+                [DCInstall]
+                ; New forest promotion
+                ReplicaOrNewDomain=Domain
+                NewDomain=Forest
+                NewDomainDNSName=_REALM_
+                ForestLevel=_FUNCTION_LEVEL_INT_
+                DomainNetbiosName=_DOMAIN_
+                DomainLevel=_FUNCTION_LEVEL_INT_
+                InstallDNS=Yes
+                ConfirmGc=Yes
+                CreateDNSDelegation=No
+                DatabasePath="C:\Windows\NTDS"
+                LogPath="C:\Windows\NTDS"
+                SYSVOLPath="C:\Windows\SYSVOL"
+                ; Set SafeModeAdminPassword to the correct value prior to using the unattend file
+                SafeModeAdminPassword=_WIN_PASS_
+                ; Run-time flags (optional)
+                RebootOnCompletion=No
+              params:
+                _FUNCTION_LEVEL_INT_: 4
+                _REALM_:  {get_param: samba_realm}
+                _DOMAIN_:  {get_param: samba_domain}
+                _PASSWORD_:  {get_param: windows_rwdc_password}
+          - path: dcpromo.bat
+            content:
+              dcpromo /answer:answers.txt
