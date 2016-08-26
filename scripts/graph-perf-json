@@ -98,10 +98,9 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
             if not sort_refs:
                 print >> sys.stderr, "WARNING: load order randomised by dict"
 
-        seen_labels = set(x_labels)
-        x_labels += [k for k, v in d if k not in seen_labels]
-
         for k, v in d:
+            if k not in x_labels:
+                x_labels.append(k)
             if tidy_names:
                 k = tidy_revision_name(k)
             rev_times = data.setdefault(k, {})
