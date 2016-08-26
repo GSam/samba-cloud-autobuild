@@ -286,7 +286,8 @@ def main():
 
                     try_and_try_again(args.interactive, tree.configure)
                     try_and_try_again(args.interactive, tree.build)
-                except PerfTestException:
+                except (PerfTestException, subprocess.CalledProcessError), e:
+                    print e
                     print "aborting branch %s" % b
                     continue
 
