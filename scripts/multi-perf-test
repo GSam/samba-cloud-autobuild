@@ -233,6 +233,9 @@ def main():
                         help="ignore whitespace differences in patch")
     parser.add_argument('--run-perf', action='store_true',
                         help="collect linux perf data during each run")
+    parser.add_argument('-c', '--clean-between-revisions', action='store_true',
+                        help=("remove untracked files between commits "
+                              "(slower, safer builds)"))
     parser.add_argument('--flame-graph-path',
                         help=("find Flamegraph binaries here "
                               "(implies --run-perf)"))
@@ -275,6 +278,8 @@ def main():
                 tree.git('reset', '--hard')
                 tree.git('clean')
                 tree.checkout(b)
+                if args.clean_between_revisions:
+                    tree.git('clean', '-x')
                 try:
                     patches = []
                     if not args.no_auto_patch:
