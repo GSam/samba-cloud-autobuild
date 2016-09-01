@@ -309,7 +309,7 @@ def main():
                 tree.git('clean')
                 tree.checkout(b)
                 if args.clean_between_revisions:
-                    tree.git('clean', '-x')
+                    tree.git('clean', '-x', '-f')
                 try:
                     patches = []
                     if not args.no_auto_patch:
