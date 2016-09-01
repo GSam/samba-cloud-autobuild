@@ -1,7 +1,7 @@
-From f31e3d694ac403429e893e15def6fbb56a575f9b Mon Sep 17 00:00:00 2001
+From 288efc55608e7d465f68d782790cf485defb79b6 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Wed, 17 Aug 2016 10:56:39 +1200
-Subject: [PATCH 1/5] Add AD DC performance tests
+Subject: [PATCH] Add AD DC performance tests
 
 These test a variety of simple AD DC operations.
 
@@ -16,6 +16,7 @@ operations that should work on all versions of Samba. The tests have
 been tested back to Samba 4.0.26.
 
 Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Reviewed-by: Garming Sam <garming@catalyst.net.nz>
 ---
  source4/dsdb/tests/python/ad_dc_performance.py | 338 +++++++++++++++++++++++++
  1 file changed, 338 insertions(+)
@@ -23,7 +24,7 @@ Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 
 diff --git a/source4/dsdb/tests/python/ad_dc_performance.py b/source4/dsdb/tests/python/ad_dc_performance.py
 new file mode 100644
-index 0000000..e811ef3
+index 0000000..09af52f
 --- /dev/null
 +++ b/source4/dsdb/tests/python/ad_dc_performance.py
 @@ -0,0 +1,338 @@
@@ -180,7 +181,7 @@ index 0000000..e811ef3
 +             'Built-in account for adminstering the computer/domain))'),
 +            '(description=Built-in account for adminstering the computer/domain)',
 +            '(objectCategory=*)',
-+            '(samaccountname=Administrator)'
++            '(samaccountname=Administrator*)'
 +        ]
 +        for expression in expressions:
 +            t = time.time()
@@ -367,5 +368,4 @@ index 0000000..e811ef3
 +    TestProgram(module=__name__, opts=subunitopts)
 -- 
 2.7.4
-
 
