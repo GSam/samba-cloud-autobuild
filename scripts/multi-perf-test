@@ -180,6 +180,24 @@ class SambaGitTree(object):
         return PATCHES['samba-4-5']
 
 
+    def get_last_n_weeks(self, n, reference='last Saturday'):
+        # find the last n autobuild commits that immediately precede a weekend.
+        #
+        #git log -n 1 --before="12 weeks ago" origin/master --grep Autobuild-Date --decorate --pretty='tformat:%h %cI %s'
+        results = []
+        latest_commit = None
+        for i in range(n):
+            datestr = "%s - %d weeks" % (reference, i)
+            s = self.git('rev-list', '-n1',
+                         '--before', datestr,
+                         'origin/master',
+                         '--grep', 'Autobuild-Date',
+                         output=True)
+            results.append(s.strip())
+        results.reverse()
+        return results
+
+
 class PerfTestException(Exception):
     pass
 
@@ -219,6 +237,8 @@ def main():
                         const='origin/v4-[0-9]*-stable',
                         help=("test stable release branches from 4.0 "
                               "(or the supplied pattern)"))
+    parser.add_argument('--last-n-weeks', type=int,
+                        help=("test autobuilds from this many recent Saturdays"))
     parser.add_argument('-r', '--remote',
                         default='git://git.samba.org/samba.git',
                         help="git remote to use")
@@ -275,6 +295,10 @@ def main():
             # let's assume the named branches are newer thant the old releases
             # (because we have to assume something).
             branches = tree.list_branches(args.test_releases) + branches
+
+        if args.last_n_weeks:
+            commits = tree.get_last_n_weeks(args.last_n_weeks)
+            branches = commits + branches
 
         for i in range(args.best_of):
             for b in branches:
