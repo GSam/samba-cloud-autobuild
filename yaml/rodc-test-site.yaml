@@ -4,6 +4,14 @@ description: >
   A template to create Windows and Samba RODCs in a single site
 
 parameters:
+  user:
+    type: string
+    description: Admin user
+    default: "ubuntu"
+    constraints:
+      - allowed_pattern: "[a-z_][a-z0-9_]{0,30}"
+        description: Lowercase please, no fancy characters, not too long.
+
   key_name:
     type: string
     description: Name of an existing key pair to use for the server
@@ -83,14 +91,14 @@ resources:
       user_data:
         get_resource: windows_rwdc_init
       block_device_mapping_v2:
-        source:
-          image
-        id:
-          8c431b2b-1d89-4137-8b79-f288bfe65c9a
-        dest: volume
-        shutdown: remove
-        bootindex: 0
-        size: 70
+        - source:
+            image
+          id:
+            8c431b2b-1d89-4137-8b79-f288bfe65c9a
+          dest: volume
+          shutdown: remove
+          boot_index: 0
+          size: 70
 
   rodc-windows:
     type: OS::Nova::Server
@@ -104,14 +112,14 @@ resources:
       user_data:
         get_resource: windows_rodc_init
       block_device_mapping_v2:
-        source:
-          image
-        id:
-          8c431b2b-1d89-4137-8b79-f288bfe65c9a
-        dest: volume
-        shutdown: remove
-        bootindex: 0
-        size: 70
+        - source:
+            image
+          id:
+            8c431b2b-1d89-4137-8b79-f288bfe65c9a
+          dest: volume
+          shutdown: remove
+          boot_index: 0
+          size: 70
 
   windows_rodc_init:
     type: OS::Heat::MultipartMime
@@ -209,13 +217,8 @@ resources:
                     sleep 10
                   done
 
-                  if [[ "$(hostname)" == '_NAME_-1-0' && _RODC_ == 'True' ]]; then
-                    /usr/local/samba/bin/samba-tool domain join _REALM_ RODC -UAdministrator \
-                      --password='_PASSWORD_' --realm=_REALM_ -d 3
-                  else
-                    /usr/local/samba/bin/samba-tool domain join _REALM_ DC -UAdministrator \
-                      --password='_PASSWORD_' --realm=_REALM_ -d 3
-                  fi
+                  /usr/local/samba/bin/samba-tool domain join _REALM_ RODC -UAdministrator \
+                       --password='_PASSWORD_' --realm=_REALM_ -d 3
 
                   /usr/local/samba/sbin/samba
                   for i in {1..10}; do
@@ -232,8 +235,7 @@ resources:
                   _REALM_:  {get_param: samba_realm}
                   _DOMAIN_:  {get_param: samba_domain}
                   _PASSWORD_:  {get_param: samba_password}
-                  _NAME_: {get_param: stack_name}
-                  _RODC_: {get_param: has_rodc}
+                  _NAME_: { get_param: "OS::stack_name" }
 
           - path: /run/shm/samba-scripts/wait-for-dns
             permissions: '0755'
@@ -286,7 +288,7 @@ resources:
                      /run/shm/samba-scripts/join-dc
                   fi
                 params:
-                  _NAME_: { get_param: stack_name }
+                  _NAME_: { get_param: "OS::stack_name" }
                   _USER_: {get_param: user}
 
 
@@ -300,7 +302,8 @@ resources:
         write_files:
           - path: answers.txt
             content:
-              str_replace:
+              str_replace: |
+
                 [DCInstall]
                 ; New forest promotion
                 ReplicaOrNewDomain=Domain
@@ -329,7 +332,7 @@ resources:
               dcpromo /answer:answers.txt
           - path: misc.ps1
             content:
-              str_replace:
+              str_replace: |
                 #ps1_sysnative
 
                 # The Telnet server needs to be enabled
@@ -359,7 +362,7 @@ resources:
         write_files:
           - path: answers.txt
             content:
-              str_replace:
+              str_replace: |
                 [DCInstall]
                 ; New forest promotion
                 ReplicaOrNewDomain=Domain
