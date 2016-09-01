@@ -147,12 +147,15 @@ class SambaGitTree(object):
         lines = self.git(*args, output=True)
         return lines.split()
 
-    def patch(self, patch, patch_not_am=True, ignore_whitespace=False):
+    def patch(self, patch, patch_not_am=True, ignore_whitespace=False,
+              no_questions=False):
         patch = os.path.abspath(patch)
         if patch_not_am:
             cmd = ['patch', '-d', self.path, '-p1', '-N', '-i', patch]
             if ignore_whitespace:
                 cmd.append('--ignore-whitespace')
+            if no_questions:
+                cmd.append('-f')
             subprocess.check_call(cmd)
         elif ignore_whitespace:
             self.git('am', '--ignore-whitespace', '-3', patch)
@@ -231,6 +234,8 @@ def main():
                         help="patch using git am")
     parser.add_argument('-l', '--ignore-whitespace', action='store_true',
                         help="ignore whitespace differences in patch")
+    parser.add_argument('--no-patch-questions', action='store_true',
+                        help="tell patch to shut up and not complain")
     parser.add_argument('--run-perf', action='store_true',
                         help="collect linux perf data during each run")
     parser.add_argument('-c', '--clean-between-revisions', action='store_true',
@@ -290,7 +295,8 @@ def main():
                         print >> sys.stderr, "using patch %s" % patch
                         try_and_try_again(args.interactive, tree.patch, patch,
                                           not args.use_git_am_not_patch,
-                                          args.ignore_whitespace)
+                                          args.ignore_whitespace,
+                                          args.no_patch_questions)
 
                     try_and_try_again(args.interactive, tree.configure)
                     try_and_try_again(args.interactive, tree.build)
