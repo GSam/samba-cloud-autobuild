@@ -301,6 +301,7 @@ def main():
             branches = commits + branches
 
         for i in range(args.best_of):
+            tree.git('clean', '-x', '-f')
             for b in branches:
                 print ("::: trying branch %s in directory %s (round %d)" %
                        (b, tree.path, i))
