@@ -1,7 +1,220 @@
-From ddedbf25eb284922c23ed359054764796576bee1 Mon Sep 17 00:00:00 2001
+From dda1b74ea10a45d9a810b2a982e93cfb13dfeaba Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Wed, 3 Aug 2016 16:03:57 +1200
+Subject: [PATCH 1/4] blackbox tests: add timestamps for subunit tests
+
+There is the icky thing with sed because some kinds of `date` don't
+have sub-second resolution, which we really want.
+
+Another way to do it would be:
+
+   python -c "import datetime; print datetime.datetime.utcnow().strftime('time: %Y-%m-%d %H:%M:%S.%fZ')"
+
+which should be universal, but is a little slower.
+
+Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Reviewed-by: Andrew Bartlett <abartlet@samba.org>
+Reviewed-by: Garming Sam <garming@catalyst.net.nz>
+---
+ testprogs/blackbox/subunit.sh | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/testprogs/blackbox/subunit.sh b/testprogs/blackbox/subunit.sh
+index db7fb05..70fe2d7 100755
+--- a/testprogs/blackbox/subunit.sh
++++ b/testprogs/blackbox/subunit.sh
+@@ -18,14 +18,23 @@
+ #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ #
+ 
++timestamp() {
++  # mark the start time. With Gnu date, you get nanoseconds from %N
++  # (here truncated to microseconds with %6N), but not on BSDs,
++  # Solaris, etc, which will apparently leave either %N or N at the end.
++  date -u +'time: %Y-%m-%d %H:%M:%S.%6NZ' | sed 's/%\?NZ$/000000Z/'
++}
++
+ subunit_start_test () {
+   # emit the current protocol start-marker for test $1
++  timestamp
+   echo "test: $1"
+ }
+ 
+ 
+ subunit_pass_test () {
+   # emit the current protocol test passed marker for test $1
++  timestamp
+   echo "success: $1"
+ }
+ 
+@@ -38,6 +47,7 @@ subunit_fail_test () {
+   # the error text.
+   # we use stdin because the failure message can be arbitrarily long, and this
+   # makes it convenient to write in scripts (using <<END syntax.
++  timestamp
+   echo "failure: $1 ["
+   cat -
+   echo "]"
+@@ -49,6 +59,7 @@ subunit_error_test () {
+   # the error text.
+   # we use stdin because the failure message can be arbitrarily long, and this
+   # makes it convenient to write in scripts (using <<END syntax.
++  timestamp
+   echo "error: $1 ["
+   cat -
+   echo "]"
+-- 
+2.7.4
+
+
+From 6c391e18a47782a78e035f3e35a41710d8424105 Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Fri, 29 Jul 2016 10:57:52 +1200
+Subject: [PATCH 2/4] selftest: allow tests.py scripts to run independently
+
+These generate lists of test commands. Usually they are run in special
+environments, but they should work from the command line. This
+restores the intended behaviour.
+
+Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Reviewed-by: Garming Sam <garming@catalyst.net.nz>
+---
+ selftest/tests.py         | 1 +
+ source3/selftest/tests.py | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/selftest/tests.py b/selftest/tests.py
+index e02f049..62dadab 100644
+--- a/selftest/tests.py
++++ b/selftest/tests.py
+@@ -23,6 +23,7 @@ from selftesthelpers import *
+ try:
+     config_h = os.environ["CONFIG_H"]
+ except KeyError:
++    samba4bindir = bindir()
+     config_h = os.path.join(samba4bindir, "default/include/config.h")
+ 
+ # define here var to check what we support
+diff --git a/source3/selftest/tests.py b/source3/selftest/tests.py
+index e4c31c6..c75b7ae 100755
+--- a/source3/selftest/tests.py
++++ b/source3/selftest/tests.py
+@@ -206,6 +206,7 @@ for env in ["fileserver"]:
+     try:
+         config_h = os.environ["CONFIG_H"]
+     except KeyError:
++        samba4bindir = bindir()
+         config_h = os.path.join(samba4bindir, "default/include/config.h")
+ 
+     # see if libarchive is supported
+-- 
+2.7.4
+
+
+From 809f4c718af00909bbce46ddde6a2688a88e73fc Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Tue, 2 Aug 2016 10:27:05 +1200
+Subject: [PATCH 3/4] subunithelper: use set for efficient inclusion test
+
+Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Reviewed-by: Garming Sam <garming@catalyst.net.nz>
+---
+ selftest/subunithelper.py | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/selftest/subunithelper.py b/selftest/subunithelper.py
+index 948256d..441bafa 100644
+--- a/selftest/subunithelper.py
++++ b/selftest/subunithelper.py
+@@ -24,7 +24,11 @@ from samba.subunit.run import TestProtocolClient
+ from samba.subunit import iso8601
+ import unittest
+ 
+-VALID_RESULTS = ['success', 'successful', 'failure', 'fail', 'skip', 'knownfail', 'error', 'xfail', 'skip-testsuite', 'testsuite-failure', 'testsuite-xfail', 'testsuite-success', 'testsuite-error', 'uxsuccess', 'testsuite-uxsuccess']
++VALID_RESULTS = set(['success', 'successful', 'failure', 'fail', 'skip',
++                     'knownfail', 'error', 'xfail', 'skip-testsuite',
++                     'testsuite-failure', 'testsuite-xfail',
++                     'testsuite-success', 'testsuite-error',
++                     'uxsuccess', 'testsuite-uxsuccess'])
+ 
+ class TestsuiteEnabledTestResult(unittest.TestResult):
+ 
+-- 
+2.7.4
+
+
+From 85b4a3ea613b2f2b531551787f764c940bcf3f83 Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Tue, 2 Aug 2016 11:00:27 +1200
+Subject: [PATCH 4/4] filter-subunit: default to empty affixes, saving verbose
+ checks
+
+Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Reviewed-by: Garming Sam <garming@catalyst.net.nz>
+---
+ selftest/filter-subunit   | 12 +++---------
+ selftest/subunithelper.py |  9 +--------
+ 2 files changed, 4 insertions(+), 17 deletions(-)
+
+diff --git a/selftest/filter-subunit b/selftest/filter-subunit
+index fe157a0..857b842 100755
+--- a/selftest/filter-subunit
++++ b/selftest/filter-subunit
+@@ -36,9 +36,9 @@ parser.add_option("--strip-passed-output", action="store_true",
+     help="Whether to strip output from tests that passed")
+ parser.add_option("--fail-immediately", action="store_true",
+     help="Whether to stop on the first error", default=False)
+-parser.add_option("--prefix", type="string",
++parser.add_option("--prefix", type="string", default='',
+     help="Add prefix to all test names")
+-parser.add_option("--suffix", type="string",
++parser.add_option("--suffix", type="string", default='',
+     help="Add suffix to all test names")
+ parser.add_option("--fail-on-empty", default=False,
+     action="store_true", help="Fail if there was no subunit output")
+@@ -47,14 +47,8 @@ parser.add_option("--list", default=False,
+ opts, args = parser.parse_args()
+ 
+ if opts.list:
+-    prefix = opts.prefix
+-    suffix = opts.suffix
+-    if not prefix:
+-        prefix = ""
+-    if not suffix:
+-        suffix = ""
+     for l in sys.stdin:
+-         sys.stdout.write("%s%s%s\n" % (prefix, l.rstrip(), suffix))
++         sys.stdout.write("%s%s%s\n" % (opts.prefix, l.rstrip(), opts.suffix))
+     sys.exit(0)
+ 
+ if opts.expected_failures:
+diff --git a/selftest/subunithelper.py b/selftest/subunithelper.py
+index 441bafa..a3bb30b 100644
+--- a/selftest/subunithelper.py
++++ b/selftest/subunithelper.py
+@@ -287,14 +287,7 @@ class FilterOps(unittest.TestResult):
+         self._ops.startTest(test)
+ 
+     def _add_prefix(self, test):
+-        prefix = ""
+-        suffix = ""
+-        if self.prefix is not None:
+-            prefix = self.prefix
+-        if self.suffix is not None:
+-            suffix = self.suffix
+-
+-        return subunit.RemotedTestCase(prefix + test.id() + suffix)
++        return subunit.RemotedTestCase(self.prefix + test.id() + self.suffix)
+ 
+     def addError(self, test, err=None):
+         test = self._add_prefix(test)
+-- 
+2.7.4
+
+From e908873757171db5b65296c5c3cdefe7d0fb0c01 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Wed, 17 Aug 2016 10:56:50 +1200
-Subject: [PATCH 1/4] make perftest: for performance testing
+Subject: [PATCH 1/3] make perftest: for performance testing
 
 This runs a selection of subunit tests and reduces the output to only
 the time it takes to run each test.
@@ -9,13 +222,14 @@ the time it takes to run each test.
 The tests are listed in selftest/perf_tests.py.
 
 Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Reviewed-by: Garming Sam <garming@catalyst.net.nz>
 ---
  Makefile                  |  3 +++
- selftest/filter-subunit   | 27 +++++++++++++++++---
- selftest/perf_tests.py    | 26 +++++++++++++++++++
- selftest/subunithelper.py | 65 +++++++++++++++++++++++++++++++++++++++++++++++
- selftest/wscript          | 12 ++++++---
- 5 files changed, 126 insertions(+), 7 deletions(-)
+ selftest/filter-subunit   | 27 ++++++++++++++++---
+ selftest/perf_tests.py    | 26 ++++++++++++++++++
+ selftest/subunithelper.py | 68 +++++++++++++++++++++++++++++++++++++++++++++++
+ selftest/wscript          | 16 ++++++++---
+ 5 files changed, 132 insertions(+), 8 deletions(-)
  create mode 100644 selftest/perf_tests.py
 
 diff --git a/Makefile b/Makefile
@@ -117,7 +331,7 @@ index 0000000..d49bdf4
 +                        '--workgroup=$DOMAIN',
 +                        '$LOADLIST', '$LISTOPT'])
 diff --git a/selftest/subunithelper.py b/selftest/subunithelper.py
-index a3bb30b..6fe0755 100644
+index a3bb30b..c17036d 100644
 --- a/selftest/subunithelper.py
 +++ b/selftest/subunithelper.py
 @@ -17,6 +17,7 @@
@@ -128,7 +342,7 @@ index a3bb30b..6fe0755 100644
  import re
  import sys
  from samba import subunit
-@@ -429,6 +430,70 @@ class FilterOps(unittest.TestResult):
+@@ -429,6 +430,73 @@ class FilterOps(unittest.TestResult):
          self.fail_immediately = fail_immediately
  
  
@@ -142,6 +356,9 @@ index a3bb30b..6fe0755 100644
 +
 +    def control_msg(self, msg):
 +        pass
++
++    def skip_testsuite(self, name, reason=None):
++        self._ops.skip_testsuite(name, reason)
 +
 +    def start_testsuite(self, name):
 +        self.suite_has_time = False
@@ -200,7 +417,7 @@ index a3bb30b..6fe0755 100644
  
      def __init__(self, verbose, immediate, statistics,
 diff --git a/selftest/wscript b/selftest/wscript
-index 61ca0bd..52861df 100644
+index 61ca0bd..5fa0dac 100644
 --- a/selftest/wscript
 +++ b/selftest/wscript
 @@ -79,6 +79,8 @@ def set_options(opt):
@@ -212,7 +429,19 @@ index 61ca0bd..52861df 100644
  
  def configure(conf):
      conf.env.SELFTEST_PREFIX = Options.options.SELFTEST_PREFIX
-@@ -193,9 +195,13 @@ def cmd_testonly(opt):
+@@ -145,7 +147,10 @@ def cmd_testonly(opt):
+         env.OPTIONS += ' --socket-wrapper-keep-pcap'
+     if Options.options.RANDOM_ORDER:
+         env.OPTIONS += ' --random-order'
+-    if os.environ.get('RUN_FROM_BUILD_FARM') is not None:
++    if Options.options.PERF_TEST:
++        env.FILTER_OPTIONS = ('${PYTHON} -u ${srcdir}/selftest/filter-subunit '
++                              '--perf-test-output')
++    elif os.environ.get('RUN_FROM_BUILD_FARM') is not None:
+         env.FILTER_OPTIONS = '${FILTER_XFAIL} --strip-passed-output'
+     else:
+         env.FILTER_OPTIONS = '${FILTER_XFAIL}'
+@@ -193,9 +198,12 @@ def cmd_testonly(opt):
      if not os.path.isdir(env.SELFTEST_PREFIX):
          os.makedirs(env.SELFTEST_PREFIX, int('755', 8))
  
@@ -221,7 +450,6 @@ index 61ca0bd..52861df 100644
 -                     '--testlist="${PYTHON} ${srcdir}/source4/selftest/tests.py|"')
 +    if Options.options.PERF_TEST:
 +        env.TESTLISTS = '--testlist="${PYTHON} ${srcdir}/selftest/perf_tests.py|" '
-+        env.FILTER_OPTIONS = '${PYTHON} -u ${srcdir}/selftest/filter-subunit  --perf-test-output'
 +    else:
 +        env.TESTLISTS = ('--testlist="${PYTHON} ${srcdir}/selftest/tests.py|" ' +
 +                         '--testlist="${PYTHON} ${srcdir}/source3/selftest/tests.py|" ' +
@@ -233,12 +461,72 @@ index 61ca0bd..52861df 100644
 2.7.4
 
 
-From 3df75082fb0eb94a5028aa9f301772c66aea8a41 Mon Sep 17 00:00:00 2001
+From dfac53cd40d8f44cebcf15d9aceba5b4a8106b2a Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Wed, 31 Aug 2016 14:56:25 +1200
+Subject: [PATCH 2/3] selftest: add an option to specify the test list
+
+This can be used to override the default test lists used by
+`make test` and `make perftest`. This tests can either be
+programmatically generated (as is done for the defaults -- see
+selftest/tests.py for an example), or from a static list. For the
+generated lists, append a pipe symbol:
+
+    make test TEST_LIST='/bin/sh /tmp/tests.sh|'
+
+and omit the pipe for a static list:
+
+    make test TEST_LIST='/tmp/tests.txt'
+
+There are likely other useful modes of operation -- see `perldoc open`
+for the wondrous details.
+
+Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Reviewed-by: Garming Sam <garming@catalyst.net.nz>
+---
+ selftest/wscript | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/selftest/wscript b/selftest/wscript
+index 5fa0dac..243cceb 100644
+--- a/selftest/wscript
++++ b/selftest/wscript
+@@ -81,6 +81,11 @@ def set_options(opt):
+                   action="store_true", help="Run testsuites in random order")
+     gr.add_option('--perf-test', dest='PERF_TEST', default=False,
+                   action="store_true", help="run performance tests only")
++    gr.add_option('--test-list', dest='TEST_LIST', default='',
++                  action="store_true",
++                  help=("use tests listed here, not defaults "
++                        "(--test-list='FOO|' will execute FOO; "
++                        "--test-list='FOO' will read it)"))
+ 
+ def configure(conf):
+     conf.env.SELFTEST_PREFIX = Options.options.SELFTEST_PREFIX
+@@ -198,7 +203,9 @@ def cmd_testonly(opt):
+     if not os.path.isdir(env.SELFTEST_PREFIX):
+         os.makedirs(env.SELFTEST_PREFIX, int('755', 8))
+ 
+-    if Options.options.PERF_TEST:
++    if Options.options.TEST_LIST:
++        env.TESTLISTS = '--testlist=%r' % Options.options.TEST_LIST
++    elif Options.options.PERF_TEST:
+         env.TESTLISTS = '--testlist="${PYTHON} ${srcdir}/selftest/perf_tests.py|" '
+     else:
+         env.TESTLISTS = ('--testlist="${PYTHON} ${srcdir}/selftest/tests.py|" ' +
+-- 
+2.7.4
+
+
+From 1d0dd5bf5eef4ceedb4c99bd1de8042f26201bb8 Mon Sep 17 00:00:00 2001
 From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
 Date: Thu, 4 Aug 2016 15:35:46 +1200
-Subject: [PATCH 2/4] selftest/wscript: format perftest as json
+Subject: [PATCH 3/3] selftest/wscript: format perftest as json
 
 This makes it easier to use with common web-based graphing systems.
+
+Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Reviewed-by: Garming Sam <garming@catalyst.net.nz>
 ---
  selftest/format-subunit-json | 54 ++++++++++++++++++++++++++++++++++++++++++++
  selftest/wscript             |  5 +++-
@@ -306,10 +594,10 @@ index 0000000..d44918c
 +signal.signal(signal.SIGINT, handle_sigint)
 +main()
 diff --git a/selftest/wscript b/selftest/wscript
-index 52861df..35442f7 100644
+index 243cceb..4a3fb4e 100644
 --- a/selftest/wscript
 +++ b/selftest/wscript
-@@ -113,7 +113,10 @@ def cmd_testonly(opt):
+@@ -118,7 +118,10 @@ def cmd_testonly(opt):
  
      env.SUBUNIT_FORMATTER = os.getenv('SUBUNIT_FORMATTER')
      if not env.SUBUNIT_FORMATTER:
@@ -321,95 +609,6 @@ index 52861df..35442f7 100644
      env.FILTER_XFAIL = '${PYTHON} -u ${srcdir}/selftest/filter-subunit --expected-failures=${srcdir}/selftest/knownfail --flapping=${srcdir}/selftest/flapping'
  
      if Options.options.FAIL_IMMEDIATELY:
--- 
-2.7.4
-
-
-From 0c7a560a73aa552fc404aea916ef25e73ce63509 Mon Sep 17 00:00:00 2001
-From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
-Date: Wed, 3 Aug 2016 16:03:57 +1200
-Subject: [PATCH 3/4] blackbox tests: add timestamps for subunit tests
-
-Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
----
- testprogs/blackbox/subunit.sh | 11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-diff --git a/testprogs/blackbox/subunit.sh b/testprogs/blackbox/subunit.sh
-index db7fb05..70fe2d7 100755
---- a/testprogs/blackbox/subunit.sh
-+++ b/testprogs/blackbox/subunit.sh
-@@ -18,14 +18,23 @@
- #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- #
- 
-+timestamp() {
-+  # mark the start time. With Gnu date, you get nanoseconds from %N
-+  # (here truncated to microseconds with %6N), but not on BSDs,
-+  # Solaris, etc, which will apparently leave either %N or N at the end.
-+  date -u +'time: %Y-%m-%d %H:%M:%S.%6NZ' | sed 's/%\?NZ$/000000Z/'
-+}
-+
- subunit_start_test () {
-   # emit the current protocol start-marker for test $1
-+  timestamp
-   echo "test: $1"
- }
- 
- 
- subunit_pass_test () {
-   # emit the current protocol test passed marker for test $1
-+  timestamp
-   echo "success: $1"
- }
- 
-@@ -38,6 +47,7 @@ subunit_fail_test () {
-   # the error text.
-   # we use stdin because the failure message can be arbitrarily long, and this
-   # makes it convenient to write in scripts (using <<END syntax.
-+  timestamp
-   echo "failure: $1 ["
-   cat -
-   echo "]"
-@@ -49,6 +59,7 @@ subunit_error_test () {
-   # the error text.
-   # we use stdin because the failure message can be arbitrarily long, and this
-   # makes it convenient to write in scripts (using <<END syntax.
-+  timestamp
-   echo "error: $1 ["
-   cat -
-   echo "]"
--- 
-2.7.4
-
-
-From b4ed4ab1ea9679a0b8033fed4528ba60a018d205 Mon Sep 17 00:00:00 2001
-From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
-Date: Wed, 3 Aug 2016 16:27:16 +1200
-Subject: [PATCH 4/4] use python for subunit.sh timing
-
----
- testprogs/blackbox/subunit.sh | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
-
-diff --git a/testprogs/blackbox/subunit.sh b/testprogs/blackbox/subunit.sh
-index 70fe2d7..6923833 100755
---- a/testprogs/blackbox/subunit.sh
-+++ b/testprogs/blackbox/subunit.sh
-@@ -19,10 +19,9 @@
- #
- 
- timestamp() {
--  # mark the start time. With Gnu date, you get nanoseconds from %N
--  # (here truncated to microseconds with %6N), but not on BSDs,
--  # Solaris, etc, which will apparently leave either %N or N at the end.
--  date -u +'time: %Y-%m-%d %H:%M:%S.%6NZ' | sed 's/%\?NZ$/000000Z/'
-+  # Yes, it looks like we could use `date +...`, but that doesn't
-+  # have sub-second resolution on non-Gnu systems.
-+  python -c "import datetime; print datetime.datetime.utcnow().strftime('time: %Y-%m-%d %H:%M:%S.%fZ')"
- }
- 
- subunit_start_test () {
 -- 
 2.7.4
 
