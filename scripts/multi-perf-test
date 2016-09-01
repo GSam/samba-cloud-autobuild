@@ -318,10 +318,15 @@ def main():
                         patches.extend(args.patch)
                     for patch in patches:
                         print >> sys.stderr, "using patch %s" % patch
-                        try_and_try_again(args.interactive, tree.patch, patch,
-                                          not args.use_git_am_not_patch,
-                                          args.ignore_whitespace,
-                                          args.no_patch_questions)
+                        try:
+                            try_and_try_again(args.interactive, tree.patch, patch,
+                                              not args.use_git_am_not_patch,
+                                              args.ignore_whitespace,
+                                              args.no_patch_questions)
+                        except subprocess.CalledProcessError, e:
+                            print >> sys.stderr, "Patch failed with %s" % e
+                            if not args.no_patch_questions:
+                               raise
 
                     try_and_try_again(args.interactive, tree.configure)
                     try_and_try_again(args.interactive, tree.build)
