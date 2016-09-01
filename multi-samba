@@ -78,7 +78,7 @@ def main():
     parser.add_argument('--template-list', action='store_true',
                         help="list known templates")
     parser.add_argument('--give-template-credentials', action='store_true',
-                        help="provide openstack crednetials to template (for self shutdown)")
+                        help="provide openstack credentials to template (for self shutdown)")
     parser.add_argument('--subnet-count', type=int, default=1,
                         help="create this many subnets")
     parser.add_argument('--servers-per-subnet', type=int, default=1,
