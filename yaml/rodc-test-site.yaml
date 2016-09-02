@@ -101,6 +101,8 @@ resources:
       user_data_format: RAW
       user_data:
         get_resource: windows_rwdc_init
+      networks:
+        - network: 10f83a57-2c8c-40c9-a472-a2ae10e2a65f
       block_device_mapping_v2:
         - volume_id: {get_resource: server1}
           delete_on_termination: true
@@ -115,6 +117,8 @@ resources:
       user_data_format: RAW
       user_data:
         get_resource: windows_rodc_init
+      networks:
+        - network: 10f83a57-2c8c-40c9-a472-a2ae10e2a65f
       block_device_mapping_v2:
         - volume_id: {get_resource: server2}
           delete_on_termination: true
@@ -142,6 +146,9 @@ resources:
       user_data_format: RAW
       user_data:
         get_resource: samba_init
+
+      networks:
+        - network: 10f83a57-2c8c-40c9-a472-a2ae10e2a65f
 
   samba_init:
     type: OS::Heat::MultipartMime
