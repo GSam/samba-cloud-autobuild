@@ -106,7 +106,7 @@ resources:
     properties:
       count: {get_param: subnet_count}
       resource_def:
-        type: single-site.yaml
+        type: single_site
         properties:
           name:
             str_replace:

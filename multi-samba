@@ -48,6 +48,7 @@ def run(template_name, stack_id, parameters, credentials, dry_run=False,
     if verbose:
         cmd += ['-d', '-v']
     cmd += ["stack-create",
+           "-e", os.path.join(HERE, "env.yaml"),
            "--template-file", template_name,
            "--parameters", parameters, stack_id]
 
