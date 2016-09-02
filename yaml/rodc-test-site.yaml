@@ -95,7 +95,6 @@ resources:
     type: OS::Nova::Server
     properties:
       key_name: { get_param: key_name }
-      image: { get_param: windows_image }
       flavor: { get_param: flavor }
       name:
         rwdc
@@ -103,20 +102,13 @@ resources:
       user_data:
         get_resource: windows_rwdc_init
       block_device_mapping_v2:
-        - source:
-            image
-          id:
-            8c431b2b-1d89-4137-8b79-f288bfe65c9a
-          dest: volume
-          shutdown: remove
-          boot_index: 0
-          size: 70
+        - volume_id: {get_resource: server1}
+          delete_on_termination: true
 
   rodc-windows:
     type: OS::Nova::Server
     properties:
       key_name: { get_param: key_name }
-      image: { get_param: windows_image }
       flavor: { get_param: flavor }
       name:
         rodc-windows
@@ -124,14 +116,8 @@ resources:
       user_data:
         get_resource: windows_rodc_init
       block_device_mapping_v2:
-        - source:
-            image
-          id:
-            8c431b2b-1d89-4137-8b79-f288bfe65c9a
-          dest: volume
-          shutdown: remove
-          boot_index: 0
-          size: 70
+        - volume_id: {get_resource: server2}
+          delete_on_termination: true
 
   windows_rodc_init:
     type: OS::Heat::MultipartMime
