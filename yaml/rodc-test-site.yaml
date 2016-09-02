@@ -79,6 +79,18 @@ parameters:
 
 
 resources:
+  server1:
+    type: OS::Cinder::Volume
+    properties:
+      image: { get_param: windows_image }
+      size: 70
+
+  server2:
+    type: OS::Cinder::Volume
+    properties:
+      image: { get_param: windows_image }
+      size: 70
+
   rwdc:
     type: OS::Nova::Server
     properties:
