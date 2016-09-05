@@ -88,6 +88,11 @@ parameters:
     default: [10.9.0.10, 202.78.247.198]
     description: list of nameservers to use
 
+  private_net_cidr:
+    type: string
+    default: 10.9.0.0/24
+    description: default cidr to use
+
 resources:
   router:
     type: OS::Neutron::Router
@@ -103,7 +108,7 @@ resources:
           template:
             _NAME_-network-rodcs
           params:
-            _NAME_: { get_param: stack_name }
+            _NAME_: { get_param: "OS::stack_name" }
 
   private_subnet:
     type: OS::Neutron::Subnet
@@ -122,7 +127,7 @@ resources:
   router_interface:
     type: OS::Neutron::RouterInterface
     properties:
-      router_id: { get_param: router }
+      router_id: { get_resource: router }
       subnet_id: { get_resource: private_subnet }
 
   server1:
@@ -219,7 +224,7 @@ resources:
       networks:
         - network: { get_resource: private_net }
           fixed_ip:
-            10.9.1.10
+            10.9.0.11
       block_device_mapping_v2:
         - volume_id: {get_resource: server2}
           delete_on_termination: true
@@ -251,7 +256,7 @@ resources:
       networks:
         - network: { get_resource: private_net }
           fixed_ip:
-            10.9.2.10
+            10.9.0.12
 
   samba_init:
     type: OS::Heat::MultipartMime
