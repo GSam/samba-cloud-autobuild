@@ -99,8 +99,58 @@ resources:
       name:
         rwdc
       user_data_format: RAW
+      # user_data:
+      #   get_resource: windows_rwdc_init
       user_data:
-        get_resource: windows_rwdc_init
+        str_replace:
+          template: |
+            #ps1_sysnative
+            ping 127.0.0.1
+
+            # The Telnet server needs to be enabled
+            install-windowsfeature "telnet-server"
+            install-windowsfeature "telnet-client"
+            install-windowsfeature -name AD-Domain-Services -IncludeManagementTools
+
+            Set-ADUser -Identity Administrator -ChangePasswordAtLogon $false
+            wmic UserAccount set PasswordExpires=False
+            net user Administrator _PASSWORD_
+            cmd /C netsh advfirewall set allprofiles state off
+            cmd /C tlntadmn config maxconn=1024
+
+            cmd /C net localgroup /add telnetclients "authenticated users"
+            cmd /C sc config tlntsvr start=auto
+            cmd /C sc start tlntsvr
+
+            $dcpromo = @"
+            [DCInstall]
+            ; New forest promotion
+            ReplicaOrNewDomain=Domain
+            NewDomain=Forest
+            NewDomainDNSName=_REALM_
+            ForestLevel=_FUNCTION_LEVEL_INT_
+            DomainNetbiosName=_DOMAIN_
+            DomainLevel=_FUNCTION_LEVEL_INT_
+            InstallDNS=Yes
+            ConfirmGc=Yes
+            CreateDNSDelegation=No
+            DatabasePath="C:\Windows\NTDS"
+            LogPath="C:\Windows\NTDS"
+            SYSVOLPath="C:\Windows\SYSVOL"
+            ; Set SafeModeAdminPassword to the correct value prior to using the unattend file
+            SafeModeAdminPassword=_PASSWORD_
+            ; Run-time flags (optional)
+            RebootOnCompletion=No
+            "@
+            # " - to fix formatting
+            $dcpromo | Out-File "answers.txt"
+            dcpromo /answer:answers.txt
+          params:
+            _PASSWORD_:  {get_param: windows_rwdc_password}
+            _FUNCTION_LEVEL_INT_: 4
+            _REALM_:  {get_param: samba_realm}
+            _DOMAIN_:  {get_param: samba_domain}
+
       networks:
         - network: 10f83a57-2c8c-40c9-a472-a2ae10e2a65f
       block_device_mapping_v2:
