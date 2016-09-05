@@ -145,6 +145,7 @@ resources:
             # " - to fix formatting
             $dcpromo | Out-File "answers.txt"
             dcpromo /answer:answers.txt
+            shutdown -r -t 0
           params:
             _PASSWORD_:  {get_param: windows_rwdc_password}
             _FUNCTION_LEVEL_INT_: 4
