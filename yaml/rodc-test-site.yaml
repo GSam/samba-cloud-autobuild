@@ -220,7 +220,73 @@ resources:
         rodc-windows
       user_data_format: RAW
       user_data:
-        get_resource: windows_rodc_init
+        str_replace:
+          template: |
+            #ps1_sysnative
+            ping 127.0.0.1
+
+            # The Telnet server needs to be enabled
+            install-windowsfeature "telnet-server"
+            install-windowsfeature "telnet-client"
+            install-windowsfeature -name AD-Domain-Services -IncludeManagementTools
+
+            Set-ADUser -Identity Administrator -ChangePasswordAtLogon $false
+            wmic UserAccount set PasswordExpires=False
+            net user Administrator _PASSWORD_
+            cmd /C netsh advfirewall set allprofiles state off
+            cmd /C tlntadmn config maxconn=1024
+
+            cmd /C net localgroup /add telnetclients "authenticated users"
+            cmd /C sc config tlntsvr start=auto
+            cmd /C sc start tlntsvr
+
+            $timeout = new-timespan -Minutes 15
+            $sw = [diagnostics.stopwatch]::StartNew()
+            while ($sw.elapsed -lt $timeout){
+                if (Resolve-DnsName -Name samdom.example.com -Server 10.9.0.10) {
+                    break
+                }
+
+                start-sleep -seconds 20
+            }
+
+            netsh interface ip set dns "Ethernet" static 10.9.0.10 primary
+
+            $dcpromo = @"
+            [DCInstall]
+            ReplicaOrNewDomain=ReadOnlyReplica
+            ReplicaDomainDNSName=_REALM_
+            PasswordReplicationDenied="BUILTIN\Administrators"
+            PasswordReplicationDenied="BUILTIN\Server Operators"
+            PasswordReplicationDenied="BUILTIN\Backup Operators"
+            PasswordReplicationDenied="BUILTIN\Account Operators"
+            PasswordReplicationDenied="_DOMAIN_\Denied RODC Password Replication Group"
+            PasswordReplicationAllowed="_DOMAIN_\Allowed RODC Password Replication Group"
+            DelegatedAdmin="_DOMAIN_\Administrator"
+            SiteName=Default-First-Site-Name
+            InstallDNS=No
+            ConfirmGc=Yes
+            CreateDNSDelegation=No
+            UserDomain=_REALM_
+            UserName=_REALM_\administrator
+            Password=_DC_PASSWORD_
+            DatabasePath="C:\Windows\NTDS"
+            LogPath="C:\Windows\NTDS"
+            SYSVOLPath="C:\Windows\SYSVOL"
+            SafeModeAdminPassword=_DC_PASSWORD_
+            RebootOnCompletion=No
+            DomainLevel=3
+            "@
+            # " - to fix formatting
+            $dcpromo | Out-File "answers.txt"
+            dcpromo /answer:answers.txt
+            shutdown -r -t 0
+          params:
+            _FUNCTION_LEVEL_INT_: 4
+            _REALM_:  {get_param: samba_realm}
+            _DOMAIN_:  {get_param: samba_domain}
+            _DC_PASSWORD_: {get_param: windows_rwdc_password}
+
       networks:
         - network: { get_resource: private_net }
           fixed_ip:
@@ -334,7 +400,7 @@ resources:
                   done
 
                   /usr/local/samba/bin/samba-tool domain join _REALM_ RODC -UAdministrator \
-                       --password='_PASSWORD_' --realm=_REALM_ -d 3
+                       --password='_DC_PASSWORD_' --realm=_REALM_ -d 3
 
                   /usr/local/samba/sbin/samba
                   for i in {1..10}; do
@@ -344,13 +410,13 @@ resources:
 
                   ip=$(ip -o -4 addr show | grep -oP '10\.9\.\d+\.\d+(?=/\d+)')
 
-                  /usr/local/samba/bin/samba-tool dns add 10.9.0.10 _REALM_ $(hostname) A  $ip -Uadministrator%_PASSWORD_
+                  /usr/local/samba/bin/samba-tool dns add 10.9.0.10 _REALM_ $(hostname) A  $ip -Uadministrator%_DC_PASSWORD_
 
                 params:
                   _USER_: {get_param: user}
                   _REALM_:  {get_param: samba_realm}
                   _DOMAIN_:  {get_param: samba_domain}
-                  _PASSWORD_:  {get_param: samba_password}
+                  _DC_PASSWORD_:  {get_param: windows_rwdc_password}
                   _NAME_: { get_param: "OS::stack_name" }
 
           - path: /run/shm/samba-scripts/wait-for-dns
