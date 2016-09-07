@@ -276,6 +276,9 @@ resources:
     type: OS::Heat::CloudConfig
     properties:
       cloud_config:
+        runcmd:
+          - /run/shm/samba-scripts/run
+
         write_files:
           - path: /run/shm/samba-scripts/clone-samba
             permissions: '0755'
