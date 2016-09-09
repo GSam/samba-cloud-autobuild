@@ -1,0 +1,32 @@
+{
+    "builders": [{
+	"type": "openstack",
+	"ssh_username": "ubuntu",
+	"image_name": "samba-build-14.04-template",
+	"source_image": "cab9f3f4-a3a5-488b-885e-892873c15f53",
+	"flavor": "c1.c1r1",
+	"security_groups": ["default"],
+	"floating_ip_pool": "public-net",
+	"networks": ["a4ed9e9e-1479-4f36-a4f3-09d9da7ab04a"]
+    }],
+    "provisioners": [{
+	"type": "shell",
+	"inline": [
+	    "set -x",
+	    "set -e",
+	    "sudo apt-get update",
+	    "sudo apt-get upgrade -y",
+	    "sudo apt-get install -y acl attr autoconf bind9utils bison build-essential ccache curl debhelper dnsutils docbook-xml docbook-xsl emacs24-nox flex gdb git jed krb5-user libacl1-dev libaio-dev libarchive-dev libattr1-dev libblkid-dev libbsd-dev libcap-dev libcups2-dev libgnutls-dev libjson-perl libldap2-dev libncurses5-dev libpam0g-dev libparse-yapp-perl libpopt-dev libreadline-dev linux-tools-generic linux-cloud-tools-generic perl perl-modules pkg-config python-all-dev python-crypto python-dev python3-dev python-dnspython python3-dnspython python-gpgme python3-gpgme python-novaclient python-crypto realpath rng-tools screen tshark xsltproc zlib1g-dev",
+	    "cd ~",
+	    "git clone git://git.catalyst.net.nz/samba.git",
+	    "cd samba",
+	    "git remote add catalyst git://git.catalyst.net.nz/samba.git",
+	    "git remote add abartlet git://git.samba.org/abartlet/samba.git",
+	    "git remote set-url origin git://git.samba.org/samba.git",
+	    "git fetch catalyst",
+	    "git fetch origin",
+	    "git checkout origin/master",
+	    "CC='ccache gcc' ./script/autobuild.py --restrict-tests=samba.tests.source --testbase=$HOME/autobuild"
+	]
+    }]
+}
