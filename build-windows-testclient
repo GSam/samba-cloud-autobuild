@@ -1,0 +1,120 @@
+#!/usr/bin/python
+import argparse
+import os
+import sys
+import subprocess
+import tempfile
+import random
+
+from common import get_credentials, get_package_list, DEFAULT_REGION, OPENRC_TABLE, SambaCloudError
+
+try:
+    from pipes import quote
+except ImportError:
+    from shlex import quote
+
+HERE = os.path.dirname(__file__)
+
+PACKER_TEMPLATE = os.path.join(HERE, 'templates/build-windows-image.json.template')
+CLOUD_INIT_TEMPLATE = os.path.join(HERE, 'templates/build-windows-image-user_data.ps1')
+
+
+def write_packer_config(password=None, net_id=None, image=None, flavor=None, ms_downloads=None,
+                        cloud_init_file=None):
+    template = PACKER_TEMPLATE
+
+
+    f = open(template)
+    s = f.read()
+    f.close()
+    s = s.format(image=image, generated_password=password, flavor=flavor, net_id=net_id,
+                 ms_downloads=ms_downloads, cloud_init_file=cloud_init_file)
+    f = tempfile.NamedTemporaryFile(suffix='.json',
+                                    prefix='build-windows-image-',
+                                    delete=False)
+    f.write(s)
+    f.close()
+    return f.name
+
+def write_cloud_init(password=None):
+    template = CLOUD_INIT_TEMPLATE
+
+
+    f = open(template)
+    s = f.read()
+    f.close()
+    s = s.format(generated_password=password)
+    f = tempfile.NamedTemporaryFile(suffix='.ps1',
+                                    prefix='build-windows-image-',
+                                    delete=False)
+    f.write(s)
+    f.close()
+    return f.name
+
+
+def run_packer(packer_file, region, dry_run=False):
+    open_rc = OPENRC_TABLE[region]
+    args = ['.', open_rc, ';', 'packer', 'build']
+    args += [packer_file]
+    
+    if dry_run:
+        print ' '.join(args)
+    else:
+        subprocess.check_call(' '.join(args), shell=True)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    password = subprocess.check_output("pwgen -s 20", shell=True)[:20]
+
+    parser.add_argument('--region', default=DEFAULT_REGION,
+                        help="'wlg' or 'por' (default '%s')" % DEFAULT_REGION)
+
+    parser.add_argument('-i', '--image', default="windows-server-2012r2-x86_64",
+                        help="specify the image to use")
+
+    parser.add_argument('--net-id',
+                        help=("Use net with this UUID "
+                              "(auto to search for a good one)"))
+
+    parser.add_argument('--verbose-logs', action='store_true',
+                        help=("run packer --verbose"))
+
+    parser.add_argument('--use-default-pass', action='store_true',
+                        help=("use a default (insecure) password for machines and samba"))
+
+    parser.add_argument('-n', '--dry-run', action='store_true',
+                        help="do nothing remotely, "
+                        "show the command that would be run")
+    parser.add_argument('-f', '--flavor', default='c1.c2r4',
+                        help=("specify which flavour to use "
+                              "(default: 2 CPUs, 4GB)"))
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help="say a litle more about what is happening")
+    parser.add_argument('--ms-downloads',
+                        help="directory of files for Windows (firefox, winpcap from nmap, wireshark)")
+
+
+   
+    args = parser.parse_args()
+
+    if args.use_default_pass:
+        password="penguin12#"
+    else:
+        password=subprocess.check_output("pwgen -s 20", shell=True)[:20]
+        
+    cloud_init_file = write_cloud_init(password=password)
+    packer_file = write_packer_config(password=password,
+                                      image=args.image,
+                                      net_id = args.net_id,
+                                      flavor=args.flavor,
+                                      ms_downloads=args.ms_downloads,
+                                      cloud_init_file=cloud_init_file)
+
+    if args.verbose:
+        print >> sys.stderr, "packer file is %s" % packer_file
+
+    run_packer(packer_file, args.region, args.dry_run)
+
+
+main()

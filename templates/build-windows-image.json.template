@@ -1,0 +1,70 @@
+{{
+    "builders": [{{
+	"type": "openstack",
+	"image_name": "windows-test-image-template",
+	"source_image": "{image}",
+	"flavor": "{flavor}",
+	"security_groups": ["winrm-ok"],
+	"floating_ip_pool": "public-net",
+	"networks": ["{net_id}"],
+        "communicator": "winrm",
+        "winrm_username": "Administrator",
+	"winrm_password": "{generated_password}",
+	"user_data_file": "{cloud_init_file}"
+    }}],
+    "provisioners": [{{
+	"type": "file",
+	"source": "{ms_downloads}/Firefox Setup 48.0.2.exe",
+	"destination": "c:\\firefox.exe"
+    }},
+    {{
+	"type": "file",
+	"source": "{ms_downloads}/winpcap-nmap-4.13.exe",
+	"destination": "c:\\winpcap-nmap.exe"
+    }},
+    {{
+	"type": "file",
+	"source": "{ms_downloads}/Wireshark-win64-2.0.5.exe",
+	"destination": "c:\\Wireshark.exe"
+    }},
+    {{
+	"type": "powershell",
+	"inline": ["c:\\firefox.exe -ms",
+		  "c:\\winpcap-nmap.exe /S",
+		  "c:\\wireshark.exe /S"]
+    }},
+    {{
+	"type": "file",
+	"source": "{ms_downloads}/setupssh-7.3p1-2.exe",
+	"destination": "c:\\setupssh.exe"
+    }},
+    {{
+	"type": "powershell",
+	"inline": ["c:\\setupssh.exe /password={generated_password} /privsep=1 /S"]
+    }},
+    {{
+	"type": "powershell",
+	"inline": ["Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Microsoft/WindowsProtocolTestSuites/staging/InstallPrerequisites/InstallPrerequisites.ps1'  -OutFile 'C:\\InstallPrerequisites.ps1'",
+		  "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Microsoft/WindowsProtocolTestSuites/staging/InstallPrerequisites/PrerequisitesConfig.xml'  -OutFile 'C:\\PrerequisitesConfig.xml'",
+		  "Invoke-WebRequest -Uri 'https://github.com/Microsoft/WindowsProtocolTestSuites/archive/master.zip' -OutFile 'C:\\WindowsProtocolTestSuites.zip'",
+		  "c:\\InstallPrerequisites.ps1 -Category 'Kerberos' -ConfigPath c:\\PrerequisitesConfig.xml"]
+    }},
+    {{
+	"type": "file",
+	"source": "{ms_downloads}/ADFamily_TestSuite_ServerEP.msi",
+	"destination": "c:\\ADFamily_TestSuite_ServerEP.msi"
+    }},
+    {{
+	"type": "file",
+	"source": "{ms_downloads}/Kerberos_TestSuite_ServerEP.msi",
+	"destination": "c:\\Kerberos_TestSuite_ServerEP.msi"
+    }},
+    {{
+	"type": "file",
+	"source": "{ms_downloads}/MS_AZOD_TestSuite_ODEP.msi",
+	"destination": "c:\\MS_AZOD_TestSuite_ODEP.msi"
+    }},
+    {{
+	"type": "windows-restart"
+    }}]
+}}
