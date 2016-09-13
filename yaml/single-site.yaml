@@ -238,7 +238,7 @@ resources:
                   git fetch our_repo
                   git checkout our_repo/_BRANCH_
                   ./configure.developer
-                  make
+                  make -j
                   sudo make install
                 params:
                   _REMOTE_: {get_param: remote}
