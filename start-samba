@@ -194,7 +194,7 @@ def main():
                                   flame_graphs=args.flame_graphs,
                                   restrict_tests=args.restrict_tests,
                                   ident=ident, password=password,
-                                  use_default_pass=args.use_default_pass)
+                                  use_default_pass=args.use_default_pass,
                                   email_recipient=args.email_recipient,
                                   on_success=args.on_success)
 
