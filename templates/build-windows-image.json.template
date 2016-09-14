@@ -51,6 +51,15 @@
     }},
     {{
 	"type": "file",
+	"source": "{ms_downloads}/ProtocolTestManager.msi",
+	"destination": "c:\\ProtocolTestManager.msi"
+    }},
+    {{
+	"type": "powershell",
+	"inline": ["c:\\ProtocolTestManager.msi /q"]
+    }},
+    {{
+	"type": "file",
 	"source": "{ms_downloads}/ADFamily_TestSuite_ServerEP.msi",
 	"destination": "c:\\ADFamily_TestSuite_ServerEP.msi"
     }},
