@@ -316,6 +316,13 @@ resources:
                     sleep 10
                   done
 
+                  for i in {1..10}; do
+                     /usr/local/samba/bin/ldbsearch -H \
+                       ldap://$(host samdom.example.com | cut -d ' ' -f4) \
+                       -UAdministrator --password='_PASSWORD_' && break
+                    sleep 10
+                  done
+
                   if [[ "$(hostname)" == '_NAME_-_SUBNET_ID_-2' && _RODC_ == 'True' ]]; then
                     /usr/local/samba/bin/samba-tool domain join _REALM_ RODC -UAdministrator \
                                           --machinepass='_PASSWORD_' \
