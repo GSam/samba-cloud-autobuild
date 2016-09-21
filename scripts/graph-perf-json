@@ -55,7 +55,7 @@ def find_spaced_label_locations(locations, max_value):
             b = locations[i + 1][0]
             gap = a - b
             if gap < min_spacing:
-                step = min_spacing - gap
+                step = (min_spacing - gap) * 0.5
                 if a < top:
                     locations[i][0] += step
                 if b > bottom:
