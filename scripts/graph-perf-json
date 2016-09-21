@@ -265,7 +265,7 @@ def main():
     if not args.output:
         plt.show()
     else:
-        fig.set_size_inches(10, 10)
+        fig.set_size_inches(12, 12)
         plt.savefig(args.output,
                     dpi=100,
                     frameon=True,
