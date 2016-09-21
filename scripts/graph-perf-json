@@ -17,9 +17,15 @@ matplotlib.rcParams.update({'font.size': 10,
 })
 
 
-def find_commit_message(git_tree, commit, maxlen=75):
-    cmd = ['git', '-C', git_tree,
-           'log', '--pretty=oneline', '--abbrev-commit', '-n1', commit]
+def find_commit_message(git_tree, commit, maxlen=75, date_only=False):
+    if date_only:
+        cmd = ['git', '-C', git_tree,
+               'log', '--pretty=tformat:%cd %h', '--date=format:%Y-%m-%d %H:%M',
+               '--abbrev-commit',
+               '-n1', commit]
+    else:
+        cmd = ['git', '-C', git_tree,
+               'log', '--pretty=oneline', '--abbrev-commit', '-n1', commit]
     try:
         s = subprocess.check_output(cmd).strip()
     except subprocess.CalledProcessError, e:
@@ -195,6 +201,9 @@ def main():
     parser.add_argument('--label-commits-from-git-tree',
                         help=("label revisions with commit messages"
                               " using this tree"))
+    parser.add_argument('--label-dates-from-git-tree',
+                        help=("label revisions with commit dates"
+                              " using this tree"))
 
     args = parser.parse_args()
 
@@ -239,6 +248,12 @@ def main():
         xlabels = [find_commit_message(args.label_commits_from_git_tree, x)
                    for x in xlabels]
         plt.xticks(range(len(xlabels)), xlabels, rotation=-12, va='top',
+                   ha='left')
+    elif args.label_dates_from_git_tree is not None:
+        xlabels = [find_commit_message(args.label_dates_from_git_tree, x, date_only=True)
+                   for x in xlabels]
+        angle = max(len(xlabels) / -0.7, -90)
+        plt.xticks(range(len(xlabels)), xlabels, rotation=angle, va='top',
                    ha='left')
     else:
         plt.xticks(range(len(xlabels)), xlabels)
