@@ -1,0 +1,30 @@
+#!/bin/bash
+
+machine=$1
+
+echo checking whether $machine has a floating IP...
+
+ip=$(nova list | grep "| $machine " | cut -d'|' -f7 | cut -d, -f2 -s)
+
+if [[ "$ip" ]]; then
+    echo found IP $ip
+else
+    for x in 1 2; do
+        echo looking for a free IP
+        ip=$(nova  floating-ip-list | cut -d'|' -f 3,4 -s | grep -e '| -' | head -1 | cut -d'|' -f1)
+        if [[ "$ip" ]]; then
+            echo using $ip
+            break
+        else
+            echo no free floating IPs; creating a new one...
+            nova floating-ip-create
+        fi
+    done
+
+    nova floating-ip-associate $machine $ip
+fi
+
+ssh -o 'UserKnownHostsFile /dev/null' -o 'User ubuntu' $ip
+
+# for windows machines:
+#xfreerdp -v $ip -u 'SAMDOM\Administrator' -clipboard
