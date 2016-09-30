@@ -124,8 +124,10 @@ class SambaGitTree(object):
         cmd.extend(args)
         subprocess.check_call(cmd, cwd=self.path)
 
-    def checkout(self, tag):
+    def checkout(self, tag, clean=False):
         self.git('checkout', tag)
+        if clean:
+            self.git('clean')
 
     def build(self):
         self.make('-j')
@@ -304,6 +306,7 @@ def main():
                 print ("::: trying branch %s in directory %s (round %d)" %
                        (b, tree.path, i))
                 tree.git('reset', '--hard')
+                tree.git('clean')
                 tree.checkout(b)
                 if args.clean_between_revisions:
                     tree.git('clean', '-x', '-f')
