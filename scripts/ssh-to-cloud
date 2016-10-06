@@ -2,6 +2,9 @@
 
 machine=$1
 
+KNOWN_HOSTS=~/.known-hosts-on-catalyst-cloud/$machine
+CLOUD_DOT_FILES=~/cloud-dot-files
+
 echo checking whether $machine has a floating IP...
 
 ip=$(nova list | grep "| $machine " | cut -d'|' -f7 | cut -d, -f2 -s)
@@ -22,9 +25,20 @@ else
     done
 
     nova floating-ip-associate $machine $ip
+    rm -f $KNOW_HOSTS
 fi
 
-ssh -o 'UserKnownHostsFile /dev/null' -o 'User ubuntu' $ip
+# copy the dot files if this looks like the first connection
+
+if [[ -d $CLOUD_DOT_FILES && ! -f $KNOWN_HOSTS ]]; then
+    mkdir - $(dirname $KNOWN_HOSTS)
+    echo "copying $CLOUD_DOT_FILES/ dot files"
+    rsync -e "ssh -o 'UserKnownHostsFile $KNOWN_HOSTS' -o 'User ubuntu'" -rv $CLOUD_DOT_FILES/ $ip:
+fi
+
+ssh -o "UserKnownHostsFile $KNOWN_HOSTS" -o 'User ubuntu' $ip
+
+
 
 # for windows machines:
 #xfreerdp -v $ip -u 'SAMDOM\Administrator' -clipboard
