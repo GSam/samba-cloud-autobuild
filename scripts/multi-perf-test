@@ -147,20 +147,39 @@ class SambaGitTree(object):
         lines = self.git(*args, output=True)
         return lines.split()
 
-    def patch(self, patch, patch_not_am=True, ignore_whitespace=False,
-              no_questions=False):
+    def _get_patch_command(self, patch,
+                           ignore_whitespace=False, no_questions=False):
         patch = os.path.abspath(patch)
-        if patch_not_am:
-            cmd = ['patch', '-d', self.path, '-p1', '-N', '-i', patch]
-            if ignore_whitespace:
-                cmd.append('--ignore-whitespace')
-            if no_questions:
-                cmd.append('-f')
+        cmd = ['patch', '-d', self.path, '-p1', '-N', '-i', patch]
+        if ignore_whitespace:
+            cmd.append('--ignore-whitespace')
+        if no_questions:
+            cmd.append('-f')
+        return cmd
+
+    def patch(self, patch, use_git_am=False, ignore_whitespace=False,
+              no_questions=False):
+        if not use_git_am:
+            cmd = self._get_patch_command(patch, ignore_whitespace,
+                                          no_questions)
             subprocess.check_call(cmd)
-        elif ignore_whitespace:
+            return
+
+        patch = os.path.abspath(patch)
+        if ignore_whitespace:
             self.git('am', '--ignore-whitespace', '-3', patch)
         else:
             self.git('am', '-3', patch)
+
+    def try_patch(self, patch, ignore_whitespace=False):
+        cmd = self._get_patch_command(patch, ignore_whitespace,
+                                      no_questions=True)
+        cmd.extend(['--dry-run', '--quiet'])
+        try:
+            suppressed_output = subprocess.check_output(cmd)
+        except subprocess.CalledProcessError:
+            return False
+        return True
 
     def collect_perf_data(self, tag):
         f = open(os.path.join(self.path, 'st/summary.json'))
@@ -171,14 +190,21 @@ class SambaGitTree(object):
         json.dump(self.perf_data, f,
                   sort_keys=True, indent=2, separators=(',', ': '))
 
-    def guess_the_right_patches(self, revision):
-        # FIXME: increase cleverness in the face of arbitrary commits
+    def guess_the_right_patches(self, revision, ignore_whitespace=True):
+        # For specific releases we KNOW.
         if re.search(r'4-[0]', revision):
             return PATCHES['samba-4-0']
         if re.search(r'4-[12]', revision):
             return PATCHES['samba-4-2']
-        return PATCHES['samba-4-5']
-
+        if re.search(r'4-[345]', revision):
+            return PATCHES['samba-4-5']
+        # now we don't know, so we TRY and SEE.
+        patches = []
+        for p in PATCHES['samba-4-0']:
+            if self.try_patch(p, ignore_whitespace):
+                patches.append(p)
+                print "using patch %s" % p
+        return patches
 
     def get_last_n_weeks(self, n, reference='last Saturday'):
         # find the last n autobuild commits that immediately precede a weekend.
@@ -320,7 +346,7 @@ def main():
                         print >> sys.stderr, "using patch %s" % patch
                         try:
                             try_and_try_again(args.interactive, tree.patch, patch,
-                                              not args.use_git_am_not_patch,
+                                              args.use_git_am_not_patch,
                                               args.ignore_whitespace,
                                               args.no_patch_questions)
                         except subprocess.CalledProcessError, e:
