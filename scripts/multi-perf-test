@@ -311,7 +311,7 @@ def main():
 
     try:
         if d is None:
-            d = tempfile.mkdtemp()
+            d = tempfile.mkdtemp(prefix='samba-perf-test')
 
         print "using directory %r" % d
 
