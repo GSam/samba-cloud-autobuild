@@ -186,9 +186,15 @@ class SambaGitTree(object):
         self.perf_data.append([tag, json.load(f)])
         f.close()
 
-    def write_json(self, f):
+    def write_json(self, fn, backup=False):
+        if backup:
+            fn2 = fn + '~'
+            os.rename(fn, fn2)
+
+        f = open(fn, 'w')
         json.dump(self.perf_data, f,
                   sort_keys=True, indent=2, separators=(',', ': '))
+        f.close()
 
     def guess_the_right_patches(self, revision, ignore_whitespace=True):
         # For specific releases we KNOW.
@@ -296,12 +302,20 @@ def main():
     parser.add_argument('-t', '--test-regex',
                         help="restrict tests with this regex")
     parser.add_argument('-o', '--output', default='samba-performance.json',
-                        type=argparse.FileType('w'),
                         help="write data here")
     parser.add_argument('--best-of', metavar='N', type=int, default=1,
                         help="run this many times")
 
     args = parser.parse_args()
+
+    try:
+        f = open(args.output, 'a')
+        f.close()
+    except IOError, e:
+        print "You can't write to %s:" % args.output
+        print e.strerror
+        print "Stopping..."
+        sys.exit(1)
 
     branches = args.branches
     d = args.working_dir
@@ -380,9 +394,13 @@ def main():
                 if args.flame_graph_path:
                     tree.make_flame_graphs(args.flame_graph_path)
 
+            tree.write_json(args.output, backup=True)
+
+            if args.preserve_tmp_dir:
+                tree.write_json(tree.path + '/round-%d.json' % i)
+
     finally:
-        tree.write_json(args.output)
-        args.output.close()
+        tree.write_json(args.output, backup=True)
         if args.working_dir is None and not args.preserve_tmp_dir:
             shutil.rmtree(d)
 
