@@ -110,7 +110,11 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
             if k not in x_labels:
                 x_labels.append(k)
             rev_times = data.setdefault(k, {})
-            for test, time in v.items():
+            for row in v.items():
+                if len(row) == 3:
+                    test, time, date = row
+                else:
+                    test, time = row
                 if tidy_names:
                     test = tidy_test_name(test)
                 rev_times.setdefault(test, []).append(time)
