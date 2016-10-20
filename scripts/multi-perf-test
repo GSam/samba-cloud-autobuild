@@ -181,9 +181,14 @@ class SambaGitTree(object):
             return False
         return True
 
-    def collect_perf_data(self, tag):
+    def collect_perf_data(self, tag, add_date=False):
         f = open(os.path.join(self.path, 'st/summary.json'))
-        self.perf_data.append([tag, json.load(f)])
+        if add_date:
+            date = self.git('log', '--pretty=tformat:%cd',
+                            '--date=format:%Y-%m-%d %H:%M', '-n1')
+            self.perf_data.append([tag, json.load(f), date])
+        else:
+            self.perf_data.append([tag, json.load(f)])
         f.close()
 
     def write_json(self, fn, backup=False):
@@ -305,6 +310,8 @@ def main():
                         help="write data here")
     parser.add_argument('--best-of', metavar='N', type=int, default=1,
                         help="run this many times")
+    parser.add_argument('-D', '--record-revision-date', action='store_true',
+                        help='save the commit date in the JSON')
 
     args = parser.parse_args()
 
@@ -389,7 +396,7 @@ def main():
                 except subprocess.CalledProcessError, e:
                     print >> sys.stderr, "perf test failed: %s" % e
 
-                tree.collect_perf_data(b)
+                tree.collect_perf_data(b, args.record_revision_date)
 
                 if args.flame_graph_path:
                     tree.make_flame_graphs(args.flame_graph_path)
