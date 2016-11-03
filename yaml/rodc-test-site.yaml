@@ -374,7 +374,7 @@ resources:
                   git fetch our_repo
                   git checkout our_repo/_BRANCH_
                   ./configure.developer
-                  make
+                  make -j
                   sudo make install
                 params:
                   _REMOTE_: {get_param: remote}
@@ -461,16 +461,10 @@ resources:
                   su _USER_ -l -c /run/shm/samba-scripts/clone-samba
                   su _USER_ -l -c /run/shm/samba-scripts/build-samba
 
-                  if [[ "$(hostname)" == '_NAME_-0-0' ]]; then
-                     /run/shm/samba-scripts/mangle-dns
-                     /run/shm/samba-scripts/provision-dc
-                  else
-                     /run/shm/samba-scripts/wait-for-dns
-                     /run/shm/samba-scripts/mangle-dns
-                     /run/shm/samba-scripts/join-dc
-                  fi
+                  /run/shm/samba-scripts/wait-for-dns
+                  /run/shm/samba-scripts/mangle-dns
+                  /run/shm/samba-scripts/join-dc
                 params:
-                  _NAME_: { get_param: "OS::stack_name" }
                   _USER_: {get_param: user}
 
 
