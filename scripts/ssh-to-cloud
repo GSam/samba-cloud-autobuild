@@ -28,10 +28,13 @@ else
     rm -f $KNOW_HOSTS
 fi
 
+# make sure $ip has no trailing space (or else rsync $ip: will fail)
+ip=${ip// }
+
 # copy the dot files if this looks like the first connection
 
 if [[ -d $CLOUD_DOT_FILES && ! -f $KNOWN_HOSTS ]]; then
-    mkdir - $(dirname $KNOWN_HOSTS)
+    mkdir -p $(dirname $KNOWN_HOSTS)
     echo "copying $CLOUD_DOT_FILES/ dot files"
     rsync -e "ssh -o 'UserKnownHostsFile $KNOWN_HOSTS' -o 'User ubuntu'" -rv $CLOUD_DOT_FILES/ $ip:
 fi
