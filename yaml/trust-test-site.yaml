@@ -1,0 +1,463 @@
+heat_template_version: 2014-10-16
+
+description: >
+  A template to create Windows-Samba and a Windows-Windows trusts in a single site
+
+parameters:
+  user:
+    type: string
+    description: Admin user
+    default: "ubuntu"
+    constraints:
+      - allowed_pattern: "[a-z_][a-z0-9_]{0,30}"
+        description: Lowercase please, no fancy characters, not too long.
+
+  key_name:
+    type: string
+    description: Name of an existing key pair to use for the server
+    constraints:
+      - custom_constraint: nova.keypair
+
+  flavor:
+    type: string
+    description: Flavor for the server to be created
+    default: c1.c2r4
+    constraints:
+      - custom_constraint: nova.flavor
+
+  unix_image:
+    type: string
+    default: ubuntu-16.04-x86_64
+    description: Image ID or image name to use for Samba server
+    constraints:
+      - custom_constraint: glance.image
+
+  windows_image:
+    type: string
+    default: windows-server-2012r2-x86_64
+    description: Image ID or image name to use for the Windows servers
+    constraints:
+      - custom_constraint: glance.image
+
+  remote:
+    default: git://git.catalyst.net.nz/samba.git
+    type: string
+    description: URL of git remote
+
+  branch:
+    type: string
+    description: git branch to use
+
+  samba_realm:
+    type: string
+    default: "SAMDOM.EXAMPLE.COM"
+    description: Realm for the samba DCs
+
+  samba_domain:
+    type: string
+    default: "SAMDOM"
+    description: Domain for the samba DC
+
+  windows_main_realm:
+    type: string
+    default: "WINDOWS.EXAMPLE.COM"
+    description: Realm for the Windows main DC
+
+  windows_main_domain:
+    type: string
+    default: "WINDOWS"
+    description: Domain for the Windows main DC
+
+  windows_trust_realm:
+    type: string
+    default: "TRUST.EXAMPLE.COM"
+    description: Realm for the Windows DC2
+
+  windows_trust_domain:
+    type: string
+    default: "TRUST"
+    description: Domain for the Windows DC2
+
+  samba_password:
+    type: string
+    default: "penguin12#"
+    description: Password for the samba DCs
+
+  windows_main_password:
+    type: string
+    default: "puffin12#"
+    description: Password for Windows DC1
+
+  windows_trust_password:
+    type: string
+    default: "pelican12#"
+    description: Password for Windows DC2
+
+  package_list:
+    type: comma_delimited_list
+    description: package to install
+
+  public_net:
+    type: string
+    default: public-net
+    description: >
+      ID or name of the public network
+
+  nameservers:
+    type: comma_delimited_list
+    default: [10.9.0.10, 202.78.247.198]
+    description: list of nameservers to use
+
+  private_net_cidr:
+    type: string
+    default: 10.9.0.0/24
+    description: default cidr to use
+
+resources:
+  router:
+    type: OS::Neutron::Router
+    properties:
+      external_gateway_info:
+        network: { get_param: public_net }
+
+  private_net:
+    type: OS::Neutron::Net
+    properties:
+      name:
+        str_replace:
+          template:
+            _NAME_-network-rodcs
+          params:
+            _NAME_: { get_param: "OS::stack_name" }
+
+  private_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: private_net }
+      cidr: { get_param: private_net_cidr }
+      enable_dhcp: true
+      allocation_pools:
+        - start:
+            10.9.0.200
+          end:
+            10.9.0.254
+
+      dns_nameservers: { get_param: nameservers }
+
+  router_interface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: router }
+      subnet_id: { get_resource: private_subnet }
+
+  server1:
+    type: OS::Cinder::Volume
+    properties:
+      image: { get_param: windows_image }
+      size: 70
+
+  server2:
+    type: OS::Cinder::Volume
+    properties:
+      image: { get_param: windows_image }
+      size: 70
+
+  windows_main:
+    type: OS::Nova::Server
+    properties:
+      key_name: { get_param: key_name }
+      flavor: { get_param: flavor }
+      name:
+        windows_main
+      user_data_format: RAW
+      # user_data:
+      # get_resource: windows_rwdc_init
+      user_data:
+        str_replace:
+          template: |
+            #ps1_sysnative
+            ping 127.0.0.1
+
+            # The Telnet server needs to be enabled
+            install-windowsfeature "telnet-server"
+            install-windowsfeature "telnet-client"
+            install-windowsfeature -name AD-Domain-Services -IncludeManagementTools
+
+            Set-ADUser -Identity Administrator -ChangePasswordAtLogon $false
+            wmic UserAccount set PasswordExpires=False
+            net user Administrator _PASSWORD_
+            cmd /C netsh advfirewall set allprofiles state off
+            cmd /C tlntadmn config maxconn=1024
+
+            cmd /C net localgroup /add telnetclients "authenticated users"
+            cmd /C sc config tlntsvr start=auto
+            cmd /C sc start tlntsvr
+
+            $dcpromo = @"
+            [DCInstall]
+            ; New forest promotion
+            ReplicaOrNewDomain=Domain
+            NewDomain=Forest
+            NewDomainDNSName=_REALM_
+            ForestLevel=_FUNCTION_LEVEL_INT_
+            DomainNetbiosName=_DOMAIN_
+            DomainLevel=_FUNCTION_LEVEL_INT_
+            InstallDNS=Yes
+            ConfirmGc=Yes
+            CreateDNSDelegation=No
+            DatabasePath="C:\Windows\NTDS"
+            LogPath="C:\Windows\NTDS"
+            SYSVOLPath="C:\Windows\SYSVOL"
+            ; Set SafeModeAdminPassword to the correct value prior to using the unattend file
+            SafeModeAdminPassword=_PASSWORD_
+            ; Run-time flags (optional)
+            RebootOnCompletion=No
+            "@
+            # " - to fix formatting
+            $dcpromo | Out-File "answers.txt"
+            dcpromo /answer:answers.txt
+            Add-DnsServerConditionalForwarderZone -Name trust.example.com -MasterServers 10.9.0.11
+            Add-DnsServerConditionalForwarderZone -Name samdom.example.com -MasterServers 10.9.0.12
+            shutdown -r -t 0
+          params:
+            _PASSWORD_:  {get_param: windows_main_password}
+            _FUNCTION_LEVEL_INT_: 4
+            _REALM_:  {get_param: windows_main_realm}
+            _DOMAIN_:  {get_param: windows_main_domain}
+
+      networks:
+        - network: { get_resource: private_net }
+          fixed_ip:
+            10.9.0.10
+      block_device_mapping_v2:
+        - volume_id: {get_resource: server1}
+          delete_on_termination: true
+
+  trust_windows:
+    type: OS::Nova::Server
+    properties:
+      key_name: { get_param: key_name }
+      flavor: { get_param: flavor }
+      name:
+        trust_windows
+      user_data_format: RAW
+      user_data:
+        str_replace:
+          template: |
+            #ps1_sysnative
+            ping 127.0.0.1
+
+            # The Telnet server needs to be enabled
+            install-windowsfeature "telnet-server"
+            install-windowsfeature "telnet-client"
+            install-windowsfeature -name AD-Domain-Services -IncludeManagementTools
+
+            Set-ADUser -Identity Administrator -ChangePasswordAtLogon $false
+            wmic UserAccount set PasswordExpires=False
+            net user Administrator _PASSWORD_
+            cmd /C netsh advfirewall set allprofiles state off
+            cmd /C tlntadmn config maxconn=1024
+
+            cmd /C net localgroup /add telnetclients "authenticated users"
+            cmd /C sc config tlntsvr start=auto
+            cmd /C sc start tlntsvr
+
+            $dcpromo = @"
+            [DCInstall]
+            ; New forest promotion
+            ReplicaOrNewDomain=Domain
+            NewDomain=Forest
+            NewDomainDNSName=_REALM_
+            ForestLevel=_FUNCTION_LEVEL_INT_
+            DomainNetbiosName=_DOMAIN_
+            DomainLevel=_FUNCTION_LEVEL_INT_
+            InstallDNS=Yes
+            ConfirmGc=Yes
+            CreateDNSDelegation=No
+            DatabasePath="C:\Windows\NTDS"
+            LogPath="C:\Windows\NTDS"
+            SYSVOLPath="C:\Windows\SYSVOL"
+            ; Set SafeModeAdminPassword to the correct value prior to using the unattend file
+            SafeModeAdminPassword=_PASSWORD_
+            ; Run-time flags (optional)
+            RebootOnCompletion=No
+            "@
+            # " - to fix formatting
+            $dcpromo | Out-File "answers.txt"
+            dcpromo /answer:answers.txt
+            Add-DnsServerConditionalForwarderZone -Name windows.example.com -MasterServers 10.9.0.10
+            Add-DnsServerConditionalForwarderZone -Name samdom.example.com -MasterServers 10.9.0.12
+            shutdown -r -t 0
+          params:
+            _PASSWORD_:  {get_param: windows_trust_password}
+            _FUNCTION_LEVEL_INT_: 4
+            _REALM_:  {get_param: windows_trust_realm}
+            _DOMAIN_:  {get_param: windows_trust_domain}
+
+      networks:
+        - network: { get_resource: private_net }
+          fixed_ip:
+            10.9.0.11
+      block_device_mapping_v2:
+        - volume_id: {get_resource: server2}
+          delete_on_termination: true
+
+  samba:
+    type: OS::Nova::Server
+    properties:
+      key_name: { get_param: key_name }
+      image: { get_param: unix_image }
+      flavor: { get_param: flavor }
+      name:
+        samba
+      user_data_format: RAW
+      user_data:
+        get_resource: samba_init
+
+      networks:
+        - network: { get_resource: private_net }
+          fixed_ip:
+            10.9.0.12
+
+  samba_init:
+    type: OS::Heat::MultipartMime
+    properties:
+      parts:
+      - config: {get_resource: get_packages}
+      - config: {get_resource: prepare_samba}
+
+  get_packages:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        packages:
+          {get_param: package_list}
+
+  prepare_samba:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        runcmd:
+          - /run/shm/samba-scripts/run
+
+        write_files:
+          - path: /run/shm/samba-scripts/clone-samba
+            permissions: '0755'
+            content: |
+              #!/bin/bash
+              set -x
+              set -e
+              cd ~
+              git clone git://git.catalyst.net.nz/samba.git
+              cd samba
+              git remote add catalyst git://git.catalyst.net.nz/samba.git
+              git remote add abartlet git://git.samba.org/abartlet/samba.git
+              git remote set-url origin git://git.samba.org/samba.git
+              git fetch catalyst
+
+          - path: /run/shm/samba-scripts/build-samba
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  set -e
+                  cd ~/samba
+                  git remote rm our_repo && echo "removed old remote"
+                  git remote add our_repo _REMOTE_
+                  git fetch our_repo
+                  git checkout our_repo/_BRANCH_
+                  ./configure.developer
+                  make
+                  sudo make install
+                params:
+                  _REMOTE_: {get_param: remote}
+                  _BRANCH_: {get_param: branch}
+
+          - path: /run/shm/samba-scripts/wait-for-dns
+            permissions: '0755'
+            content: |
+              # Wait for the DNS server to come up
+              /bin/ping -w 300 -c 1 10.9.0.10
+              for i in {1..100}; do
+                /usr/bin/host catalyst.net.nz 10.9.0.10 && break
+                /bin/sleep 10
+              done
+
+          - path: /run/shm/samba-scripts/mangle-dns
+            permissions: '0755'
+            content: |
+              #!/bin/bash -x
+              # put localhost in resolv.conf
+              # resolvconf(8) wants to look after it via symlinks and so forth.
+              # To be sure we nuke its copies too.
+
+              cat /etc/resolv.conf >  /etc/resolv.conf.old
+              printf 'nameserver 10.9.0.12\n' > /etc/resolv.conf.new
+              printf 'search samdom.example.com\n' >> /etc/resolv.conf.new
+              mv /etc/resolv.conf.new /etc/resolv.conf
+              chattr +i  /etc/resolv.conf
+
+          - path: /run/shm/samba-scripts/run
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+                  echo this is /run/shm/samba-scripts/run
+
+                  echo PATH="/usr/local/samba/bin:$PATH" >> /etc/profile
+                  echo PATH="/usr/local/samba/bin:$PATH" >> /root/.profile
+                  su _USER_ -l -c echo PATH="/usr/local/samba/bin:$PATH" >> /home/_USER_/.profile
+                  echo PYTHONPATH=/usr/local/samba/lib/python2.7 > /root/.profile
+                  su _USER_ -l -c echo PYTHONPATH=/usr/local/samba/lib/python2.7 >> /home/_USER_/.profile
+
+                  su _USER_ -l -c /run/shm/samba-scripts/clone-samba
+                  su _USER_ -l -c /run/shm/samba-scripts/build-samba
+
+                  /run/shm/samba-scripts/mangle-dns
+                  /run/shm/samba-scripts/provision-dc
+                params:
+                  _NAME_: { get_param: "OS::stack_name" }
+                  _USER_: {get_param: user}
+
+          - path: /run/shm/samba-scripts/provision-dc
+            permissions: '0755'
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -x
+
+                  /usr/local/samba/bin/samba-tool domain provision --use-rfc2307 \
+                    --realm=_REALM_ \
+                    --domain=_DOMAIN_ \
+                    --server-role=dc \
+                    --adminpass='_PASSWORD_' \
+                    --krbtgtpass='_PASSWORD_' \
+                    --machinepass='_PASSWORD_' \
+                    --ldapadminpass='_PASSWORD_' \
+                    --dnspass='_PASSWORD_' \
+                    --option='dns forwarder=10.9.0.10' \
+                    --option='ldapserverrequirestrongauth=no' \
+                    -d 3
+
+                  (/usr/local/samba/sbin/samba &)
+
+                  for i in {1..100}; do
+                    /usr/local/samba/bin/smbclient -L localhost -U% && break
+                    sleep 10
+                  done
+                  for i in {1..10}; do
+                    /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls' && break
+                    sleep 10
+                  done
+
+                params:
+                  _USER_: {get_param: user}
+                  _REALM_:  {get_param: samba_realm}
+                  _DOMAIN_:  {get_param: samba_domain}
+                  _PASSWORD_:  {get_param: samba_password}
+                  #_IP_: {get_attr: [my_server, networks, net0, 0]}
