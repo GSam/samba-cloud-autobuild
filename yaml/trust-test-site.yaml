@@ -216,8 +216,44 @@ resources:
             # " - to fix formatting
             $dcpromo | Out-File "answers.txt"
             dcpromo /answer:answers.txt
+
             Add-DnsServerConditionalForwarderZone -Name trust.example.com -MasterServers 10.9.0.11
             Add-DnsServerConditionalForwarderZone -Name samdom.example.com -MasterServers 10.9.0.12
+
+            $dctrust = @"
+            $strRemoteForest = "TRUST.EXAMPLE.COM"
+            $strRemoteAdmin = "Administrator"
+            $strRemoteAdminPassword = "pelican12#"
+
+            $remoteContext = New-Object -TypeName "System.DirectoryServices.ActiveDirectory.DirectoryContext" -ArgumentList @("Forest", $strRemoteForest, $strRemoteAdmin, $strRemoteAdminPassword)
+
+            try{
+               $RemoteForest = [System.DirectoryServices.ActiveDirectory.Forest]::getForest($remoteContext)
+               Write-Host "$RemoteForest"
+               Write-Host "GetRemoteForest: Succeeded for domain $strRemoteForest"
+            }
+
+            catch{
+               Write-Warning "GetRemoteForestFailed:`n`tError:$($($_.Exception).Massaage)"
+            }
+
+            $localForest = [System.DirectoryServices.ActiveDirectory.Forest]::getCurrentForest()
+
+            try{
+              $localForest.CreateTrustRelationship($remoteForest,"Bidirectional")
+              Write-Host "CreateTrustRelationship: Succeeded for domain $($remoteForest)"
+            }
+
+            catch{
+              Write-Warning "CreateTrustRelationship: Failed for domain $($remoteForest)`n`tError: &(&($_.Exception).Message)"
+            }
+
+            "@
+            # " - to fix formatting
+
+            $dctrust | Out-file "create-trust.ps1"
+            powershell -File "create-trust.ps1"
+
             shutdown -r -t 0
           params:
             _PASSWORD_:  {get_param: windows_main_password}
