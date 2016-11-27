@@ -221,6 +221,7 @@ resources:
             Add-DnsServerConditionalForwarderZone -Name samdom.example.com -MasterServers 10.9.0.12
 
             $dctrust = @"
+            runas /user:<windows-main\administrator> 
             `$strRemoteForest = "TRUST.EXAMPLE.COM"
             `$strRemoteAdmin = "Administrator"
             `$strRemoteAdminPassword = "pelican12#"
@@ -252,7 +253,10 @@ resources:
             # " - to fix formatting
 
             $dctrust | Out-file "create-trust.ps1"
-            powershell -File "create-trust.ps1"
+            #powershell -File "create-trust.ps1"
+            $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-File "C:\Windows\System32\create_trust.ps1"'
+            $trigger = New-ScheduledTaskTrigger -AtStartup
+            Register-ScheduledTask -Action $action -Trigger $trigger "Trust" -User "WINDOWS\Administrator" -Password "puffin12#"
 
             shutdown -r -t 0
           params:
