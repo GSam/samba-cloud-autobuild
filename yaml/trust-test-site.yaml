@@ -221,42 +221,40 @@ resources:
             Add-DnsServerConditionalForwarderZone -Name samdom.example.com -MasterServers 10.9.0.12
 
             $dctrust = @"
-            runas /user:<windows-main\administrator> 
-            `$strRemoteForest = "TRUST.EXAMPLE.COM"
-            `$strRemoteAdmin = "Administrator"
-            `$strRemoteAdminPassword = "pelican12#"
+            `$RemoteForestWin = "TRUST.EXAMPLE.COM"
+            `$RemoteAdminWin = "Administrator"
+            `$RemoteAdminPasswordWin = "pelican12#"
+            `$RemoteForestSam = "SAMDOM.EXAMPLE.COM"
+            `$RemoteAdminSam = "Administrator"
+            `$RemoteAdminPasswordSam = "penguin12#"
+            `$remoteContextWin = New-Object -TypeName "System.DirectoryServices.ActiveDirectory.DirectoryContext" -ArgumentList @("Forest", `$RemoteForestWin, `$RemoteAdminWin, `$RemoteAdminPasswordWin)
+            `$remoteContextSam = New-Object -TypeName "System.DirectoryServices.ActiveDirectory.DirectoryContext" -ArgumentList @("Forest", `$RemoteForestSam, `$RemoteAdminSam, `$RemoteAdminPasswordSam)
 
-            `$remoteContext = New-Object -TypeName "System.DirectoryServices.ActiveDirectory.DirectoryContext" -ArgumentList @("Forest", `$strRemoteForest, `$strRemoteAdmin, `$strRemoteAdminPassword)
-
-            try{
-               `$RemoteForest = [System.DirectoryServices.ActiveDirectory.Forest]::getForest(`$remoteContext)
-               Write-Host "`$RemoteForest"
-               Write-Host "GetRemoteForest: Succeeded for domain `$strRemoteForest"
+             while(1){
+               `$RemoteForestWinDom = [System.DirectoryServices.ActiveDirectory.Forest]::getForest(`$remoteContextWin)
+                if(`$RemoteForestWinDom){
+                    break
+                }
+                sleep 10
+             }
+             while(1){
+                `$RemoteForestSamDom = [System.DirectoryServices.ActiveDirectory.Forest]::getForest(`$remoteContextSam)
+                 if(`$RemoteForestSamDom){
+                    break
+                }
+                sleep 10
             }
-
-            catch{
-               Write-Warning "GetRemoteForestFailed:`n`tError:`$(`$(`$_.Exception).Massaage)"
-            }
-
             `$localForest = [System.DirectoryServices.ActiveDirectory.Forest]::getCurrentForest()
-
-            try{
-              `$localForest.CreateTrustRelationship(`$remoteForest,"Bidirectional")
-              Write-Host "CreateTrustRelationship: Succeeded for domain `$(`$remoteForest)"
-            }
-
-            catch{
-              Write-Warning "CreateTrustRelationship: Failed for domain `$(`$remoteForest)`n`tError: &(&(`$_.Exception).Message)"
-            }
-
+            `$localForest.CreateTrustRelationship(`$remoteForestSamDom,"Bidirectional")
+            `$localForest.CreateTrustRelationship(`$remoteForestWinDom,"Bidirectional")
             "@
             # " - to fix formatting
 
             $dctrust | Out-file "create-trust.ps1"
             #powershell -File "create-trust.ps1"
-            $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-File "C:\Windows\System32\create_trust.ps1"'
+            $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-File "C:\Windows\System32\create-trust.ps1"'
             $trigger = New-ScheduledTaskTrigger -AtStartup
-            Register-ScheduledTask -Action $action -Trigger $trigger "Trust" -User "WINDOWS\Administrator" -Password "puffin12#"
+            Register-ScheduledTask -Action $action -Trigger $trigger "Trust" -User "NT AUTHORITY\SYSTEM"
 
             shutdown -r -t 0
           params:
