@@ -1,0 +1,1163 @@
+b ...
+[  409.287783] cloud-init[1234]: Unpacking xsltproc (1.1.28-2.1) ...
+[  409.299939] cloud-init[1234]: Selecting previously unselected package libattr1-dev:amd64.
+[  409.308493] cloud-init[1234]: Preparing to unpack .../libattr1-dev_1%3a2.4.47-2_amd64.deb ...
+[  409.309543] cloud-init[1234]: Unpacking libattr1-dev:amd64 (1:2.4.47-2) ...
+[  409.331289] cloud-init[1234]: Selecting previously unselected package libacl1-dev.
+[  409.342554] cloud-init[1234]: Preparing to unpack .../libacl1-dev_2.2.52-3_amd64.deb ...
+[  409.343701] cloud-init[1234]: Unpacking libacl1-dev (2.2.52-3) ...
+[  409.367442] cloud-init[1234]: Selecting previously unselected package libc6-dbg:amd64.
+[  409.377738] cloud-init[1234]: Preparing to unpack .../libc6-dbg_2.23-0ubuntu4_amd64.deb ...
+[  409.378873] cloud-init[1234]: Unpacking libc6-dbg:amd64 (2.23-0ubuntu4) ...
+[  409.995144] cloud-init[1234]: Selecting previously unselected package libldap2-dev:amd64.
+[  410.004237] cloud-init[1234]: Preparing to unpack .../libldap2-dev_2.4.42+dfsg-2ubuntu3.1_amd64.deb ...
+[  410.005230] cloud-init[1234]: Unpacking libldap2-dev:amd64 (2.4.42+dfsg-2ubuntu3.1) ...
+[  410.078394] cloud-init[1234]: Selecting previously unselected package libtasn1-doc.
+[  410.086759] cloud-init[1234]: Preparing to unpack .../libtasn1-doc_4.7-3ubuntu0.16.04.1_all.deb ...
+[  410.087895] cloud-init[1234]: Unpacking libtasn1-doc (4.7-3ubuntu0.16.04.1) ...
+[  410.129068] cloud-init[1234]: Processing triggers for man-db (2.7.5-1) ...
+[  414.628784] cloud-init[1234]: Processing triggers for libc-bin (2.23-0ubuntu4) ...
+[  414.919402] cloud-init[1234]: Processing triggers for install-info (6.1.0.dfsg.1-5) ...
+[  415.473844] cloud-init[1234]: Processing triggers for sgml-base (1.26+nmu4ubuntu1) ...
+[  415.508342] cloud-init[1234]: Processing triggers for mime-support (3.59ubuntu1) ...
+[  415.527954] cloud-init[1234]: Processing triggers for ureadahead (0.100.0-19) ...
+[  415.790707] cloud-init[1234]: Processing triggers for systemd (229-4ubuntu12) ...
+[[0;32m  OK  [0m] Started ACPI event daemon.
+[  415.901099] cloud-init[1234]: Processing triggers for shared-mime-info (1.5-2ubuntu0.1) ...
+[  416.587266] cloud-init[1234]: Setting up libpython3.5-minimal:amd64 (3.5.2-2ubuntu0~16.04.1) ...
+[  416.593615] cloud-init[1234]: Setting up libpython3.5-stdlib:amd64 (3.5.2-2ubuntu0~16.04.1) ...
+[  416.594729] cloud-init[1234]: Setting up libpython3.5:amd64 (3.5.2-2ubuntu0~16.04.1) ...
+[  416.595631] cloud-init[1234]: Setting up python3.5-minimal (3.5.2-2ubuntu0~16.04.1) ...
+[  417.186919] cloud-init[1234]: Setting up python3.5 (3.5.2-2ubuntu0~16.04.1) ...
+[  418.279515] cloud-init[1234]: Setting up m4 (1.4.17-5) ...
+[  418.280995] cloud-init[1234]: Setting up libfl-dev:amd64 (2.6.0-11) ...
+[  418.282440] cloud-init[1234]: Setting up flex (2.6.0-11) ...
+[  418.283867] cloud-init[1234]: Setting up liblockfile-bin (1.09-6ubuntu1) ...
+[  418.285375] cloud-init[1234]: Setting up liblockfile1:amd64 (1.09-6ubuntu1) ...
+[  418.292749] cloud-init[1234]: Setting up libslang2-modules:amd64 (2.3.0-2ubuntu1) ...
+[  418.294904] cloud-init[1234]: Setting up libunistring0:amd64 (0.9.3-5.2ubuntu1) ...
+[  418.296823] cloud-init[1234]: Setting up libpython2.7-stdlib:amd64 (2.7.12-1ubuntu0~16.04.1) ...
+[  418.298341] cloud-init[1234]: Setting up python2.7 (2.7.12-1ubuntu0~16.04.1) ...
+[  419.209797] cloud-init[1234]: Setting up libpython-stdlib:amd64 (2.7.11-1) ...
+[  419.210879] cloud-init[1234]: Setting up python (2.7.11-1) ...
+[  419.219930] cloud-init[1234]: Setting up python-six (1.10.0-3) ...
+[  419.312495] cloud-init[1234]: Setting up python-wrapt (1.8.0-5build2) ...
+[  419.395147] cloud-init[1234]: Setting up libc-dev-bin (2.23-0ubuntu4) ...
+[  419.397891] cloud-init[1234]: Setting up linux-libc-dev:amd64 (4.4.0-51.72) ...
+[  419.399003] cloud-init[1234]: Setting up libc6-dev:amd64 (2.23-0ubuntu4) ...
+[  419.400120] cloud-init[1234]: Setting up uuid-dev:amd64 (2.27.1-6ubuntu3.1) ...
+[  419.401119] cloud-init[1234]: Setting up libblkid-dev:amd64 (2.27.1-6ubuntu3.1) ...
+[  419.406781] cloud-init[1234]: Setting up libmpc3:amd64 (1.0.3-1) ...
+[  419.412373] cloud-init[1234]: Setting up libisc160:amd64 (1:9.10.3.dfsg.P4-8ubuntu1.3) ...
+[  419.414180] cloud-init[1234]: Setting up libdns162:amd64 (1:9.10.3.dfsg.P4-8ubuntu1.3) ...
+[  419.415199] cloud-init[1234]: Setting up libisccfg140:amd64 (1:9.10.3.dfsg.P4-8ubuntu1.3) ...
+[  419.416421] cloud-init[1234]: Setting up libbind9-140:amd64 (1:9.10.3.dfsg.P4-8ubuntu1.3) ...
+[  419.417863] cloud-init[1234]: Setting up liblwres141:amd64 (1:9.10.3.dfsg.P4-8ubuntu1.3) ...
+[  419.419604] cloud-init[1234]: Setting up bind9-host (1:9.10.3.dfsg.P4-8ubuntu1.3) ...
+[  419.420932] cloud-init[1234]: Setting up dnsutils (1:9.10.3.dfsg.P4-8ubuntu1.3) ...
+[  419.422739] cloud-init[1234]: Setting up attr (1:2.4.47-2) ...
+[  419.424498] cloud-init[1234]: Setting up autoconf (2.69-9) ...
+[  419.426174] cloud-init[1234]: Setting up autotools-dev (20150820.1) ...
+[  419.427783] cloud-init[1234]: Setting up automake (1:1.15-4ubuntu1) ...
+[  419.432937] cloud-init[1234]: update-alternatives: using /usr/bin/automake-1.15 to provide /usr/bin/automake (automake) in auto mode
+[  419.435761] cloud-init[1234]: Setting up bind9utils (1:9.10.3.dfsg.P4-8ubuntu1.3) ...
+[  419.438988] cloud-init[1234]: Setting up binutils (2.26.1-1ubuntu1~16.04.3) ...
+[  419.440143] cloud-init[1234]: Setting up libbison-dev:amd64 (2:3.0.4.dfsg-1) ...
+[  419.441632] cloud-init[1234]: Setting up bison (2:3.0.4.dfsg-1) ...
+[  419.446419] cloud-init[1234]: update-alternatives: using /usr/bin/bison.yacc to provide /usr/bin/yacc (yacc) in auto mode
+[  419.448155] cloud-init[1234]: Setting up libisl15:amd64 (0.16.1-1) ...
+[  419.449121] cloud-init[1234]: Setting up cpp-5 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.450222] cloud-init[1234]: Setting up cpp (4:5.3.1-1ubuntu1) ...
+[  419.453251] cloud-init[1234]: Setting up libcc1-0:amd64 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.454213] cloud-init[1234]: Setting up libgomp1:amd64 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.455205] cloud-init[1234]: Setting up libitm1:amd64 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.457201] cloud-init[1234]: Setting up libatomic1:amd64 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.459623] cloud-init[1234]: Setting up libasan2:amd64 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.461268] cloud-init[1234]: Setting up liblsan0:amd64 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.462958] cloud-init[1234]: Setting up libtsan0:amd64 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.464892] cloud-init[1234]: Setting up libubsan0:amd64 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.466735] cloud-init[1234]: Setting up libcilkrts5:amd64 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.468390] cloud-init[1234]: Setting up libmpx0:amd64 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.470423] cloud-init[1234]: Setting up libquadmath0:amd64 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.472060] cloud-init[1234]: Setting up libgcc-5-dev:amd64 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.473892] cloud-init[1234]: Setting up gcc-5 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.475781] cloud-init[1234]: Setting up gcc (4:5.3.1-1ubuntu1) ...
+[  419.477236] cloud-init[1234]: Setting up libstdc++-5-dev:amd64 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.478709] cloud-init[1234]: Setting up g++-5 (5.4.0-6ubuntu1~16.04.4) ...
+[  419.480434] cloud-init[1234]: Setting up g++ (4:5.3.1-1ubuntu1) ...
+[  419.556820] cloud-init[1234]: update-alternatives: using /usr/bin/g++ to provide /usr/bin/c++ (c++) in auto mode
+[  419.558715] cloud-init[1234]: Setting up make (4.1-6) ...
+[  419.559692] cloud-init[1234]: Setting up libdpkg-perl (1.18.4ubuntu1.1) ...
+[  419.560702] cloud-init[1234]: Setting up dpkg-dev (1.18.4ubuntu1.1) ...
+[  419.561701] cloud-init[1234]: Setting up build-essential (12.1ubuntu2) ...
+[  419.562653] cloud-init[1234]: Setting up ccache (3.2.4-1) ...
+[  419.563490] cloud-init[1234]: Updating symlinks in /usr/lib/ccache ...
+[  419.568112] cloud-init[1234]: Setting up libcroco3:amd64 (0.6.11-1) ...
+[  419.569213] cloud-init[1234]: Setting up gettext (0.19.7-2ubuntu3) ...
+[  419.572555] cloud-init[1234]: Setting up intltool-debian (0.35.0+20060710.4) ...
+[  419.574373] cloud-init[1234]: Setting up po-debconf (1.0.19) ...
+[  419.576213] cloud-init[1234]: Setting up libarchive-zip-perl (1.56-2) ...
+[  419.577277] cloud-init[1234]: Setting up libfile-stripnondeterminism-perl (0.015-1) ...
+[  419.578459] cloud-init[1234]: Setting up libtimedate-perl (2.3000-2) ...
+[  419.579503] cloud-init[1234]: Setting up dirmngr (2.1.11-6ubuntu2) ...
+[  419.586232] cloud-init[1234]: Setting up sgml-data (2.0.10) ...
+[  420.312555] cloud-init[1234]: Setting up docbook-xsl (1.79.1+dfsg-1) ...
+[  420.433458] cloud-init[1234]: Setting up emacsen-common (2.0.8) ...
+[  420.500349] cloud-init[1234]: Setting up emacs24-common-non-dfsg (24.4+1-2) ...
+[  420.501381] cloud-init[1234]: Setting up emacs24-common (24.5+1-6ubuntu1) ...
+[  420.511568] cloud-init[1234]: Setting up emacs24-bin-common (24.5+1-6ubuntu1) ...
+[  420.515369] cloud-init[1234]: update-alternatives: using /usr/bin/ctags.emacs24 to provide /usr/bin/ctags (ctags) in auto mode
+[  420.517538] cloud-init[1234]: update-alternatives: using /usr/bin/ebrowse.emacs24 to provide /usr/bin/ebrowse (ebrowse) in auto mode
+[  420.519712] cloud-init[1234]: update-alternatives: using /usr/bin/emacsclient.emacs24 to provide /usr/bin/emacsclient (emacsclient) in auto mode
+[  420.521886] cloud-init[1234]: update-alternatives: using /usr/bin/etags.emacs24 to provide /usr/bin/etags (etags) in auto mode
+[  420.524118] cloud-init[1234]: update-alternatives: using /usr/bin/grep-changelog.emacs24 to provide /usr/bin/grep-changelog (grep-changelog) in auto mode
+[  420.526381] cloud-init[1234]: Setting up emacs24-el (24.5+1-6ubuntu1) ...
+[  420.527857] cloud-init[1234]: Setting up libasound2-data (1.1.0-0ubuntu1) ...
+[  420.529181] cloud-init[1234]: Setting up libasound2:amd64 (1.1.0-0ubuntu1) ...
+[  420.533303] cloud-init[1234]: Setting up emacs24-nox (24.5+1-6ubuntu1) ...
+[  420.537025] cloud-init[1234]: update-alternatives: using /usr/bin/emacs24-nox to provide /usr/bin/emacs (emacs) in auto mode
+[  420.581576] cloud-init[1234]: Install emacsen-common for emacs24
+[  420.584149] cloud-init[1234]: emacsen-common: Handling install of emacsen flavor emacs24
+[  430.665100] cloud-init[1234]: Wrote /etc/emacs24/site-start.d/00debian-vars.elc
+[  430.670217] cloud-init[1234]: Wrote /usr/share/emacs24/site-lisp/debian-startup.elc
+[  430.674328] cloud-init[1234]: Setting up libfakeroot:amd64 (1.20.2-1ubuntu1) ...
+[  430.675504] cloud-init[1234]: Setting up fakeroot (1.20.2-1ubuntu1) ...
+[  430.677941] cloud-init[1234]: update-alternatives: using /usr/bin/fakeroot-sysv to provide /usr/bin/fakeroot (fakeroot) in auto mode
+[  430.681148] cloud-init[1234]: Setting up libbabeltrace1:amd64 (1.3.2-1) ...
+[  430.682430] cloud-init[1234]: Setting up libbabeltrace-ctf1:amd64 (1.3.2-1) ...
+[  430.683453] cloud-init[1234]: Setting up gdb (7.11.1-0ubuntu1~16.04) ...
+[  430.684861] cloud-init[1234]: Setting up gdbserver (7.11.1-0ubuntu1~16.04) ...
+[  430.686059] cloud-init[1234]: Setting up geoip-database-extra (20160408-1) ...
+[  430.687126] cloud-init[1234]: Setting up ieee-data (20150531.1) ...
+[  430.688132] cloud-init[1234]: Setting up javascript-common (11) ...
+[  430.697549] cloud-init[1234]: Setting up slsh (2.3.0-2ubuntu1) ...
+[  430.698555] cloud-init[1234]: Setting up jed-common (1:0.99.19-4) ...
+[  430.870481] cloud-init[1234]: Running /usr/share/jed/compile/jed-common...done
+[  430.879108] cloud-init[1234]: Setting up jed (1:0.99.19-4) ...
+[  430.884485] cloud-init[1234]: update-alternatives: using /usr/bin/jed to provide /usr/bin/editor (editor) in auto mode
+[  430.888475] cloud-init[1234]: update-alternatives: using /usr/bin/jed to provide /usr/bin/jed-script (jed-script) in auto mode
+[  441.101647] cloud-init[1234]: Updating precompiled files...done
+[  441.105096] cloud-init[1234]: Setting up krb5-config (2.3) ...
+[  463.391203] cloud-init[1234]: Setting up libgssrpc4:amd64 (1.13.2+dfsg-5) ...
+[  463.392714] cloud-init[1234]: Setting up libkadm5clnt-mit9:amd64 (1.13.2+dfsg-5) ...
+[  463.394552] cloud-init[1234]: Setting up libkdb5-8:amd64 (1.13.2+dfsg-5) ...
+[  463.396383] cloud-init[1234]: Setting up libkadm5srv-mit9:amd64 (1.13.2+dfsg-5) ...
+[  463.398098] cloud-init[1234]: Setting up krb5-user (1.13.2+dfsg-5) ...
+[  463.399573] cloud-init[1234]: Setting up libaio1:amd64 (0.3.110-2) ...
+[  463.401316] cloud-init[1234]: Setting up libaio-dev (0.3.110-2) ...
+[  463.402761] cloud-init[1234]: Setting up libalgorithm-diff-perl (1.19.03-1) ...
+[  463.404462] cloud-init[1234]: Setting up libalgorithm-diff-xs-perl (0.04-4build1) ...
+[  463.406159] cloud-init[1234]: Setting up libalgorithm-merge-perl (0.08-3) ...
+[  463.407757] cloud-init[1234]: Setting up libarchive13:amd64 (3.1.2-11ubuntu0.16.04.2) ...
+[  463.409574] cloud-init[1234]: Setting up libarchive-dev:amd64 (3.1.2-11ubuntu0.16.04.2) ...
+[  463.411248] cloud-init[1234]: Setting up libasprintf-dev:amd64 (0.19.7-2ubuntu3) ...
+[  463.412845] cloud-init[1234]: Setting up libavahi-common-data:amd64 (0.6.32~rc+dfsg-1ubuntu2) ...
+[  463.414471] cloud-init[1234]: Setting up libavahi-common3:amd64 (0.6.32~rc+dfsg-1ubuntu2) ...
+[  463.416048] cloud-init[1234]: Setting up libavahi-client3:amd64 (0.6.32~rc+dfsg-1ubuntu2) ...
+[  463.417702] cloud-init[1234]: Setting up libbsd-dev:amd64 (0.8.2-1) ...
+[  463.419197] cloud-init[1234]: Setting up libcap-dev:amd64 (1:2.24-12) ...
+[  463.420661] cloud-init[1234]: Setting up libcommon-sense-perl (3.74-1build1) ...
+[  463.422139] cloud-init[1234]: Setting up libcups2:amd64 (2.1.3-4) ...
+[  463.423471] cloud-init[1234]: Setting up libcups2-dev:amd64 (2.1.3-4) ...
+[  463.424928] cloud-init[1234]: Setting up libdw1:amd64 (0.165-3ubuntu1) ...
+[  463.426240] cloud-init[1234]: Setting up libexpat1-dev:amd64 (2.1.0-7ubuntu0.16.04.2) ...
+[  463.427555] cloud-init[1234]: Setting up libfile-fcntllock-perl (0.22-3) ...
+[  463.428939] cloud-init[1234]: Setting up libgettextpo0:amd64 (0.19.7-2ubuntu3) ...
+[  463.434229] cloud-init[1234]: Setting up libgettextpo-dev:amd64 (0.19.7-2ubuntu3) ...
+[  463.435589] cloud-init[1234]: Setting up libgmpxx4ldbl:amd64 (2:6.1.0+dfsg-2) ...
+[  463.436932] cloud-init[1234]: Setting up libgmp-dev:amd64 (2:6.1.0+dfsg-2) ...
+[  463.438215] cloud-init[1234]: Setting up libgnutlsxx28:amd64 (3.4.10-4ubuntu1.1) ...
+[  463.439529] cloud-init[1234]: Setting up nettle-dev (3.2-1) ...
+[  463.440787] cloud-init[1234]: Setting up zlib1g-dev:amd64 (1:1.2.8.dfsg-2ubuntu4) ...
+[  463.442164] cloud-init[1234]: Setting up libtasn1-6-dev:amd64 (4.7-3ubuntu0.16.04.1) ...
+[  463.443628] cloud-init[1234]: Setting up libp11-kit-dev:amd64 (0.23.2-5~ubuntu16.04.1) ...
+[  463.445267] cloud-init[1234]: Setting up pkg-config (0.29.1-0ubuntu1) ...
+[  463.505130] cloud-init[1234]: Setting up libidn11-dev (1.32-3ubuntu1.1) ...
+[  463.506189] cloud-init[1234]: Setting up libgnutls-dev:amd64 (3.4.10-4ubuntu1.1) ...
+[  463.506986] cloud-init[1234]: Setting up libgpgme11:amd64 (1.6.0-1) ...
+[  463.507874] cloud-init[1234]: Setting up libjs-jquery (1.11.3+dfsg-4) ...
+[  463.508588] cloud-init[1234]: Setting up libjson-perl (2.90-1) ...
+[  463.509358] cloud-init[1234]: Setting up libtypes-serialiser-perl (1.0-1) ...
+[  463.510623] cloud-init[1234]: Setting up libjson-xs-perl (3.010-2build1) ...
+[  463.512115] cloud-init[1234]: Setting up liblua5.2-0:amd64 (5.2.4-1ubuntu1) ...
+[  463.513218] cloud-init[1234]: Setting up libsys-hostname-long-perl (1.5-1) ...
+[  463.514418] cloud-init[1234]: Setting up libmail-sendmail-perl (0.79.16-1) ...
+[  463.515577] cloud-init[1234]: Setting up libtinfo-dev:amd64 (6.0+20160213-1ubuntu1) ...
+[  463.516774] cloud-init[1234]: Setting up libncurses5-dev:amd64 (6.0+20160213-1ubuntu1) ...
+[  463.517071] cloud-init[1234]: Setting up libnl-3-200:amd64 (3.2.27-1) ...
+[  463.517338] cloud-init[1234]: Setting up libnl-genl-3-200:amd64 (3.2.27-1) ...
+[  463.523250] cloud-init[1234]: Setting up libpam0g-dev:amd64 (1.1.8-3.2ubuntu2) ...
+[  463.525685] cloud-init[1234]: Setting up libparse-yapp-perl (1.05-12) ...
+[  463.527868] cloud-init[1234]: Setting up libpopt-dev:amd64 (1.16-10) ...
+[  463.529973] cloud-init[1234]: Setting up libpython2.7:amd64 (2.7.12-1ubuntu0~16.04.1) ...
+[  463.532067] cloud-init[1234]: Setting up libpython2.7-dev:amd64 (2.7.12-1ubuntu0~16.04.1) ...
+[  463.532724] cloud-init[1234]: Setting up libpython-dev:amd64 (2.7.11-1) ...
+[  463.533511] cloud-init[1234]: Setting up libpython-all-dev:amd64 (2.7.11-1) ...
+[  463.534428] cloud-init[1234]: Setting up libpython3.5-dev:amd64 (3.5.2-2ubuntu0~16.04.1) ...
+[  463.535205] cloud-init[1234]: Setting up libpython3-dev:amd64 (3.5.1-3) ...
+[  463.536121] cloud-init[1234]: Setting up libreadline6-dev:amd64 (6.3-8ubuntu2) ...
+[  463.537064] cloud-init[1234]: Setting up libreadline-dev:amd64 (6.3-8ubuntu2) ...
+[  463.537931] cloud-init[1234]: Setting up libsmi2ldbl:amd64 (0.4.8+dfsg2-11) ...
+[  463.539873] cloud-init[1234]: Setting up libunwind8 (1.1-4.1) ...
+[  463.541168] cloud-init[1234]: Setting up libjs-openlayers (2.13.1+ds2-2) ...
+[  463.542761] cloud-init[1234]: Setting up libwireshark-data (2.0.2+ga16e22e-1) ...
+[  463.544450] cloud-init[1234]: Setting up libc-ares2:amd64 (1.10.0-3) ...
+[  463.545899] cloud-init[1234]: Setting up libwsutil6:amd64 (2.0.2+ga16e22e-1) ...
+[  463.554746] cloud-init[1234]: Setting up libwiretap5:amd64 (2.0.2+ga16e22e-1) ...
+[  463.556175] cloud-init[1234]: Setting up libwireshark6:amd64 (2.0.2+ga16e22e-1) ...
+[  463.557505] cloud-init[1234]: Setting up libxslt1.1:amd64 (1.1.28-2.1) ...
+[  463.558906] cloud-init[1234]: Setting up linux-cloud-tools-common (4.4.0-51.72) ...
+[[0;32m  OK  [0m] Started ACPI event daemon.
+[[0;32m  OK  [0m] Started ACPI event daemon.
+[[0;32m  OK  [0m] Started ACPI event daemon.
+[[0;32m  OK  [0m] Started ACPI event daemon.
+[  464.485908] cloud-init[1234]: Setting up linux-cloud-tools-4.4.0-51 (4.4.0-51.72) ...
+[  464.487462] cloud-init[1234]: Setting up linux-cloud-tools-4.4.0-51-generic (4.4.0-51.72) ...
+[  464.488953] cloud-init[1234]: Setting up linux-cloud-tools-generic (4.4.0.51.54) ...
+[  464.490346] cloud-init[1234]: Setting up linux-tools-common (4.4.0-51.72) ...
+[  464.491628] cloud-init[1234]: Setting up linux-tools-4.4.0-51 (4.4.0-51.72) ...
+[  464.492999] cloud-init[1234]: Setting up linux-tools-4.4.0-51-generic (4.4.0-51.72) ...
+[  464.494429] cloud-init[1234]: Setting up linux-tools-generic (4.4.0.51.54) ...
+[  464.495723] cloud-init[1234]: Setting up manpages-dev (4.04-2) ...
+[  464.496997] cloud-init[1234]: Setting up python-all (2.7.11-1) ...
+[  464.498230] cloud-init[1234]: Setting up python2.7-dev (2.7.12-1ubuntu0~16.04.1) ...
+[  464.499586] cloud-init[1234]: Setting up python-dev (2.7.11-1) ...
+[  464.500782] cloud-init[1234]: Setting up python-all-dev (2.7.11-1) ...
+[  464.501940] cloud-init[1234]: Setting up python-babel-localedata (1.3+dfsg.1-6) ...
+[  464.503289] cloud-init[1234]: Setting up python-pkg-resources (20.7.0-1) ...
+[  464.658883] cloud-init[1234]: Setting up python-tz (2014.10~dfsg1-0ubuntu2) ...
+[  464.797997] cloud-init[1234]: Setting up python-babel (1.3+dfsg.1-6) ...
+[  464.802877] cloud-init[1234]: update-alternatives: using /usr/bin/pybabel-python2 to provide /usr/bin/pybabel (pybabel) in auto mode
+[  464.944574] cloud-init[1234]: Setting up python-bs4 (4.4.1-1) ...
+[  465.056370] cloud-init[1234]: Setting up python-cffi-backend (1.5.2-1ubuntu1) ...
+[  465.057890] cloud-init[1234]: Setting up python-chardet (2.3.0-2) ...
+[  465.309540] cloud-init[1234]: Setting up python-crypto (2.6.1-6build1) ...
+[  465.520687] cloud-init[1234]: Setting up python-enum34 (1.1.2-1) ...
+[  465.615497] cloud-init[1234]: Setting up python-idna (2.0-3) ...
+[  465.768415] cloud-init[1234]: Setting up python-ipaddress (1.0.16-1) ...
+[  465.849661] cloud-init[1234]: Setting up python-pyasn1 (0.1.9-1) ...
+[  465.974535] cloud-init[1234]: Setting up python-cryptography (1.2.3-1ubuntu0.1) ...
+[  466.118616] cloud-init[1234]: Setting up python-dbus (1.2.0-3) ...
+[  466.123545] cloud-init[1234]: Remove stale byte-compiled files...
+[  466.235361] cloud-init[1234]: Setting up python-pbr (1.8.0-4ubuntu1) ...
+[  466.240472] cloud-init[1234]: update-alternatives: using /usr/bin/python2-pbr to provide /usr/bin/pbr (pbr) in auto mode
+[  466.365169] cloud-init[1234]: Setting up python-funcsigs (0.4-2) ...
+[  466.456334] cloud-init[1234]: Setting up python-debtcollector (1.3.0-2) ...
+[  466.561147] cloud-init[1234]: Setting up python-dnspython (1.12.0-1) ...
+[  466.740340] cloud-init[1234]: Setting up python-gi (3.20.0-0ubuntu1) ...
+[  466.859376] cloud-init[1234]: Setting up python-gpgme (0.3-1.1) ...
+[  466.936620] cloud-init[1234]: Setting up python-html5lib (0.999-4) ...
+[  467.121098] cloud-init[1234]: Setting up python-keyring (7.3-1ubuntu1) ...
+[  467.230951] cloud-init[1234]: Setting up python-iso8601 (0.1.11-1) ...
+[  467.315259] cloud-init[1234]: Setting up python-lxml (3.5.0-1build1) ...
+[  467.421741] cloud-init[1234]: Setting up python-positional (1.0.1-2) ...
+[  467.504789] cloud-init[1234]: Setting up python-urllib3 (1.13.1-2ubuntu0.16.04.1) ...
+[  467.607378] cloud-init[1234]: Setting up python-requests (2.9.1-3) ...
+[  467.715549] cloud-init[1234]: Setting up python-stevedore (1.12.0-1) ...
+[  467.797436] cloud-init[1234]: Setting up python-keystoneauth1 (2.4.1-1ubuntu0.16.04.1) ...
+[  467.969536] cloud-init[1234]: Setting up python-monotonic (0.6-2) ...
+[  468.055325] cloud-init[1234]: Setting up python-msgpack (0.4.6-1build1) ...
+[  468.140843] cloud-init[1234]: Setting up python-openssl (0.15.1-2build1) ...
+[  468.294858] cloud-init[1234]: Setting up python-ndg-httpsclient (0.4.0-3) ...
+[  468.394991] cloud-init[1234]: Setting up python-netaddr (0.7.18-1) ...
+[  468.522568] cloud-init[1234]: Setting up python-netifaces (0.10.4-0.1build2) ...
+[  468.524414] cloud-init[1234]: Setting up python-oslo.i18n (3.5.0-2) ...
+[  468.635825] cloud-init[1234]: Setting up python-oslo.utils (3.8.0-2) ...
+[  468.776709] cloud-init[1234]: Setting up python-oslo.serialization (2.4.0-2) ...
+[  468.870103] cloud-init[1234]: Setting up python-prettytable (0.7.2-3) ...
+[  468.970133] cloud-init[1234]: Setting up python-simplejson (3.8.1-1ubuntu2) ...
+[  469.088909] cloud-init[1234]: Setting up python-novaclient (2:3.3.1-2ubuntu1) ...
+[  469.094167] cloud-init[1234]: update-alternatives: using /usr/bin/python2-nova to provide /usr/bin/nova (nova) in auto mode
+[  469.411308] cloud-init[1234]: Setting up python-ptyprocess (0.5-1) ...
+[  469.497011] cloud-init[1234]: Setting up python-pexpect (4.0.1-1) ...
+[  469.600535] cloud-init[1234]: Setting up python-secretstorage (2.1.3-1) ...
+[  469.680194] cloud-init[1234]: Setting up python3.5-dev (3.5.2-2ubuntu0~16.04.1) ...
+[  469.682648] cloud-init[1234]: Setting up python3-dev (3.5.1-3) ...
+[  469.683946] cloud-init[1234]: Setting up python3-dnspython (1.12.0-0ubuntu3) ...
+[  470.320480] cloud-init[1234]: Setting up python3-gpgme (0.3-1.1) ...
+[  470.525283] cloud-init[1234]: Setting up rng-tools (5-0ubuntu3) ...
+[[0;32m  OK  [0m] Started ACPI event daemon.
+[[0;32m  OK  [0m] Started ACPI event daemon.
+         Starting rng-tools.service...
+[[0;32m  OK  [0m] Started rng-tools.service.
+[  470.955538] cloud-init[1234]: Setting up wireshark-common (2.0.2+ga16e22e-1) ...
+[  471.129794] cloud-init[1234]: Setting up tshark (2.0.2+ga16e22e-1) ...
+[  471.130936] cloud-init[1234]: Setting up xsltproc (1.1.28-2.1) ...
+[  471.131955] cloud-init[1234]: Setting up libattr1-dev:amd64 (1:2.4.47-2) ...
+[  471.132918] cloud-init[1234]: Setting up libacl1-dev (2.2.52-3) ...
+[  471.133911] cloud-init[1234]: Setting up libc6-dbg:amd64 (2.23-0ubuntu4) ...
+[  471.134914] cloud-init[1234]: Setting up libldap2-dev:amd64 (2.4.42+dfsg-2ubuntu3.1) ...
+[  471.135982] cloud-init[1234]: Setting up libtasn1-doc (4.7-3ubuntu0.16.04.1) ...
+[  471.137085] cloud-init[1234]: Processing triggers for sgml-base (1.26+nmu4ubuntu1) ...
+[  471.145666] cloud-init[1234]: Setting up docbook-xml (4.5-7.3) ...
+[  472.995096] cloud-init[1234]: Processing triggers for sgml-base (1.26+nmu4ubuntu1) ...
+[  473.009947] cloud-init[1234]: Setting up debhelper (9.20160115ubuntu3) ...
+[  473.011975] cloud-init[1234]: Setting up dh-strip-nondeterminism (0.015-1) ...
+[  473.020244] cloud-init[1234]: Processing triggers for libc-bin (2.23-0ubuntu4) ...
+[  473.218188] cloud-init[1234]: Processing triggers for ureadahead (0.100.0-19) ...
+[  473.362004] cloud-init[1234]: Processing triggers for systemd (229-4ubuntu12) ...
+[[0;32m  OK  [0m] Started ACPI event daemon.
+[  474.496884] cloud-init[1234]: + echo this is /run/shm/samba-scripts/run
+[  474.498140] cloud-init[1234]: this is /run/shm/samba-scripts/run
+[  474.499136] cloud-init[1234]: + echo PATH=/usr/local/samba/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+[  474.505947] cloud-init[1234]: + echo PATH=/usr/local/samba/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+[  474.509477] cloud-init[1234]: + su ubuntu -l -c echo PATH=/usr/local/samba/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+[[0;32m  OK  [0m] Created slice User Slice of ubuntu.
+         Starting User Manager for UID 1000...
+[[0;32m  OK  [0m] Started Session c1 of user ubuntu.
+[[0;32m  OK  [0m] Started User Manager for UID 1000.
+[  475.032627] cloud-init[1234]: + echo PYTHONPATH=/usr/local/samba/lib/python2.7
+[  475.033494] cloud-init[1234]: + su ubuntu -l -c echo PYTHONPATH=/usr/local/samba/lib/python2.7
+         Stopping User Manager for UID 1000...
+[[0;32m  OK  [0m] Created slice User Slice of ubuntu.
+[[0;32m  OK  [0m] Started Session c2 of user ubuntu.
+         Starting User Manager for UID 1000...
+[[0;32m  OK  [0m] Started User Manager for UID 1000.
+[  475.119314] cloud-init[1234]: + su ubuntu -l -c /run/shm/samba-scripts/clone-samba
+         Stopping User Manager for UID 1000...
+[[0;32m  OK  [0m] Stopped User Manager for UID 1000.
+[[0;32m  OK  [0m] Removed slice User Slice of ubuntu.
+[[0;32m  OK  [0m] Created slice user-1000.slice.
+         Starting User Manager for UID 1000...
+[[0;32m  OK  [0m] Started Session c3 of user ubuntu.
+[[0;32m  OK  [0m] Started User Manager for UID 1000.
+[  475.179277] cloud-init[1234]: + set -e
+[  475.179886] cloud-init[1234]: + cd /home/ubuntu
+[  475.180429] cloud-init[1234]: + git clone git://git.catalyst.net.nz/samba.git
+[  475.284071] cloud-init[1234]: Cloning into 'samba'...
+[  538.115855] cloud-init[1234]: + cd samba
+[  538.117365] cloud-init[1234]: + git remote add catalyst git://git.catalyst.net.nz/samba.git
+[  538.135957] cloud-init[1234]: + git remote add abartlet git://git.samba.org/abartlet/samba.git
+[  538.139820] cloud-init[1234]: + git remote set-url origin git://git.samba.org/samba.git
+[  538.143464] cloud-init[1234]: + git fetch catalyst
+[  558.266616] cloud-init[1234]: From git://git.catalyst.net.nz/samba
+[  558.268187] cloud-init[1234]:  * [new branch]      4-5-2-test -> catalyst/4-5-2-test
+[  558.269781] cloud-init[1234]:  * [new branch]      4-5-plus-ctdb -> catalyst/4-5-plus-ctdb
+[  558.272227] cloud-init[1234]:  * [new branch]      4.4-faster-rpc -> catalyst/4.4-faster-rpc
+[  558.273518] cloud-init[1234]:  * [new branch]      abartlet-backupkey-1 -> catalyst/abartlet-backupkey-1
+[  558.274725] cloud-init[1234]:  * [new branch]      ad-dc-winbindd -> catalyst/ad-dc-winbindd
+[  558.275239] cloud-init[1234]:  * [new branch]      allow-no-krb5-checksum -> catalyst/allow-no-krb5-checksum
+[  558.275723] cloud-init[1234]:  * [new branch]      allow-no-krb5-checksum-HACK -> catalyst/allow-no-krb5-checksum-HACK
+[  558.278798] cloud-init[1234]:  * [new branch]      array-size-protection -> catalyst/array-size-protection
+[  558.280855] cloud-init[1234]:  * [new branch]      autobuild  -> catalyst/autobuild
+[  558.282593] cloud-init[1234]:  * [new branch]      autobuild-2016-07-03_1 -> catalyst/autobuild-2016-07-03_1
+[  558.284722] cloud-init[1234]:  * [new branch]      autobuild-2016-07-28 -> catalyst/autobuild-2016-07-28
+[  558.286567] cloud-init[1234]:  * [new branch]      autobuild-2016-07-28-plus-ctdb -> catalyst/autobuild-2016-07-28-plus-ctdb
+[  558.288680] cloud-init[1234]:  * [new branch]      autobuild-2016-07-28-plus-ctdb-diag -> catalyst/autobuild-2016-07-28-plus-ctdb-diag
+[  558.290685] cloud-init[1234]:  * [new branch]      autobuild-2016-07-28-plus-rpc-timeout -> catalyst/autobuild-2016-07-28-plus-rpc-timeout
+[  558.292896] cloud-init[1234]:  * [new branch]      autobuild-hooray -> catalyst/autobuild-hooray
+[  558.294545] cloud-init[1234]:  * [new branch]      autobuild-logger -> catalyst/autobuild-logger
+[  558.296288] cloud-init[1234]:  * [new branch]      backupkey  -> catalyst/backupkey
+[  558.297800] cloud-init[1234]:  * [new branch]      bad-packet -> catalyst/bad-packet
+[  558.299344] cloud-init[1234]:  * [new branch]      before-service-ptrs -> catalyst/before-service-ptrs
+[  558.301085] cloud-init[1234]:  * [new branch]      before-service-ptrs-review -> catalyst/before-service-ptrs-review
+[  558.302758] cloud-init[1234]:  * [new branch]      before-service-ptrs-review2 -> catalyst/before-service-ptrs-review2
+[  558.304461] cloud-init[1234]:  * [new branch]      before-service-ptrs-review3 -> catalyst/before-service-ptrs-review3
+[  558.306133] cloud-init[1234]:  * [new branch]      bob-la-expire -> catalyst/bob-la-expire
+[  558.307496] cloud-init[1234]:  * [new branch]      broken-on-purpose -> catalyst/broken-on-purpose
+[  558.309069] cloud-init[1234]:  * [new branch]      bug-10991  -> catalyst/bug-10991
+[  558.310397] cloud-init[1234]:  * [new branch]      check-password-script -> catalyst/check-password-script
+[  558.311961] cloud-init[1234]:  * [new branch]      check-pw-test -> catalyst/check-pw-test
+[  558.313342] cloud-init[1234]:  * [new branch]      current    -> catalyst/current
+[  558.314606] cloud-init[1234]:  * [new branch]      dSHuristics-userPassword-perf -> catalyst/dSHuristics-userPassword-perf
+[  558.316257] cloud-init[1234]:  * [new branch]      dbcheck-dns -> catalyst/dbcheck-dns
+[  558.317535] cloud-init[1234]:  * [new branch]      dbcheck-links -> catalyst/dbcheck-links
+[  558.318869] cloud-init[1234]:  * [new branch]      dbchecker-fixes -> catalyst/dbchecker-fixes
+[  558.320305] cloud-init[1234]:  * [new branch]      dbchecker-fixes-2 -> catalyst/dbchecker-fixes-2
+[  558.321680] cloud-init[1234]:  * [new branch]      defaultObjectCategory-fixes -> catalyst/defaultObjectCategory-fixes
+[  558.323177] cloud-init[1234]:  * [new branch]      deleted-objects -> catalyst/deleted-objects
+[  558.324451] cloud-init[1234]:  * [new branch]      demote-dc  -> catalyst/demote-dc
+[  558.325541] cloud-init[1234]:  * [new branch]      demote-dc-for-master -> catalyst/demote-dc-for-master
+[  558.326774] cloud-init[1234]:  * [new branch]      dfs        -> catalyst/dfs
+[  558.328137] cloud-init[1234]:  * [new branch]      dn+binary  -> catalyst/dn+binary
+[  558.329201] cloud-init[1234]:  * [new branch]      dns-all-fixes -> catalyst/dns-all-fixes
+[  558.330970] cloud-init[1234]:  * [new branch]      dns-fixes  -> catalyst/dns-fixes
+         Stopping User Manager for UID 1000...
+[  558.355241] cloud-init[1234]:  * [new branch]      dns-forwarder -> catalyst/dns-forwarder
+[[0;32m  OK  [0m] Stopped User Manager for UID 1000.
+[  558.360167] cloud-init[1234]:  * [new branch]      dns-forwarder-review -> catalyst/dns-forwarder-review[[0;32m  OK  [0m] Removed slice user-1000.slice.
+
+[  558.362742] cloud-init[1234]:  * [new branch]      dns-hostname -> catalyst/dns-hostname
+[[0;32m  OK  [0m] Created slice user-1000.slice.
+         Starting User Manager for UID 1000...
+[[0;32m  OK  [0m] Started Session c4 of user ubuntu.
+[  558.374302] cloud-init[1234]:  * [new branch]      dns-tkey   -> catalyst/dns-tkey
+[  558.380157] cloud-init[1234]:  * [new branch]      dns-to-review -> catalyst/dns-to-review
+[  558.381542] cloud-init[1234]:  * [new branch]      dns-update-doxygen -> catalyst/dns-update-doxygen
+[  558.386284] cloud-init[1234]:  * [new branch]      dnscmdtest -> catalyst/dnscmdtest
+[  558.387592] cloud-init[1234]:  * [new branch]      domain-clone -> catalyst/domain-clone
+[  558.390956] cloud-init[1234]:  * [new branch]      dpapi      -> catalyst/dpapi
+[  558.391833] cloud-init[1234]:  * [new branch]      durable-open -> catalyst/durable-open
+[  558.392616] cloud-init[1234]:  * [new branch]      fast-fast-fast -> catalyst/fast-fast-fast
+[  558.393434] cloud-init[1234]:  * [new branch]      faster-ldb-for-master -> catalyst/faster-ldb-for-master
+[  558.394225] cloud-init[1234]:  * [new branch]      faster-ldb-idx-without-cache-or-idxptr-talloc -> catalyst/faster-ldb-idx-without-cache-or-idxptr-talloc
+[  558.394610] cloud-init[1234]:  * [new branch]      faster-ldb-less-talloc -> catalyst/faster-ldb-less-talloc
+[  558.394980] cloud-init[1234]:  * [new branch]      faster-ldb-less-talloc-LATER -> catalyst/faster-ldb-less-talloc-LATER
+[  558.395266] cloud-init[1234]:  * [new branch]      faster-ldb-less-talloc-on-perf-test -> catalyst/faster-ldb-less-talloc-on-perf-test
+[  558.395657] cloud-init[1234]:  * [new branch]      faster-ldb-less-talloc-on-perf-test-2 -> catalyst/faster-ldb-less-talloc-on-perf-test-2
+[  558.396134] cloud-init[1234]:  * [new branch]      faster-ldb-less-talloc-on-perf-test-3 -> catalyst/faster-ldb-less-talloc-on-perf-test-3
+[  558.396409] cloud-init[1234]:  * [new branch]      faster-ldb-less-talloc-on-perf-test-4 -> catalyst/faster-ldb-less-talloc-on-perf-test-4
+[  558.396793] cloud-init[1234]:  * [new branch]      faster-ldb-onelevel -> catalyst/faster-ldb-onelevel
+[  558.397239] cloud-init[1234]:  * [new branch]      faster-libndr-reviewed -> catalyst/faster-libndr-reviewed
+[  558.397632] cloud-init[1234]:  * [new branch]      faster-samba-tool -> catalyst/faster-samba-tool
+[  558.398019] cloud-init[1234]:  * [new branch]      faster-samba-tool-0 -> catalyst/faster-samba-tool-0
+[  558.398213] cloud-init[1234]:  * [new branch]      faster-samba-tool-1 -> catalyst/faster-samba-tool-1
+[  558.398616] cloud-init[1234]:  * [new branch]      fdpass-i386 -> catalyst/fdpass-i386
+[  558.399005] cloud-init[1234]:  * [new branch]      fix-drs-metze -> catalyst/fix-drs-metze
+[  558.399159] cloud-init[1234]:  * [new branch]      fix-fsmo   -> catalyst/fix-fsmo
+[  558.399456] cloud-init[1234]:  * [new branch]      fix-fsmo-2 -> catalyst/fix-fsmo-2
+[  558.399869] cloud-init[1234]:  * [new branch]      fix-fsmo-3 -> catalyst/fix-fsmo-3
+[  558.400348] cloud-init[1234]:  * [new branch]      fix-fsmo-4 -> catalyst/fix-fsmo-4
+[  558.400737] cloud-init[1234]:  * [new branch]      fix-fsmo-5 -> catalyst/fix-fsmo-5
+[  558.401122] cloud-init[1234]:  * [new branch]      fix-fsmo-5a -> catalyst/fix-fsmo-5a
+[  558.401313] cloud-init[1234]:  * [new branch]      fix-fsmo-6 -> catalyst/fix-fsmo-6
+[  558.401705] cloud-init[1234]:  * [new branch]      fix-gnutls -> catalyst/fix-gnutls
+[  558.401971] cloud-init[1234]:  * [new branch]      fix-master-regressions -> catalyst/fix-master-regressions
+[  558.402417] cloud-init[1234]:  * [new branch]      fix-mkdir-dup -> catalyst/fix-mkdir-dup
+[  558.402803] cloud-init[1234]:  * [new branch]      fix-repl-slow-1 -> catalyst/fix-repl-slow-1
+[  558.403192] cloud-init[1234]:  * [new branch]      fix-repl-slow-2 -> catalyst/fix-repl-slow-2
+[  558.403726] cloud-init[1234]:  * [new branch]      fix-repl-slow-3 -> catalyst/fix-repl-slow-3
+[  558.404097] cloud-init[1234]:  * [new branch]      fix-schema-120 -> catalyst/fix-schema-120
+[  558.404512] cloud-init[1234]:  * [new branch]      fix-schema-drs-flapping-2 -> catalyst/fix-schema-drs-flapping-2
+[  558.404868] cloud-init[1234]:  * [new branch]      fix-schema-drs-flapping-3 -> catalyst/fix-schema-drs-flapping-3
+[  558.405229] cloud-init[1234]:  * [new branch]      fix-sdb_hdb -> catalyst/fix-sdb_hdb
+[  558.405533] cloud-init[1234]:  * [new branch]      fix-winbind-tests-1 -> catalyst/fix-winbind-tests-1
+[  558.405899] cloud-init[1234]:  * [new branch]      fix-winbind-tests-2 -> catalyst/fix-winbind-tests-2
+[  558.406265] cloud-init[1234]:  * [new branch]      flap       -> catalyst/flap
+[  558.406462] cloud-init[1234]:  * [new branch]      for-cloud-autobuild -> catalyst/for-cloud-autobuild
+[  558.406828] cloud-init[1234]:  * [new branch]      for-master -> catalyst/for-master
+[  558.407202] cloud-init[1234]:  * [new branch]      fsmo-only  -> catalyst/fsmo-only
+[  558.407620] cloud-init[1234]:  * [new branch]      garbage-collect -> catalyst/garbage-collect
+[  558.408047] cloud-init[1234]:  * [new branch]      garbage-collect-old-improve -> catalyst/garbage-collect-old-improve
+[  558.408490] cloud-init[1234]:  * [new branch]      garming-autobuild -> catalyst/garming-autobuild
+[  558.408641] cloud-init[1234]:  * [new branch]      garming-tombstone-reanim -> catalyst/garming-tombstone-reanim
+[  558.408798] cloud-init[1234]:  * [new branch]      gctombstones -> catalyst/gctombstones
+[  558.409161] cloud-init[1234]:  * [new branch]      getncchanges-send-pfm -> catalyst/getncchanges-send-pfm
+[  558.409592] cloud-init[1234]:  * [new branch]      gpo-update -> catalyst/gpo-update
+[  558.409773] cloud-init[1234]:  * [new branch]      haphazard-optimisation -> catalyst/haphazard-optimisation
+[  558.409942] cloud-init[1234]:  * [new branch]      i386       -> catalyst/i386
+[  558.410111] cloud-init[1234]:  * [new branch]      i386-2     -> catalyst/i386-2
+[  558.410308] cloud-init[1234]:  * [new branch]      i386-4     -> catalyst/i386-4
+[  558.410553] cloud-init[1234]:  * [new branch]      i386-for-master -> catalyst/i386-for-master
+[  558.410725] cloud-init[1234]:  * [new branch]      i386-for-review -> catalyst/i386-for-review
+[  558.410896] cloud-init[1234]:  * [new branch]      import-heimdal -> catalyst/import-heimdal
+[  558.411068] cloud-init[1234]:  * [new branch]      import-lorikeet-heimdal-201601080020-on-master -> catalyst/import-lorikeet-heimdal-201601080020-on-master
+[  558.411239] cloud-init[1234]:  * [new branch]      improve-drs-replicate -> catalyst/improve-drs-replicate
+[  558.411437] cloud-init[1234]:  * [new branch]      just-schema-mismatch -> catalyst/just-schema-mismatch
+[  558.411672] cloud-init[1234]:  * [new branch]      kcc-dns-update -> catalyst/kcc-dns-update
+[  558.412473] cloud-init[1234]:  * [new branch]      kcc-intersite-1 -> catalyst/kcc-intersite-1
+[  558.412663] cloud-init[1234]:  * [new branch]      kcc-intersite-10 -> catalyst/kcc-intersite-10
+[  558.412813] cloud-init[1234]:  * [new branch]      kcc-intersite-11 -> catalyst/kcc-intersite-11
+[  558.412974] cloud-init[1234]:  * [new branch]      kcc-intersite-12 -> catalyst/kcc-intersite-12
+[  558.451848] cloud-init[1234]:  * [new branch]      kcc-intersite-14 -> catalyst/kcc-intersite-14
+[  558.452614] cloud-init[1234]:  * [new branch]      kcc-intersite-15 -> catalyst/kcc-intersite-15
+[  558.453094] cloud-init[1234]:  * [new branch]      kcc-intersite-16 -> catalyst/kcc-intersite-16
+[  558.453563] cloud-init[1234]:  * [new branch]      kcc-intersite-17 -> catalyst/kcc-intersite-17
+[  558.454196] cloud-init[1234]:  * [new branch]      kcc-intersite-18 -> catalyst/kcc-intersite-18
+[  558.454781] cloud-init[1234]:  * [new branch]      kcc-intersite-19 -> catalyst/kcc-intersite-19
+[  558.455312] cloud-init[1234]:  * [new branch]      kcc-intersite-2 -> catalyst/kcc-intersite-2
+[  558.455755] cloud-init[1234]:  * [new branch]      kcc-intersite-20 -> catalyst/kcc-intersite-20
+[  558.456594] cloud-init[1234]:  * [new branch]      kcc-intersite-22 -> catalyst/kcc-intersite-22
+[  558.457034] cloud-init[1234]:  * [new branch]      kcc-intersite-24 -> catalyst/kcc-intersite-24
+[  558.457328] cloud-init[1234]:  * [new branch]      kcc-intersite-25 -> catalyst/kcc-intersite-25
+[  558.457781] cloud-init[1234]:  * [new branch]      kcc-intersite-26 -> catalyst/kcc-intersite-26
+[  558.458141] cloud-init[1234]:  * [new branch]      kcc-intersite-27 -> catalyst/kcc-intersite-27
+[  558.458638] cloud-init[1234]:  * [new branch]      kcc-intersite-28 -> catalyst/kcc-intersite-28
+[  558.459125] cloud-init[1234]:  * [new branch]      kcc-intersite-29 -> catalyst/kcc-intersite-29
+[  558.459648] cloud-init[1234]:  * [new branch]      kcc-intersite-29-review -> catalyst/kcc-intersite-29-review
+[  558.460495] cloud-init[1234]:  * [new branch]      kcc-intersite-3 -> catalyst/kcc-intersite-3
+[  558.460864] cloud-init[1234]:  * [new branch]      kcc-intersite-4 -> catalyst/kcc-intersite-4
+[  558.461201] cloud-init[1234]:  * [new branch]      kcc-intersite-5 -> catalyst/kcc-intersite-5
+[[  558.733876] serial8250: too much work for irq4
+  558.461516] cloud-init[1234]:  * [new branch]      kcc-intersite-6 -> catalyst/kcc-intersite-6
+[  558.461919] cloud-init[1234]:  * [new branch]      kcc-intersite-7 -> catalyst/kcc-intersite-7
+[  558.462282] cloud-init[1234]:  * [new branch]      kcc-intersite-8 -> catalyst/kcc-intersite-8
+[  558.462735] cloud-init[1234]:  * [new branch]      kcc-intersite-9 -> catalyst/kcc-intersite-9
+[  558.463087] cloud-init[1234]:  * [new branch]      kcc-intersite-WIP -> catalyst/kcc-intersite-WIP
+[  558.463508] cloud-init[1234]:  * [new branch]      kcc-intersite-douglas -> catalyst/kcc-intersite-douglas
+[  558.463909] cloud-init[1234]:  * [new branch]      kcc-intersite-for-master-27 -> catalyst/kcc-intersite-for-master-27
+[  558.465205] cloud-init[1234]:  * [new branch]      kcc-master -> catalyst/kcc-master
+[  558.465692] cloud-init[1234]:  * [new branch]      kcc-what-the-spec-says -> catalyst/kcc-what-the-spec-says
+[  558.466281] cloud-init[1234]:  * [new branch]      kdc-dup-pw-inc -> catalyst/kdc-dup-pw-inc
+[  558.466751] cloud-init[1234]:  * [new branch]      la-expire  -> catalyst/la-expire
+[  558.467123] cloud-init[1234]:  * [new branch]      la-expire-pre -> catalyst/la-expire-pre
+[  558.467346] cloud-init[1234]:  * [new branch]      lastlogon  -> catalyst/lastlogon
+[  558.467817] cloud-init[1234]:  * [new branch]      lastlogon-review -> catalyst/lastlogon-review
+[  558.468297] cloud-init[1234]:  * [new branch]      lastlogon-wip -> catalyst/lastlogon-wip
+[  558.468822] cloud-init[1234]:  * [new branch]      ldb-0-els-fix -> catalyst/ldb-0-els-fix
+[  558.469415] cloud-init[1234]:  * [new branch]      ldb-0-els-prevent -> catalyst/ldb-0-els-prevent
+[  558.469973] cloud-init[1234]:  * [new branch]      ldb-adrian -> catalyst/ldb-adrian
+[  558.470983] cloud-init[1234]:  * [new branch]      ldb-fix-error-propagation -> catalyst/ldb-fix-error-propagation
+[  558.472202] cloud-init[1234]:  * [new branch]      ldb-perfs-current -> catalyst/ldb-perfs-current
+[  558.472632] cloud-init[1234]:  * [new branch]      ldb-recursive-search-for-4.3 -> catalyst/ldb-recursive-search-for-4.3
+[  558.473077] cloud-init[1234]:  * [new branch]      ldb-recursive-search-for-master -> catalyst/ldb-recursive-search-for-master
+[  558.473394] cloud-init[1234]:  * [new branch]      ldb-testing -> catalyst/ldb-testing
+[  558.473751] cloud-init[1234]:  * [new branch]      ldb_perfs  -> catalyst/ldb_perfs
+[  558.474270] cloud-init[1234]:  * [new branch]      loadparm-talloc-polish -> catalyst/loadparm-talloc-polish
+[  558.474643] cloud-init[1234]:  * [new branch]      loadparm-talloc-polish-second -> catalyst/loadparm-talloc-polish-second
+[  558.475076] cloud-init[1234]:  * [new branch]      loadparm-talloc-polish-secondv2 -> catalyst/loadparm-talloc-polish-secondv2
+[  558.475400] cloud-init[1234]:  * [new branch]      loadparm-talloc-polish2 -> catalyst/loadparm-talloc-polish2
+[  558.475789] cloud-init[1234]:  * [new branch]      loadparm-talloc-polish3 -> catalyst/loadparm-talloc-polish3
+[  558.476175] cloud-init[1234]:  * [new branch]      loadparm-talloc-polishv2 -> catalyst/loadparm-talloc-polishv2
+[  558.476585] cloud-init[1234]:  * [new branch]      loadparm-talloc-third -> catalyst/loadparm-talloc-third
+[  558.477047] cloud-init[1234]:  * [new branch]      loadparm-talloc-to-review3 -> catalyst/loadparm-talloc-to-review3
+[  558.477555] cloud-init[1234]:  * [new branch]      loadparm-talloc-to-review4 -> catalyst/loadparm-talloc-to-review4
+[  558.478026] cloud-init[1234]:  * [new branch]      loadparm-talloc-to-review5 -> catalyst/loadparm-talloc-to-review5
+[  558.478919] cloud-init[1234]:  * [new branch]      loadparm-talloc-to-review7 -> catalyst/loadparm-talloc-to-review7
+[  558.479364] cloud-init[1234]:  * [new branch]      loadparm-talloc-to-review8 -> catalyst/loadparm-talloc-to-review8
+[  558.479793] cloud-init[1234]:  * [new branch]      loadparm-talloc-wip -> catalyst/loadparm-talloc-wip
+[  558.480521] cloud-init[1234]:  * [new branch]      loadparm-talloc-wip2 -> catalyst/loadparm-talloc-wip2
+[  558.480951] cloud-init[1234]:  * [new branch]      localeffectivedeletiontime -> catalyst/localeffectivedeletiontime
+[  558.481462] cloud-init[1234]:  * [new branch]      make-a-name -> catalyst/make-a-name
+[  558.481892] cloud-init[1234]:  * [new branch]      master     -> catalyst/master
+[  558.482419] cloud-init[1234]:  * [new branch]      master-selftest -> catalyst/master-selftest
+[  558.482844] cloud-init[1234]:  * [new branch]      master-selftest2 -> catalyst/master-selftest2
+[  558.483385] cloud-init[1234]:  * [new branch]      master4-attid -> catalyst/master4-attid
+[  558.483827] cloud-init[1234]:  * [new branch]      metze-logoncount-smart -> catalyst/metze-logoncount-smart
+[  558.484633] cloud-init[1234]:  * [new branch]      metze-master4-gpgme -> catalyst/metze-master4-gpgme
+[  558.485060] cloud-init[1234]:  * [new branch]      metze-master4-smart-base -> catalyst/metze-master4-smart-base
+[  558.485575] cloud-init[1234]:  * [new branch]      metze-master4-smart-tmp -> catalyst/metze-master4-smart-tmp
+[  558.486004] cloud-init[1234]:  * [new branch]      metze-reviewed -> catalyst/metze-reviewed
+[  558.486586] cloud-init[1234]:  * [new branch]      mkdir-race -> catalyst/mkdir-race
+[  558.486920] cloud-init[1234]:  * [new branch]      more-creds-tests -> catalyst/more-creds-tests
+[  558.487435] cloud-init[1234]:  * [new branch]      move-garbage-collect-tombstones -> catalyst/move-garbage-collect-tombstones
+[  558.487837] cloud-init[1234]:  * [new branch]      multi-process-ad-dc -> catalyst/multi-process-ad-dc
+[  558.488385] cloud-init[1234]:  * [new branch]      multi-process-ad-dc-WIP -> catalyst/multi-process-ad-dc-WIP
+[  558.488764] cloud-init[1234]:  * [new branch]      multi-process-samba-ad-dc -> catalyst/multi-process-samba-ad-dc
+[  558.489224] cloud-init[1234]:  * [new branch]      multi-process-samba-ad-dc-WIP -> catalyst/multi-process-samba-ad-dc-WIP
+[  558.532348] cloud-init[1234]:  * [new branch]      multi-process-samba-ad-dc-for-review -> catalyst/multi-process-samba-ad-dc-for-review
+[  558.532873] cloud-init[1234]:  * [new branch]      multi-process-samba-ad-dc-for-test -> catalyst/multi-process-samba-ad-dc-for-test
+[  558.533379] cloud-init[1234]:  * [new branch]      multithread -> catalyst/multithread
+[  558.533774] cloud-init[1234]:  * [new branch]      ndr        -> catalyst/ndr
+[  558.534275] cloud-init[1234]:  * [new branch]      ndr-to-review -> catalyst/ndr-to-review
+[  558.535098] cloud-init[1234]:  * [new branch]      ntlm_auth_require -> catalyst/ntlm_auth_require
+[  558.535548] cloud-init[1234]:  * [new branch]      ntlm_auth_require_review -> catalyst/ntlm_auth_require_review
+[  558.535997] cloud-init[1234]:  * [new branch]      o3-abi-check-disable -> catalyst/o3-abi-check-disable
+[  558.536535] cloud-init[1234]:  * [new branch]      out-fix-mkdir-dup -> catalyst/out-fix-mkdir-dup
+[  558.536956] cloud-init[1234]:  * [new branch]      param-default -> catalyst/param-default
+[  558.537531] cloud-init[1234]:  * [new branch]      param-default-paths -> catalyst/param-default-paths
+[  558.537914] cloud-init[1234]:  * [new branch]      param-default-signed-off -> catalyst/param-default-signed-off
+[  558.538231] cloud-init[1234]:  * [new branch]      param-generate-wip -> catalyst/param-generate-wip
+[  558.538734] cloud-init[1234]:  * [new branch]      param-metadata -> catalyst/param-metadata
+[  558.539156] cloud-init[1234]:  * [new branch]      param-types -> catalyst/param-types
+[  558.539666] cloud-init[1234]:  * [new branch]      param-wip  -> catalyst/param-wip
+[  558.539975] cloud-init[1234]:  * [new branch]      param-wip2 -> catalyst/param-wip2
+[  558.540554] cloud-init[1234]:  * [new branch]      param-wip3 -> catalyst/param-wip3
+[  558.541048] cloud-init[1234]:  * [new branch]      partial-attribute -> catalyst/partial-attribute
+[  558.541660] cloud-init[1234]:  * [new branch]      password-lockout-wrong -> catalyst/password-lockout-wrong
+[  558.542142] cloud-init[1234]:  * [new branch]      password-lockout-wrong-internal -> catalyst/password-lockout-wrong-internal[  558.820642] serial8250: too much work for irq4
+
+[  558.542756] cloud-init[1234]:  * [new branch]      perf-test  -> catalyst/perf-test
+[  558.543252] cloud-init[1234]:  * [new branch]      polished-param -> catalyst/polished-param
+[  558.543871] cloud-init[1234]:  * [new branch]      polished-param2 -> catalyst/polished-param2
+[  558.544408] cloud-init[1234]:  * [new branch]      polished-param3 -> catalyst/polished-param3
+[  558.544948] cloud-init[1234]:  * [new branch]      polished-param4 -> catalyst/polished-param4
+[  558.545425] cloud-init[1234]:  * [new branch]      polished-param5 -> catalyst/polished-param5
+[  558.545996] cloud-init[1234]:  * [new branch]      polished-param6 -> catalyst/polished-param6
+[  558.546439] cloud-init[1234]:  * [new branch]      printer-fix -> catalyst/printer-fix
+[  558.546986] cloud-init[1234]:  * [new branch]      provision-faster -> catalyst/provision-faster
+[  558.547451] cloud-init[1234]:  * [new branch]      pwdLastSet-rules -> catalyst/pwdLastSet-rules
+[  558.547867] cloud-init[1234]:  * [new branch]      pwdLastSet-rules-new -> catalyst/pwdLastSet-rules-new
+[  558.548474] cloud-init[1234]:  * [new branch]      py-ntstatus -> catalyst/py-ntstatus
+[  558.549017] cloud-init[1234]:  * [new branch]      pytdb3     -> catalyst/pytdb3
+[  558.549409] cloud-init[1234]:  * [new branch]      python-ldb -> catalyst/python-ldb
+[  558.549883] cloud-init[1234]:  * [new branch]      rbtree-final -> catalyst/rbtree-final
+[  558.550779] cloud-init[1234]:  * [new branch]      realpath-deprecation -> catalyst/realpath-deprecation
+[  558.551170] cloud-init[1234]:  * [new branch]      recursive-search-4-3-garming -> catalyst/recursive-search-4-3-garming
+[  558.551566] cloud-init[1234]:  * [new branch]      recursive-search-testing -> catalyst/recursive-search-testing
+[  558.552135] cloud-init[1234]:  * [new branch]      recursive-search-testing-orig -> catalyst/recursive-search-testing-orig
+[  558.552499] cloud-init[1234]:  * [new branch]      remove-ldb_match -> catalyst/remove-ldb_match
+[  558.552976] cloud-init[1234]:  * [new branch]      remove-winbind -> catalyst/remove-winbind
+[  558.553373] cloud-init[1234]:  * [new branch]      rename-param -> catalyst/rename-param
+[  558.553863] cloud-init[1234]:  * [new branch]      repl-rename-fixes -> catalyst/repl-rename-fixes
+[  558.554257] cloud-init[1234]:  * [new branch]      repl-rename-fixes-2 -> catalyst/repl-rename-fixes-2
+[  558.554673] cloud-init[1234]:  * [new branch]      repl-rename-fixes-for-master -> catalyst/repl-rename-fixes-for-master
+[  558.555206] cloud-init[1234]:  * [new branch]      repl-rename-fixes-py-delete -> catalyst/repl-rename-fixes-py-delete
+[  558.555595] cloud-init[1234]:  * [new branch]      repl-rename-fixes-tmp -> catalyst/repl-rename-fixes-tmp
+[  558.556556] cloud-init[1234]:  * [new branch]      repl-rename-fixes-tmp-2 -> catalyst/repl-rename-fixes-tmp-2
+[  558.557066] cloud-init[1234]:  * [new branch]      repl-simple -> catalyst/repl-simple
+[  558.558315] cloud-init[1234]:  * [new branch]      repl-sort  -> catalyst/repl-sort
+[  558.558705] cloud-init[1234]:  * [new branch]      repl-sort-review -> catalyst/repl-sort-review
+[  558.559181] cloud-init[1234]:  * [new branch]      repl-sort-tests -> catalyst/repl-sort-tests
+[  558.559593] cloud-init[1234]:  * [new branch]      replMetaData-attid -> catalyst/replMetaData-attid
+[  558.559869] cloud-init[1234]:  * [new branch]      repl_meta_data-fixes -> catalyst/repl_meta_data-fixes
+[  558.560601] cloud-init[1234]:  * [new branch]      repl_move-RPMD-FULL -> catalyst/repl_move-RPMD-FULL
+[  558.561015] cloud-init[1234]:  * [new branch]      repl_move-RPMD-garming -> catalyst/repl_move-RPMD-garming
+[  558.561467] cloud-init[1234]:  * [new branch]      repl_move-replPropertyMetaData -> catalyst/repl_move-replPropertyMetaData
+[  558.561845] cloud-init[1234]:  * [new branch]      repl_move-replPropertyMetaData-FULL -> catalyst/repl_move-replPropertyMetaData-FULL
+[  558.562465] cloud-init[1234]:  * [new branch]      repl_move-replPropertyMetaData-garming -> catalyst/repl_move-replPropertyMetaData-garming
+[  558.562856] cloud-init[1234]:  * [new branch]      repl_schema-fix -> catalyst/repl_schema-fix
+[  558.563317] cloud-init[1234]:  * [new branch]      replmetadata-sort -> catalyst/replmetadata-sort
+[  558.563913] cloud-init[1234]:  * [new branch]      replmetadata-sort-minimal -> catalyst/replmetadata-sort-minimal
+[  558.564211] cloud-init[1234]:  * [new branch]      rid-alloc-200-garming -> catalyst/rid-alloc-200-garming
+[  558.564563] cloud-init[1234]:  * [new branch]      rid-set-abartlet -> catalyst/rid-set-abartlet
+[  558.564945] cloud-init[1234]:  * [new branch]      rid-set-clive -> catalyst/rid-set-clive
+[  558.565412] cloud-init[1234]:  * [new branch]      rid-set-final -> catalyst/rid-set-final
+[  558.565782] cloud-init[1234]:  * [new branch]      rid-set-garming -> catalyst/rid-set-garming
+[  558.566210] cloud-init[1234]:  * [new branch]      ridset-as-machine -> catalyst/ridset-as-machine
+[  558.602137] cloud-init[1234]:  * [new branch]      ridset-as-system -> catalyst/ridset-as-system
+[  558.602502] cloud-init[1234]:  * [new branch]      ridset-at-join -> catalyst/ridset-at-join
+[  558.602862] cloud-init[1234]:  * [new branch]      ridset-better-errors -> catalyst/ridset-better-errors
+[  558.603317] cloud-init[1234]:  * [new branch]      ridset-join -> catalyst/ridset-join
+[  558.603708] cloud-init[1234]:  * [new branch]      ridset-join-100 -> catalyst/ridset-join-100
+[  558.604260] cloud-init[1234]:  * [new branch]      ridset-join-200 -> catalyst/ridset-join-200
+[  558.604670] cloud-init[1234]:  * [new branch]      ridset-test-only -> catalyst/ridset-test-only
+[  558.605058] cloud-init[1234]:  * [new branch]      ridset-werror -> catalyst/ridset-werror
+[  558.605447] cloud-init[1234]:  * [new branch]      ridset-with-on-demand -> catalyst/ridset-with-on-demand
+[  558.605963] cloud-init[1234]:  * [new branch]      rodc       -> catalyst/rodc
+[  558.606551] cloud-init[1234]:  * [new branch]      rodc-fix   -> catalyst/rodc-fix
+[  558.607067] cloud-init[1234]:  * [new branch]      rpc_server-samr-spin -> catalyst/rpc_server-samr-spin
+[  558.607664] cloud-init[1234]:  * [new branch]      rr-test    -> catalyst/rr-test
+[  558.608675] cloud-init[1234]:  * [new branch]      samba-kcc  -> catalyst/samba-kcc
+[  558.609158] cloud-init[1234]:  * [new branch]      samba-kcc-4-5 -> catalyst/samba-kcc-4-5
+[  558.609737] cloud-init[1234]:  * [new branch]      samba-tool-preload-multi -> catalyst/samba-tool-preload-multi
+[  558.610260] cloud-init[1234]:  * [new branch]      samba-tool-tombstones-expunge -> catalyst/samba-tool-tombstones-expunge
+[  558.610823] cloud-init[1234]:  * [new branch]      samba_dnsupdate -> catalyst/samba_dnsupdate
+[  558.611337] cloud-init[1234]:  * [new branch]      samba_dnsupdate-and-tests -> catalyst/samba_dnsupdate-and-tests
+[  558.611753] cloud-init[1234]:  * [new branch]      samba_dnsupdate-and-tests-base -> catalyst/samba_dnsupdate-and-tests-base
+[  558.612467] cloud-init[1234]:  * [new branch]      samba_dnsupdate-no-server -> catalyst/samba_dnsupdate-no-server
+[  558.613000] cloud-init[1234]:  * [new branch]      schema     -> catalyst/schema
+[  558.613658] cloud-init[1234]:  * [new branch]      schema-120-remove -> catalyst/schema-120-remove
+[  558.614166] cloud-init[1234]:  * [new branch]      schema-random -> catalyst/schema-random
+[  558.614697] cloud-init[1234]:  * [new branch]      schema-reload-patches -> catalyst/schema-reload-patches
+[  558.615182] cloud-init[1234]:  * [new branch]      sort       -> catalyst/sort
+[  558.615709] cloud-init[1234]:  * [new branch]      sort-la-and-dns-tsig -> catalyst/sort-la-and-dns-tsig
+[  558.616542] cloud-init[1234]:  * [new branch]      subdomain-skip -> catalyst/subdomain-skip
+[  558.617096] cloud-init[1234]:  * [new branch]      subnets    -> catalyst/subnets
+[  558.617563] cloud-init[1234]:  * [new branch]      swat-for-pw-change-only -> catalyst/swat-for-pw-change-only
+[  558.617942] cloud-init[1234]:  * [new branch]      talloc-at-exit-HACK -> catalyst/talloc-at-exit-HACK
+[  558.618414] cloud-init[1[  558.901145] serial8250: too much work for irq4
+234]:  * [new branch]      talloc-backport-v4-4 -> catalyst/talloc-backport-v4-4
+[  558.618953] cloud-init[1234]:  * [new branch]      talloc-destructor-tracking -> catalyst/talloc-destructor-tracking
+[  558.619428] cloud-init[1234]:  * [new branch]      talloc-faster -> catalyst/talloc-faster
+[  558.620034] cloud-init[1234]:  * [new branch]      talloc-security3 -> catalyst/talloc-security3
+[  558.620490] cloud-init[1234]:  * [new branch]      tdb-index  -> catalyst/tdb-index
+[  558.621028] cloud-init[1234]:  * [new branch]      to-do      -> catalyst/to-do
+[  558.621501] cloud-init[1234]:  * [new branch]      tokenGroups -> catalyst/tokenGroups
+[  558.622032] cloud-init[1234]:  * [new branch]      tombstone-loglevel-4 -> catalyst/tombstone-loglevel-4
+[  558.622530] cloud-init[1234]:  * [new branch]      tombstone-reanimation -> catalyst/tombstone-reanimation
+[  558.623058] cloud-init[1234]:  * [new branch]      tombstone-reanimation-120 -> catalyst/tombstone-reanimation-120
+[  558.623535] cloud-init[1234]:  * [new branch]      tombstone-reanimation-for-master -> catalyst/tombstone-reanimation-for-master
+[  558.624140] cloud-init[1234]:  * [new branch]      tombstone-renanimation-removal -> catalyst/tombstone-renanimation-removal
+[  558.624592] cloud-init[1234]:  * [new branch]      userPassword -> catalyst/userPassword
+[  558.625099] cloud-init[1234]:  * [new branch]      v4-2-bug-10991 -> catalyst/v4-2-bug-10991
+[  558.625545] cloud-init[1234]:  * [new branch]      v4-4-test  -> catalyst/v4-4-test
+[  558.625862] cloud-init[1234]:  * [new branch]      v4-5-test  -> catalyst/v4-5-test
+[  558.626348] cloud-init[1234]:  * [new branch]      v4-5-test-ctdb -> catalyst/v4-5-test-ctdb
+[  558.626815] cloud-init[1234]:  * [new branch]      v4-5-test-diag -> catalyst/v4-5-test-diag
+[  558.627179] cloud-init[1234]:  * [new branch]      v4-5-test-drs-fix -> catalyst/v4-5-test-drs-fix
+[  558.627609] cloud-init[1234]:  * [new branch]      v4-5-test-drs-fix-only -> catalyst/v4-5-test-drs-fix-only
+[  558.628367] cloud-init[1234]:  * [new branch]      v4-5-test-drs-only -> catalyst/v4-5-test-drs-only
+[  558.628745] cloud-init[1234]:  * [new branch]      v4-5-test-pcap -> catalyst/v4-5-test-pcap
+[  558.629260] cloud-init[1234]:  * [new branch]      v4-5-test-without-drs-link -> catalyst/v4-5-test-without-drs-link
+[  558.629731] cloud-init[1234]:  * [new branch]      v4-5-test-without-drs-link-2 -> catalyst/v4-5-test-without-drs-link-2
+[  558.630242] cloud-init[1234]:  * [new branch]      vlv-4-3    -> catalyst/vlv-4-3
+[  558.630677] cloud-init[1234]:  * [new branch]      vlv-4-4    -> catalyst/vlv-4-4
+[  558.631224] cloud-init[1234]:  * [new branch]      vlv-checkpoint -> catalyst/vlv-checkpoint
+[  558.631664] cloud-init[1234]:  * [new branch]      vlv-forever -> catalyst/vlv-forever
+[  558.632054] cloud-init[1234]:  * [new branch]      vlv-no-sort -> catalyst/vlv-no-sort
+[  558.632513] cloud-init[1234]:  * [new branch]      vlv-really-good -> catalyst/vlv-really-good
+[  558.632955] cloud-init[1234]:  * [new branch]      vlv-samba  -> catalyst/vlv-samba
+[  558.633314] cloud-init[1234]:  * [new branch]      vlv-show-deleted -> catalyst/vlv-show-deleted
+[  558.633758] cloud-init[1234]:  * [new branch]      vlv-tests  -> catalyst/vlv-tests
+[  558.634254] cloud-init[1234]:  * [new branch]      vlv-tests-squashed -> catalyst/vlv-tests-squashed
+[  558.634707] cloud-init[1234]:  * [new branch]      volker-msg4 -> catalyst/volker-msg4
+[  558.635209] cloud-init[1234]:  * [new branch]      waf-edit   -> catalyst/waf-edit
+[  558.635652] cloud-init[1234]:  * [new branch]      winbindd   -> catalyst/winbindd
+[  558.636514] cloud-init[1234]:  * [new branch]      wintest-autobuild -> catalyst/wintest-autobuild
+[  558.636913] cloud-init[1234]:  * [new branch]      without-domain-critical-only -> catalyst/without-domain-critical-only
+[  558.637388] cloud-init[1234]: + su ubuntu -l -c /run/shm/samba-scripts/build-samba
+[[0;32m  OK  [0m] Started User Manager for UID 1000.
+[  558.691946] cloud-init[1234]: + set -e
+[  558.694335] cloud-init[1234]: + cd /home/ubuntu/samba
+[  558.695858] cloud-init[1234]: + git remote rm our_repo
+[  558.701058] cloud-init[1234]: error: Could not remove config section 'remote.our_repo'
+[  558.702872] cloud-init[1234]: + git remote add our_repo git://git.samba.org/samba.git
+[  558.704741] cloud-init[1234]: + git fetch our_repo
+[  698.717233] cloud-init[1234]: fatal: unable to connect to git.samba.org:
+[  698.718887] cloud-init[1234]: git.samba.org[0: 193.175.80.230]: errno=Connection timed out
+[  698.720626] cloud-init[1234]:          Stopping User Manager for UID 1000...
+git.samba.org[1: 2001:638:603:d06e::80:230]: errno=Network is unreachable
+[  698.742241] cloud-init[1234]: + /run/shm/samba-scripts/mangle-dns
+[  698.743165] cloud-init[1234]: + cat /etc/resolv.conf
+[  698.743912] cloud-init[1234]: + printf 'nameserver 10.9.0.12\n'
+[  698.744863] cloud-init[1234]: + printf 'search samdom.example.com\n'
+[  698.745625] cloud-init[1234]: + mv /etc/resolv.conf.new /etc/resolv.conf
+[  698.746329] cloud-init[1234]: + chattr +i /etc/resolv.conf
+[  698.747128] cloud-init[1234]: + /run/shm/samba-scripts/provision-dc
+[  698.747993] [[0;32m  OK  [0m] Stopped User Manager for UID 1000.
+[[0;32m  OK  [0m] Removed slice user-1000.slice.
+cloud-init[1234]: + /usr/local/samba/bin/samba-tool domain provision --use-rfc2307 --realm=SAMDOM.EXAMPLE.COM --domain=SAMDOM --server-role=dc --adminpass=penguin12# --krbtgtpass=penguin12# --machinepass=penguin12# --ldapadminpass=penguin12# --dnspass=penguin12# '--option=dns forwarder=10.9.0.10' --option=ldapserverrequirestrongauth=no -d 3
+[  698.753708] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 4: /usr/local/samba/bin/samba-tool: No such file or directory
+[  698.753852] cloud-init[1234]: + /usr/local/samba/sbin/samba
+[  698.753994] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 17: /usr/local/samba/sbin/samba: No such file or directory
+[  698.754135] cloud-init[1234]: + for i in '{1..100}'
+[  698.754288] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  698.754425] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  698.754594] cloud-init[1234]: + sleep 10
+[  708.741339] cloud-init[1234]: + for i in '{1..100}'
+[  708.742897] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  708.744134] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  708.745321] cloud-init[1234]: + sleep 10
+[  718.747943] cloud-init[1234]: + for i in '{1..100}'
+[  718.749544] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  718.750683] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  718.751757] cloud-init[1234]: + sleep 10
+[  728.754614] cloud-init[1234]: + for i in '{1..100}'
+[  728.756283] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  728.757627] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  728.758837] cloud-init[1234]: + sleep 10
+[  738.761631] cloud-init[1234]: + for i in '{1..100}'
+[  738.779153] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  738.782369] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  738.784207] cloud-init[1234]: + sleep 10
+[  748.784779] cloud-init[1234]: + for i in '{1..100}'
+[  748.786426] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  748.787708] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  748.788957] cloud-init[1234]: + sleep 10
+[  758.792121] cloud-init[1234]: + for i in '{1..100}'
+[  758.793711] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  758.794956] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  758.796135] cloud-init[1234]: + sleep 10
+[  768.798803] cloud-init[1234]: + for i in '{1..100}'
+[  768.800385] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  768.801540] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  768.802753] cloud-init[1234]: + sleep 10
+[  778.803128] cloud-init[1234]: + for i in '{1..100}'
+[  778.804519] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  778.805678] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  778.806759] cloud-init[1234]: + sleep 10
+[  788.808798] cloud-init[1234]: + for i in '{1..100}'
+[  788.809658] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  788.810492] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  788.811712] cloud-init[1234]: + sleep 10
+[  798.811506] cloud-init[1234]: + for i in '{1..100}'
+[  798.812836] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  798.814018] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  798.815942] cloud-init[1234]: + sleep 10
+[  808.816654] cloud-init[1234]: + for i in '{1..100}'
+[  808.817844] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  808.819389] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  808.821130] cloud-init[1234]: + sleep 10
+[  818.820651] cloud-init[1234]: + for i in '{1..100}'
+[  818.821525] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  818.822411] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  818.823658] cloud-init[1234]: + sleep 10
+[  828.823143] cloud-init[1234]: + for i in '{1..100}'
+[  828.824556] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  828.826222] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  828.828548] cloud-init[1234]: + sleep 10
+[  838.826330] cloud-init[1234]: + for i in '{1..100}'
+[  838.827740] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  838.829347] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  838.831648] cloud-init[1234]: + sleep 10
+[  848.827174] cloud-init[1234]: + for i in '{1..100}'
+[  848.828824] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  848.830369] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  848.832349] cloud-init[1234]: + sleep 10
+[  858.830434] cloud-init[1234]: + for i in '{1..100}'
+[  858.831896] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  858.833686] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  858.836026] cloud-init[1234]: + sleep 10
+[  868.832327] cloud-init[1234]: + for i in '{1..100}'
+[  868.833671] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  868.835030] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  868.837287] cloud-init[1234]: + sleep 10
+[  878.833874] cloud-init[1234]: + for i in '{1..100}'
+[  878.835067] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  878.836336] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  878.838622] cloud-init[1234]: + sleep 10
+[  888.840272] cloud-init[1234]: + for i in '{1..100}'
+[  888.842620] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  888.844358] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  888.846580] cloud-init[1234]: + sleep 10
+[  898.844936] cloud-init[1234]: + for i in '{1..100}'
+[  898.846364] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  898.847648] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  898.849476] cloud-init[1234]: + sleep 10
+         Starting Cleanup of Temporary Directories...
+[[0;32m  OK  [0m] Started Cleanup of Temporary Directories.
+[  908.847625] cloud-init[1234]: + for i in '{1..100}'
+[  908.848921] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  908.850158] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  908.851874] cloud-init[1234]: + sleep 10
+[  918.850147] cloud-init[1234]: + for i in '{1..100}'
+[  918.851554] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  918.853059] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  918.854776] cloud-init[1234]: + sleep 10
+[  928.851970] cloud-init[1234]: + for i in '{1..100}'
+[  928.853226] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  928.854648] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  928.856765] cloud-init[1234]: + sleep 10
+[  938.854119] cloud-init[1234]: + for i in '{1..100}'
+[  938.855408] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  938.856732] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  938.858470] cloud-init[1234]: + sleep 10
+[  948.856149] cloud-init[1234]: + for i in '{1..100}'
+[  948.857417] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  948.858794] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  948.860722] cloud-init[1234]: + sleep 10
+[  958.857366] cloud-init[1234]: + for i in '{1..100}'
+[  958.858323] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  958.859142] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  958.860263] cloud-init[1234]: + sleep 10
+[  968.862484] cloud-init[1234]: + for i in '{1..100}'
+[  968.864216] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  968.865314] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  968.866349] cloud-init[1234]: + sleep 10
+[  978.868191] cloud-init[1234]: + for i in '{1..100}'
+[  978.869263] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  978.870169] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  978.872114] cloud-init[1234]: + sleep 10
+[  988.873478] cloud-init[1234]: + for i in '{1..100}'
+[  988.875752] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  988.876914] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  988.877931] cloud-init[1234]: + sleep 10
+[  998.876903] cloud-init[1234]: + for i in '{1..100}'
+[  998.878205] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[  998.879041] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[  998.879830] cloud-init[1234]: + sleep 10
+[ 1008.882791] cloud-init[1234]: + for i in '{1..100}'
+[ 1008.885598] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1008.886666] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1008.887616] cloud-init[1234]: + sleep 10
+[ 1018.890950] cloud-init[1234]: + for i in '{1..100}'
+[ 1018.892481] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1018.893855] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1018.895117] cloud-init[1234]: + sleep 10
+[ 1028.896134] cloud-init[1234]: + for i in '{1..100}'
+[ 1028.897385] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1028.898383] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1028.899345] cloud-init[1234]: + sleep 10
+[ 1038.904185] cloud-init[1234]: + for i in '{1..100}'
+[ 1038.906614] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1038.908107] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1038.909468] cloud-init[1234]: + sleep 10
+[ 1048.904908] cloud-init[1234]: + for i in '{1..100}'
+[ 1048.906227] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1048.907068] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1048.907935] cloud-init[1234]: + sleep 10
+[ 1058.910228] cloud-init[1234]: + for i in '{1..100}'
+[ 1058.911711] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1058.913281] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1058.915624] cloud-init[1234]: + sleep 10
+[ 1068.912828] cloud-init[1234]: + for i in '{1..100}'
+[ 1068.915131] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1068.917043] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1068.919432] cloud-init[1234]: + sleep 10
+[ 1078.917121] cloud-init[1234]: + for i in '{1..100}'
+[ 1078.919351] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1078.920685] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1078.922488] cloud-init[1234]: + sleep 10
+[ 1088.918142] cloud-init[1234]: + for i in '{1..100}'
+[ 1088.919821] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1088.921570] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1088.923780] cloud-init[1234]: + sleep 10
+[ 1098.921002] cloud-init[1234]: + for i in '{1..100}'
+[ 1098.922648] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1098.924517] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1098.925780] cloud-init[1234]: + sleep 10
+[ 1108.922587] cloud-init[1234]: + for i in '{1..100}'
+[ 1108.924255] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1108.925673] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1108.927619] cloud-init[1234]: + sleep 10
+[ 1118.925447] cloud-init[1234]: + for i in '{1..100}'
+[ 1118.926361] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1118.927373] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1118.928617] cloud-init[1234]: + sleep 10
+[ 1128.926906] cloud-init[1234]: + for i in '{1..100}'
+[ 1128.928125] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1128.929277] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1128.931164] cloud-init[1234]: + sleep 10
+[ 1138.932258] cloud-init[1234]: + for i in '{1..100}'
+[ 1138.933886] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1138.935024] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1138.936132] cloud-init[1234]: + sleep 10
+[ 1148.939024] cloud-init[1234]: + for i in '{1..100}'
+[ 1148.940821] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1148.942190] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1148.943431] cloud-init[1234]: + sleep 10
+[ 1158.943971] cloud-init[1234]: + for i in '{1..100}'
+[ 1158.945394] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1158.946421] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1158.947464] cloud-init[1234]: + sleep 10
+[ 1168.949520] cloud-init[1234]: + for i in '{1..100}'
+[ 1168.951016] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1168.952031] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1168.953023] cloud-init[1234]: + sleep 10
+[ 1178.954735] cloud-init[1234]: + for i in '{1..100}'
+[ 1178.956263] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1178.957898] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1178.959847] cloud-init[1234]: + sleep 10
+[ 1188.956955] cloud-init[1234]: + for i in '{1..100}'
+[ 1188.958917] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1188.960608] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1188.962912] cloud-init[1234]: + sleep 10
+[ 1198.962409] cloud-init[1234]: + for i in '{1..100}'
+[ 1198.963790] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1198.965314] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1198.967485] cloud-init[1234]: + sleep 10
+[ 1208.964821] cloud-init[1234]: + for i in '{1..100}'
+[ 1208.966135] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1208.967563] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1208.969511] cloud-init[1234]: + sleep 10
+[ 1218.966531] cloud-init[1234]: + for i in '{1..100}'
+[ 1218.967880] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1218.969024] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1218.971105] cloud-init[1234]: + sleep 10
+[ 1228.972924] cloud-init[1234]: + for i in '{1..100}'
+[ 1228.974112] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1228.976486] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1228.978748] cloud-init[1234]: + sleep 10
+[ 1238.975108] cloud-init[1234]: + for i in '{1..100}'
+[ 1238.976734] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1238.978036] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1238.979237] cloud-init[1234]: + sleep 10
+[ 1248.982776] cloud-init[1234]: + for i in '{1..100}'
+[ 1248.984345] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1248.985665] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1248.986920] cloud-init[1234]: + sleep 10
+[ 1258.989372] cloud-init[1234]: + for i in '{1..100}'
+[ 1258.990795] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1258.992487] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1258.994740] cloud-init[1234]: + sleep 10
+[ 1268.992043] cloud-init[1234]: + for i in '{1..100}'
+[ 1268.994004] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1268.995625] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1268.997992] cloud-init[1234]: + sleep 10
+[ 1278.996598] cloud-init[1234]: + for i in '{1..100}'
+[ 1278.997962] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1278.999390] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1279.001418] cloud-init[1234]: + sleep 10
+[ 1288.997968] cloud-init[1234]: + for i in '{1..100}'
+[ 1288.999305] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1289.000601] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1289.002775] cloud-init[1234]: + sleep 10
+[ 1299.003647] cloud-init[1234]: + for i in '{1..100}'
+[ 1299.005019] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1299.005870] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1299.006684] cloud-init[1234]: + sleep 10
+[ 1309.010083] cloud-init[1234]: + for i in '{1..100}'
+[ 1309.012142] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1309.013903] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1309.016414] cloud-init[1234]: + sleep 10
+[ 1319.013141] cloud-init[1234]: + for i in '{1..100}'
+[ 1319.014320] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1319.015279] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1319.016667] cloud-init[1234]: + sleep 10
+[ 1329.016184] cloud-init[1234]: + for i in '{1..100}'
+[ 1329.017996] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1329.019691] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1329.022026] cloud-init[1234]: + sleep 10
+[ 1339.019336] cloud-init[1234]: + for i in '{1..100}'
+[ 1339.020691] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1339.023843] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1339.026321] cloud-init[1234]: + sleep 10
+[ 1349.022591] cloud-init[1234]: + for i in '{1..100}'
+[ 1349.023467] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1349.024503] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1349.025873] cloud-init[1234]: + sleep 10
+[ 1359.023542] cloud-init[1234]: + for i in '{1..100}'
+[ 1359.025165] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1359.026949] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1359.029423] cloud-init[1234]: + sleep 10
+[ 1369.026691] cloud-init[1234]: + for i in '{1..100}'
+[ 1369.027404] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1369.028180] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1369.029179] cloud-init[1234]: + sleep 10
+[ 1379.028441] cloud-init[1234]: + for i in '{1..100}'
+[ 1379.029728] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1379.031550] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1379.034394] cloud-init[1234]: + sleep 10
+[ 1389.031006] cloud-init[1234]: + for i in '{1..100}'
+[ 1389.031708] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1389.032490] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1389.033681] cloud-init[1234]: + sleep 10
+[ 1399.031768] cloud-init[1234]: + for i in '{1..100}'
+[ 1399.033132] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1399.034678] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1399.036743] cloud-init[1234]: + sleep 10
+[ 1409.034351] cloud-init[1234]: + for i in '{1..100}'
+[ 1409.035962] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1409.037744] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1409.040130] cloud-init[1234]: + sleep 10
+[ 1419.035926] cloud-init[1234]: + for i in '{1..100}'
+[ 1419.037296] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1419.038198] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1419.039299] cloud-init[1234]: + sleep 10
+[ 1429.042327] cloud-init[1234]: + for i in '{1..100}'
+[ 1429.043631] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1429.044638] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1429.044812] cloud-init[1234]: + sleep 10
+[ 1439.047881] cloud-init[1234]: + for i in '{1..100}'
+[ 1439.049554] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1439.050670] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1439.051804] cloud-init[1234]: + sleep 10
+[ 1449.054778] cloud-init[1234]: + for i in '{1..100}'
+[ 1449.056403] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1449.057713] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1449.058930] cloud-init[1234]: + sleep 10
+[ 1459.058599] cloud-init[1234]: + for i in '{1..100}'
+[ 1459.059931] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1459.061134] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1459.062185] cloud-init[1234]: + sleep 10
+[ 1469.059536] cloud-init[1234]: + for i in '{1..100}'
+[ 1469.061095] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1469.062280] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1469.063581] cloud-init[1234]: + sleep 10
+[ 1479.066785] cloud-init[1234]: + for i in '{1..100}'
+[ 1479.068549] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1479.070026] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1479.071354] cloud-init[1234]: + sleep 10
+[ 1489.074576] cloud-init[1234]: + for i in '{1..100}'
+[ 1489.076808] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1489.077974] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1489.079171] cloud-init[1234]: + sleep 10
+[[0;32m  OK  [0m] Created slice User Slice of ubuntu.
+         Starting User Manager for UID 1000...
+[[0;32m  OK  [0m] Started Session 1 of user ubuntu.
+[[0;32m  OK  [0m] Started User Manager for UID 1000.
+[ 1499.078947] cloud-init[1234]: + for i in '{1..100}'
+[ 1499.080632] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1499.081828] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1499.082712] cloud-init[1234]: + sleep 10
+[ 1509.079878] cloud-init[1234]: + for i in '{1..100}'
+[ 1509.081516] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1509.082832] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1509.083979] cloud-init[1234]: + sleep 10
+[ 1519.084841] cloud-init[1234]: + for i in '{1..100}'
+[ 1519.085817] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1519.086684] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1519.086941] cloud-init[1234]: + sleep 10
+[ 1529.085731] cloud-init[1234]: + for i in '{1..100}'
+[ 1529.087318] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1529.088652] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1529.089765] cloud-init[1234]: + sleep 10
+[ 1539.093368] cloud-init[1234]: + for i in '{1..100}'
+[ 1539.094642] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1539.097044] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1539.098217] cloud-init[1234]: + sleep 10
+[ 1549.095818] cloud-init[1234]: + for i in '{1..100}'
+[ 1549.097361] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1549.098412] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1549.099604] cloud-init[1234]: + sleep 10
+[ 1559.103087] cloud-init[1234]: + for i in '{1..100}'
+[ 1559.104803] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1559.106012] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1559.107179] cloud-init[1234]: + sleep 10
+[ 1569.106589] cloud-init[1234]: + for i in '{1..100}'
+[ 1569.108451] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1569.110160] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1569.111855] cloud-init[1234]: + sleep 10
+[ 1579.109989] cloud-init[1234]: + for i in '{1..100}'
+[ 1579.110919] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1579.111815] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1579.112813] cloud-init[1234]: + sleep 10
+[ 1589.110735] cloud-init[1234]: + for i in '{1..100}'
+[ 1589.112294] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1589.113471] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1589.114941] cloud-init[1234]: + sleep 10
+[ 1599.119441] cloud-init[1234]: + for i in '{1..100}'
+[ 1599.120866] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1599.122014] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1599.123338] cloud-init[1234]: + sleep 10
+[ 1609.120234] cloud-init[1234]: + for i in '{1..100}'
+[ 1609.121838] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1609.122970] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1609.124212] cloud-init[1234]: + sleep 10
+[ 1619.127323] cloud-init[1234]: + for i in '{1..100}'
+[ 1619.128833] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1619.130084] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1619.131438] cloud-init[1234]: + sleep 10
+[ 1629.130757] cloud-init[1234]: + for i in '{1..100}'
+[ 1629.132237] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1629.133329] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1629.134366] cloud-init[1234]: + sleep 10
+[ 1639.133476] cloud-init[1234]: + for i in '{1..100}'
+[ 1639.134930] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1639.136207] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1639.137299] cloud-init[1234]: + sleep 10
+[ 1649.136140] cloud-init[1234]: + for i in '{1..100}'
+[ 1649.137199] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1649.138296] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1649.139253] cloud-init[1234]: + sleep 10
+[ 1659.142091] cloud-init[1234]: + for i in '{1..100}'
+[ 1659.143687] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1659.145000] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1659.146195] cloud-init[1234]: + sleep 10
+[ 1669.144945] cloud-init[1234]: + for i in '{1..100}'
+[ 1669.146604] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1669.147925] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1669.149136] cloud-init[1234]: + sleep 10
+[ 1679.152121] cloud-init[1234]: + for i in '{1..100}'
+[ 1679.153830] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1679.154863] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1679.155807] cloud-init[1234]: + sleep 10
+[ 1689.154279] cloud-init[1234]: + for i in '{1..100}'
+[ 1689.155094] cloud-init[1234]: + /usr/local/samba/bin/smbclient -L localhost -U%
+[ 1689.155846] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 20: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1689.156867] cloud-init[1234]: + sleep 10
+[ 1699.157839] cloud-init[1234]: + for i in '{1..10}'
+[ 1699.159464] cloud-init[1234]: + /usr/local/samba/bin/smbclient //localhost/netlogon -P -c ls
+[ 1699.161420] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 24: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1699.163784] cloud-init[1234]: + sleep 10
+[ 1709.163742] cloud-init[1234]: + for i in '{1..10}'
+[ 1709.166804] cloud-init[1234]: + /usr/local/samba/bin/smbclient //localhost/netlogon -P -c ls
+[ 1709.168716] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 24: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1709.171058] cloud-init[1234]: + sleep 10
+[ 1719.167375] cloud-init[1234]: + for i in '{1..10}'
+[ 1719.168279] cloud-init[1234]: + /usr/local/samba/bin/smbclient //localhost/netlogon -P -c ls
+[ 1719.169269] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 24: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1719.170487] cloud-init[1234]: + sleep 10
+[ 1729.170740] cloud-init[1234]: + for i in '{1..10}'
+[ 1729.172231] cloud-init[1234]: + /usr/local/samba/bin/smbclient //localhost/netlogon -P -c ls
+[ 1729.173881] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 24: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1729.175962] cloud-init[1234]: + sleep 10
+[ 1739.171727] cloud-init[1234]: + for i in '{1..10}'
+[ 1739.173596] cloud-init[1234]: + /usr/local/samba/bin/smbclient //localhost/netlogon -P -c ls
+[ 1739.175531] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 24: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1739.177858] cloud-init[1234]: + sleep 10
+[ 1749.175719] cloud-init[1234]: + for i in '{1..10}'
+[ 1749.177063] cloud-init[1234]: + /usr/local/samba/bin/smbclient //localhost/netlogon -P -c ls
+[ 1749.178624] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 24: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1749.180670] cloud-init[1234]: + sleep 10
+[ 1759.176533] cloud-init[1234]: + for i in '{1..10}'
+[ 1759.178012] cloud-init[1234]: + /usr/local/samba/bin/smbclient //localhost/netlogon -P -c ls
+[ 1759.179645] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 24: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1759.181656] cloud-init[1234]: + sleep 10
+[ 1769.178583] cloud-init[1234]: + for i in '{1..10}'
+[ 1769.179674] cloud-init[1234]: + /usr/local/samba/bin/smbclient //localhost/netlogon -P -c ls
+[ 1769.180905] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 24: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1769.182304] cloud-init[1234]: + sleep 10
+[ 1779.181753] cloud-init[1234]: + for i in '{1..10}'
+[ 1779.182686] cloud-init[1234]: + /usr/local/samba/bin/smbclient //localhost/netlogon -P -c ls
+[ 1779.183611] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 24: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1779.184631] cloud-init[1234]: + sleep 10
+[ 1789.184162] cloud-init[1234]: + for i in '{1..10}'
+[ 1789.185142] cloud-init[1234]: + /usr/local/samba/bin/smbclient //localhost/netlogon -P -c ls
+[ 1789.186223] cloud-init[1234]: /run/shm/samba-scripts/provision-dc: line 24: /usr/local/samba/bin/smbclient: No such file or directory
+[ 1789.187758] cloud-init[1234]: + sleep 10
+ci-info: +++++++++++++++++Authorized keys from /home/ubuntu/.ssh/authorized_keys for user ubuntu+++++++++++++++++
+ci-info: +---------+-------------------------------------------------+---------+--------------------------------+
+ci-info: | Keytype |                Fingerprint (md5)                | Options |            Comment             |
+ci-info: +---------+-------------------------------------------------+---------+--------------------------------+
+ci-info: | ssh-rsa | 65:d2:64:3e:c2:61:53:fd:f2:07:7a:ab:21:f6:81:03 |    -    | cliveferreira@cliveferreira-pc |
+ci-info: +---------+-------------------------------------------------+---------+--------------------------------+
+<14>Nov 30 04:04:49 ec2: 
+<14>Nov 30 04:04:49 ec2: #############################################################
+<14>Nov 30 04:04:49 ec2: -----BEGIN SSH HOST KEY FINGERPRINTS-----
+<14>Nov 30 04:04:49 ec2: 1024 SHA256:WJ/m4nrhoI69mX778s94fZHgxc7caLVIwG0ke+rv1jQ root@samba (DSA)
+<14>Nov 30 04:04:49 ec2: 256 SHA256:LFrqksDpQe3VZpe/OerPKXLtDM6HlPL4ufLqQ4SJpTQ root@samba (ECDSA)
+<14>Nov 30 04:04:49 ec2: 256 SHA256:gskEeH9bdj7t4FrvvR2w7Zo+qpvtZY8GcVMqEMZxbLo root@samba (ED25519)
+<14>Nov 30 04:04:49 ec2: 2048 SHA256:4su9a2vIl8mA2sGsB7Zfl596i3QWLYYRnn11vRtIzZI root@samba (RSA)
+<14>Nov 30 04:04:49 ec2: -----END SSH HOST KEY FINGERPRINTS-----
+<14>Nov 30 04:04:49 ec2: #############################################################
+-----BEGIN SSH HOST KEY KEYS-----
+ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHqMlISR7KDjYrmMTnT6Y+gZkCCYaZ3BT1mJyanyR/Fd89UMfBRLK1ctcPMu42IDdNQxF+m6ebD13fP28IafhVo= root@samba
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHc8vc0xp+ronoWhO9Sijmcgbfrxo3dHiELPQKAwg0gs root@samba
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC+7bb1sZzXEm/srCw57c/tclsuB9y0OL25Mu1q1Po5vICAsrk0oSdHC9z0bMGBVoWGzsGREgakIweb4zzVbOCCcB4JyaFbdz1cAmFDXwEz5x+2iH1Bza4Yli4yZFkDh38CJM0A0wYpnrm/7TIhqGHOgRhiSKEFIHPu7zzow7WQpcNY0Vj0/0RwghKT/ZNvWLkQgIWoHTngoeeJO2dAW/TlEeOekj4N9kvFSlLbYvFvsy/w2YKxs4LmfmbRNDStH61iPN+rjWQ2Xe1MjuI45apTjw8XMuNiaA/s22Q+EMI1NKDRH4mE3VduuVGU0Mzc/ZRDth9J0G70JGZyhHG2GLTT root@samba
+-----END SSH HOST KEY KEYS-----
+[ 1799.241088] cloud-init[1234]: Cloud-init v. 0.7.8 running 'modules:final' at Wed, 30 Nov 2016 03:36:19 +0000. Up 89.03 seconds.
+[ 1799.241728] cloud-init[1234]: Cloud-init v. 0.7.8 finished at Wed, 30 Nov 2016 04:04:49 +0000. Datasource DataSourceOpenStack [net,ver=2].  Up 1799.23 seconds
+[[0;32m  OK  [0m] Started Execute cloud user/final scripts.
+[[0;32m  OK  [0m] Reached target Cloud-init target.

@@ -250,11 +250,11 @@ resources:
             "@
             # " - to fix formatting
 
-            $dctrust | Out-file "create-trust.ps1"
+            $dctrust | Out-file "C:\Windows\System32\GroupPolicy\Machine\Scripts\Startup\create-trust.ps1"
             #powershell -File "create-trust.ps1"
-            $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-File "C:\Windows\System32\create-trust.ps1"'
-            $trigger = New-ScheduledTaskTrigger -AtStartup
-            Register-ScheduledTask -Action $action -Trigger $trigger "Trust" -User "NT AUTHORITY\SYSTEM"
+            #$action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-File "C:\Windows\System32\GroupPolicy\Machine\Scripts\Startup\create-trust.ps1"'
+            #$trigger = New-ScheduledTaskTrigger -AtStartup
+            #Register-ScheduledTask -Action $action -Trigger $trigger "Trust" -User "NT AUTHORITY\SYSTEM"
 
             shutdown -r -t 0
           params:
