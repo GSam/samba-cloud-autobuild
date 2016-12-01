@@ -36,7 +36,9 @@ class MatchRulesTests(samba.tests.TestCase):
         self.ou_groups = "OU=groups,%s" % self.ou
         self.ou_computers = "OU=computers,%s" % self.ou
 
-        self.n_groups = 1
+        self.n_groups = opts.n_groups
+        self.stop_after = opts.stop_after
+
 
         try:
             for i in range(self.n_groups):
@@ -111,23 +113,21 @@ class MatchRulesTests(samba.tests.TestCase):
             print e
 
     def test_u1_member_of_g4(self):
-        i = 0
         import time
         print "KEYS: total add modify delete"
 
-        while True:
+        for i in xrange(self.stop_after):
             group = i % self.n_groups + 1
-
             start = time.time()
             self.ldb.add({
-                "dn": "cn=u%d,%s" % (group, self.ou_users), "objectclass": "user"})
+                "dn": "cn=u%d,%s" % (i, self.ou_users), "objectclass": "user"})
             end_add = time.time()
 
             start_mod = time.time()
 
             m = Message()
             m.dn = Dn(self.ldb, "CN=g%d,%s" % (group, self.ou_groups))
-            m["member"] = MessageElement("cn=u%d,%s" % (group, self.ou_users),
+            m["member"] = MessageElement("cn=u%d,%s" % (i, self.ou_users),
                                          FLAG_MOD_ADD, "member")
             self.ldb.modify(m)
             end_mod = time.time()
@@ -135,8 +135,8 @@ class MatchRulesTests(samba.tests.TestCase):
             delete_force(self.ldb, "cn=u%d,%s" % (i, self.ou_users))
             end = time.time()
             print end - start, end_add - start, end_mod - start_mod, end - end_mod
-            i += 1            
-            #time.sleep(random.random())
+
+
 
 parser = optparse.OptionParser("match_rules.py [options] <host>")
 sambaopts = options.SambaOptions(parser)
@@ -146,9 +146,16 @@ parser.add_option_group(options.VersionOptions(parser))
 # use command line creds if available
 credopts = options.CredentialsOptions(parser)
 parser.add_option_group(credopts)
-opts, args = parser.parse_args()
 subunitopts = SubunitOptions(parser)
 parser.add_option_group(subunitopts)
+
+parser.add_option('-n', '--n-groups', type='int', default=4,
+                  help="use this many groups")
+parser.add_option('--stop-after', type='int', default=int(1e9),
+                  help="stop after this many cycles")
+
+
+opts, args = parser.parse_args()
 
 if len(args) < 1:
     parser.print_usage()
