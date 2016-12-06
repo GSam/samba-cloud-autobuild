@@ -88,7 +88,9 @@ class SambaGitTree(object):
 
         perf_script = '%s.script' % self.perf_file
         perf_folded = '%s.folded' % self.perf_file
+        perf_folded_samba = '%s-samba-only.folded' % self.perf_file
         svg = '%s.svg' % self.perf_file
+        svg_samba = '%s-samba-only.svg' % self.perf_file
 
         with open(perf_script, 'w') as f:
             cmd = ['perf', 'script', '-i', self.perf_file]
@@ -98,11 +100,18 @@ class SambaGitTree(object):
             cmd = [collapse, perf_script]
             subprocess.check_call(cmd, stdout=f)
 
-        with open(svg, 'w') as f:
-            cmd = [flamegraph, '--minwidth', '0.2', '--width', '1060',
-                   '--hash', perf_folded]
+        with open(perf_folded_samba, 'w') as f:
+            cmd = ['grep', 'samba', perf_folded]
             subprocess.check_call(cmd, stdout=f)
-        shutil.copy(svg, dest)
+
+        for d, s in ((svg, perf_folded),
+                     (svg_samba, perf_folded_samba)):
+            with open(d, 'w') as f:
+                cmd = [flamegraph, '--minwidth', '0.2', '--width', '1060',
+                       '--hash', s]
+                subprocess.check_call(cmd, stdout=f)
+            shutil.copy(d, dest)
+
 
     def make(self, *args, **kwargs):
         cmd = ['make', '-C', self.path]
