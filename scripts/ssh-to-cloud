@@ -7,7 +7,7 @@ CLOUD_DOT_FILES=~/cloud-dot-files
 
 echo checking whether $machine has a floating IP...
 
-ip=$(nova list | grep "| $machine " | cut -d'|' -f7 | cut -d, -f2 -s)
+ip=$(nova list | grep "| $machine " | cut -d'|' -f7 | cut -d, -f2 -s | tr -d '[:space:]')
 
 if [[ "$ip" ]]; then
     echo found IP $ip
@@ -35,8 +35,8 @@ ip=${ip// }
 
 if [[ -d $CLOUD_DOT_FILES && ! -f $KNOWN_HOSTS ]]; then
     mkdir -p $(dirname $KNOWN_HOSTS)
-    echo "copying $CLOUD_DOT_FILES/ dot files"
-    rsync -e "ssh -o 'UserKnownHostsFile $KNOWN_HOSTS' -o 'User ubuntu'" -rv $CLOUD_DOT_FILES/ $ip:
+    echo "copying $CLOUD_DOT_FILES/ contents to remote $ip:"
+    rsync -v -e "ssh -o 'UserKnownHostsFile $KNOWN_HOSTS' -o 'User ubuntu'" -r "$CLOUD_DOT_FILES/" "$ip":
 fi
 
 ssh -o "UserKnownHostsFile $KNOWN_HOSTS" -o 'User ubuntu' $ip
