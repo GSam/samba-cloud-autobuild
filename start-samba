@@ -30,7 +30,8 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
                       verbose_logs=False, no_secrets=False, server_name=None,
                       email_recipient=EMAIL_RECIPIENT,
                       flame_graphs=False, restrict_tests='', on_success=None,
-                      ident='', password='penguin12#', use_default_pass=False):
+                      ident='', password='penguin12#', use_default_pass=False,
+                      autobuild_env=''):
     if 'centos' in image:
         template = YAML_TEMPLATE
         user = 'centos'
@@ -72,7 +73,7 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
                  restrict_tests=restrict_tests, on_success=on_success,
                  generated_id=("%04d" % ident), generated_password=password,
                  use_default_pass = use_default_pass,
-                 email_recipient=email_recipient,
+                 email_recipient=email_recipient, autobuild_env=autobuild_env,
                  **credentials)
     f = tempfile.NamedTemporaryFile(suffix='.yaml',
                                     prefix='samba-cloud-autobuild-user-config-',
@@ -164,6 +165,11 @@ def main():
     parser.add_argument('--use-default-pass', action='store_true',
                         help=("use a default (insecure) password for machines and samba"))
 
+    parser.add_argument('--optimise', action='store_const', default='',
+                        const='CFLAGS=-O2',
+                        help="Don't be slow please autobuild! CFLAGS=-O2")
+
+
     args = parser.parse_args()
     process_common_args(args)
 
@@ -196,7 +202,8 @@ def main():
                                   ident=ident, password=password,
                                   use_default_pass=args.use_default_pass,
                                   email_recipient=args.email_recipient,
-                                  on_success=args.on_success)
+                                  on_success=args.on_success,
+                                  autobuild_env=args.optimise)
 
     if args.verbose:
         print >> sys.stderr, "YAML file is %s" % yaml_file
