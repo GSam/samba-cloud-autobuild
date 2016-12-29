@@ -198,7 +198,7 @@ write_files:
     FLAME_FULL_SVG=$dest/flame-{server_name}.svg
     ICICLE_SVG=$dest/icicle-{server_name}-reduced.svg
     KERNEL=$(uname -r)
-    export CFLAGS="-O2 -fno-omit-frame-pointer $CFLAGS"
+    export CFLAGS="-O2 -fno-omit-frame-pointer -fno-inline $CFLAGS"
 
     cd $home
     if [[ ! -d FlameGraph ]]; then
