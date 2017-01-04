@@ -1,0 +1,34 @@
+From d6c930299982957d3e194332a239d4af56e64c9c Mon Sep 17 00:00:00 2001
+From: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+Date: Wed, 21 Dec 2016 13:24:46 +1300
+Subject: [PATCH] ntlmssp: fix compilation with -O2 -fno-inline
+
+Without inlining the function, GCC doesn't know that
+gensec_ntlmssp->ntlmssp_state->role always has a valid value.
+
+With inlining, this is obviously redundant but GCC clearly knows
+enough to detect this and elide the default case.
+
+Signed-off-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+---
+ auth/ntlmssp/ntlmssp.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/auth/ntlmssp/ntlmssp.c b/auth/ntlmssp/ntlmssp.c
+index 4abab88..3283c96 100644
+--- a/auth/ntlmssp/ntlmssp.c
++++ b/auth/ntlmssp/ntlmssp.c
+@@ -107,6 +107,10 @@ static NTSTATUS gensec_ntlmssp_update_find(struct gensec_security *gensec_securi
+ 				return NT_STATUS_INVALID_PARAMETER;
+ 			}
+ 			break;
++		default:
++			DEBUG(1, ("NTLMSSP state has invalid role %d\n",
++				  gensec_ntlmssp->ntlmssp_state->role));
++			return NT_STATUS_INVALID_PARAMETER;
+ 		}
+ 	} else {
+ 		if (!msrpc_parse(gensec_ntlmssp->ntlmssp_state,
+-- 
+2.7.4
+
