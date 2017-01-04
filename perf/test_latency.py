@@ -38,7 +38,7 @@ class MatchRulesTests(samba.tests.TestCase):
 
         self.n_groups = opts.n_groups
         self.stop_after = opts.stop_after
-
+        self.keep_users = opts.keep_users
 
         try:
             for i in range(self.n_groups):
@@ -132,7 +132,7 @@ class MatchRulesTests(samba.tests.TestCase):
             self.ldb.modify(m)
             end_mod = time.time()
 
-            if not args.keep_users:
+            if self.keep_users:
                 print end_mod - start, end_add - start, end_mod - start_mod, 0
                 continue
 
