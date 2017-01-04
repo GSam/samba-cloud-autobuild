@@ -57,6 +57,10 @@ PATCHES = {
                   os.path.join(HERE, '../perf/ntlmssp-no-inline.patch')],
 }
 
+PATCH_FUZZINESS = {
+    os.path.join(HERE, '../perf/ntlmssp-no-inline.patch'): 1,
+}
+
 
 class SambaGitTree(object):
 
@@ -160,13 +164,17 @@ class SambaGitTree(object):
         return lines.split()
 
     def _get_patch_command(self, patch,
-                           ignore_whitespace=False, no_questions=False):
+                           ignore_whitespace=False, no_questions=False,
+                           fuzziness=None):
         patch = os.path.abspath(patch)
         cmd = ['patch', '-d', self.path, '-p1', '-N', '-i', patch]
         if ignore_whitespace:
             cmd.append('--ignore-whitespace')
         if no_questions:
             cmd.append('-f')
+        if fuzziness is not None:
+            cmd.append('-F%d' % fuzziness)
+
         return cmd
 
     def patch(self, patch, use_git_am=False, ignore_whitespace=False,
@@ -183,9 +191,11 @@ class SambaGitTree(object):
         else:
             self.git('am', '-3', patch)
 
-    def try_patch(self, patch, ignore_whitespace=False):
+    def try_patch(self, patch, ignore_whitespace=False,
+                  fuzziness=None):
         cmd = self._get_patch_command(patch, ignore_whitespace,
-                                      no_questions=True)
+                                      no_questions=True,
+                                      fuzziness=fuzziness)
         cmd.extend(['--dry-run', '--quiet'])
         try:
             suppressed_output = subprocess.check_output(cmd)
@@ -224,7 +234,8 @@ class SambaGitTree(object):
         # now we don't know, so we TRY and SEE.
         patches = []
         for p in PATCHES['samba-4-0']:
-            if self.try_patch(p, ignore_whitespace):
+            fuzziness = PATCH_FUZZINESS.get(p)
+            if self.try_patch(p, ignore_whitespace, fuzziness=fuzziness):
                 patches.append(p)
                 print "using patch %s" % p
         return patches
