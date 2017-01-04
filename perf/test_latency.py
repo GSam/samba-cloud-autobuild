@@ -132,10 +132,13 @@ class MatchRulesTests(samba.tests.TestCase):
             self.ldb.modify(m)
             end_mod = time.time()
 
+            if not args.keep_users:
+                print end_mod - start, end_add - start, end_mod - start_mod, 0
+                continue
+
             delete_force(self.ldb, "cn=u%d,%s" % (i, self.ou_users))
             end = time.time()
             print end - start, end_add - start, end_mod - start_mod, end - end_mod
-
 
 
 parser = optparse.OptionParser("match_rules.py [options] <host>")
@@ -153,6 +156,8 @@ parser.add_option('-n', '--n-groups', type='int', default=4,
                   help="use this many groups")
 parser.add_option('--stop-after', type='int', default=int(1e9),
                   help="stop after this many cycles")
+parser.add_option('--keep-users', action='store_true',
+                  help="don't delete users")
 
 
 opts, args = parser.parse_args()
