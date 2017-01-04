@@ -139,7 +139,7 @@ class SambaGitTree(object):
     def checkout(self, tag, clean=False):
         self.git('checkout', tag)
         if clean:
-            self.git('clean')
+            self.git('clean', '-f')
 
     def build(self):
         self.make('-j')
@@ -365,7 +365,7 @@ def main():
                 print ("::: trying branch %s in directory %s (round %d)" %
                        (b, tree.path, i))
                 tree.git('reset', '--hard')
-                tree.git('clean')
+                tree.git('clean', '-f')
                 tree.checkout(b)
                 if args.clean_between_revisions:
                     tree.git('clean', '-x', '-f')
