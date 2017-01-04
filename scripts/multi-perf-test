@@ -237,7 +237,7 @@ class SambaGitTree(object):
             fuzziness = PATCH_FUZZINESS.get(p)
             if self.try_patch(p, ignore_whitespace, fuzziness=fuzziness):
                 patches.append(p)
-                print "using patch %s" % p
+                print "We are going to use patch %s" % p
         return patches
 
     def get_last_n_weeks(self, n, reference='last Saturday'):
