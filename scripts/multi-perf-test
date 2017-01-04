@@ -84,7 +84,6 @@ class SambaGitTree(object):
                    '-F97',
                    '-a',
                    '-g',
-                   '--call-graph', 'dwarf',
                    '-o', self.perf_file,
                    '--']
         return cmd
