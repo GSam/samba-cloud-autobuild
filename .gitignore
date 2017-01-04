@@ -3,3 +3,5 @@
 .emacs*
 /junk/
 /images/
+/*.json
+/*.svg
