@@ -84,8 +84,12 @@ class SambaGitTree(object):
                    '-F97',
                    '-a',
                    '-g',
-                   '-o', self.perf_file,
-                   '--']
+                   '-o', self.perf_file]
+
+        if self.perf_uses_dwarf:
+            cmd.extend(['--call-graph', 'dwarf'])
+
+        cmd.append('--')
         return cmd
 
     def make_flame_graphs(self, bindir, dest='.'):
@@ -319,6 +323,8 @@ def main():
                         help="tell patch to shut up and not complain")
     parser.add_argument('--run-perf', action='store_true',
                         help="collect linux perf data during each run")
+    parser.add_argument('--perf-uses-dwarf', action='store_true',
+                        help="if using perf, use dwarf tracebacks")
     parser.add_argument('-c', '--clean-between-revisions', action='store_true',
                         help=("remove untracked files between commits "
                               "(slower, safer builds)"))
@@ -363,6 +369,7 @@ def main():
         print "using directory %r" % d
 
         tree = SambaGitTree(d, args.remote, args.verbose)
+        tree.perf_uses_dwarf = args.perf_uses_dwarf
 
         if args.test_releases:
             # let's assume the named branches are newer thant the old releases
