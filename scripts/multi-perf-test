@@ -290,6 +290,8 @@ def main():
                         help="test these branches/refspecs")
     parser.add_argument('-d', '--working-dir', default=None,
                         help="use this directory (default: a tmpdir)")
+    parser.add_argument('--temp-root-dir', default=None,
+                        help="if using a temp dir, put it in here")
     parser.add_argument('--preserve-tmp-dir', action='store_true',
                         help="do not clean up the tmp working directory")
     parser.add_argument('--test-releases', nargs='?',
@@ -351,6 +353,8 @@ def main():
 
     if args.flame_graph_path is not None:
         args.run_perf = True
+
+    tempfile.tempdir = args.temp_root_dir
 
     try:
         if d is None:
