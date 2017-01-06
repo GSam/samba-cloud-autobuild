@@ -354,7 +354,7 @@ def main():
         print "Stopping..."
         sys.exit(1)
 
-    branches = args.branches
+
     d = args.working_dir
 
     if args.flame_graph_path is not None:
@@ -370,6 +370,18 @@ def main():
 
         tree = SambaGitTree(d, args.remote, args.verbose)
         tree.perf_uses_dwarf = args.perf_uses_dwarf
+
+        branches = []
+        for b in args.branches:
+            if re.match('^[0-9A-Fa-f]+\^?\.\.[0-9A-Fa-f]+$', b):
+                print "expanding '%s' ..." % b
+                commits = tree.git('log', '--pretty=format:%h', b, output=True)
+                commits = commits.split()
+                commits.reverse()
+                print " to %s" % ' '.join(commits)
+                branches.extend(commits)
+            else:
+                branches.append(b)
 
         if args.test_releases:
             # let's assume the named branches are newer thant the old releases
