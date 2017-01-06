@@ -2,19 +2,30 @@
 """Plot the results of multi-perf-test"""
 
 import json
-import matplotlib
-import matplotlib.pyplot as plt
-from matplotlib import cm
 import argparse
 import re
 import subprocess
 import sys
+import os
 
-matplotlib.rcParams.update({'font.size': 10,
-                            'savefig.facecolor': '#ffffff',
-                            'savefig.edgecolor': '#ffffff',
-                            'figure.autolayout': True,
-})
+def import_matplotlib(we_have_x):
+    global matplotlib, plt, cm
+
+    import matplotlib
+
+    # If we don't have an X server, we need to divert matplotlib away
+    # from using TK. 'Agg' allows it to draw images.
+    if not we_have_x:
+        matplotlib.use('Agg')
+
+    import matplotlib.pyplot as plt
+    from matplotlib import cm
+
+    matplotlib.rcParams.update({'font.size': 10,
+                                'savefig.facecolor': '#ffffff',
+                                'savefig.edgecolor': '#ffffff',
+                                'figure.autolayout': True,
+    })
 
 
 def find_commit_message(git_tree, commit, maxlen=75, date_only=False):
@@ -211,6 +222,13 @@ def main():
 
     args = parser.parse_args()
 
+    we_have_x = 'DISPLAY' in os.environ
+
+    if not we_have_x and not args.output:
+        print ("ERROR: without an X server you need to specify an "
+               "ouput image name with -o")
+        sys.exit(1)
+
     (xlabels, sequences,
      location_map, last_points) = get_sequences(args.input_file,
                                                 args.filter_tests,
@@ -219,6 +237,9 @@ def main():
                                                 args.norm_index,
                                                 args.sort_refs,
                                                 args.tidy_names)
+
+
+    import_matplotlib(we_have_x)
 
     if args.log_scale:
         plot = plt.semilogy
