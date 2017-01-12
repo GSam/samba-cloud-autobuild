@@ -354,6 +354,8 @@ def main():
                         help='save the commit date in the JSON')
     parser.add_argument('--configure-developer', action='store_true',
                         help='use configure.developer (for extending old graphs)')
+    parser.add_argument('--no-cflags-munging', action='store_true',
+                        help="don't alter CFLAGS for optimisation/profiling")
 
     args = parser.parse_args()
 
@@ -373,6 +375,12 @@ def main():
         args.run_perf = True
 
     tempfile.tempdir = args.temp_root_dir
+
+    if not args.no_cflags_munging:
+        CFLAGS = os.environ.get('CFLAGS', '')
+        os.environ['CFLAGS'] = ' '.join(("-O2 -fno-omit-frame-pointer",
+                                         "-fno-inline -g",
+                                         CFLAGS))
 
     try:
         if d is None:
