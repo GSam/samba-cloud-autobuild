@@ -134,12 +134,19 @@ class SambaGitTree(object):
 
         subprocess.check_call(cmd)
 
-    def configure(self, *args):
-        # we nust set cwd to self.path AND use the full executable path
-        cmd = [os.path.join(self.path, 'configure.developer'),
-               '--abi-check-disable']
+    def configure(self, *args, **kwargs):
+        # we must set cwd to self.path AND use the full executable path
+        cmd = [os.path.join(self.path, 'configure'), '--abi-check-disable']
+
+        if kwargs.get('configure_developer'):
+            cmd.extend(['--enable-developer'])
+        else:
+            cmd.extend(['--enable-selftest', '--bundled-libraries=ALL'])
+
+
         if self.verbosity:
             cmd += ['-v'] * self.verbosity
+
         cmd.extend(args)
         subprocess.check_call(cmd, cwd=self.path)
 
@@ -342,6 +349,8 @@ def main():
                         help="run this many times")
     parser.add_argument('-D', '--record-revision-date', action='store_true',
                         help='save the commit date in the JSON')
+    parser.add_argument('--configure-developer', action='store_true',
+                        help='use configure.developer (for extending old graphs)')
 
     args = parser.parse_args()
 
@@ -420,7 +429,8 @@ def main():
                             if not args.no_patch_questions:
                                raise
 
-                    try_and_try_again(args.interactive, tree.configure)
+                    try_and_try_again(args.interactive, tree.configure,
+                                      configure_developer=args.configure_developer)
                     try_and_try_again(args.interactive, tree.build)
                 except PerfTestException:
                     print "aborting branch %s" % b
