@@ -101,7 +101,8 @@ def tidy_test_name(s):
 
 
 def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
-                  norm_index=0, sort_refs=False, tidy_names=True):
+                  norm_index=0, sort_refs=False, tidy_names=True,
+                  x_start=0, x_end=None):
     data = {}
     x_labels = []
     for fn in input_files:
@@ -157,10 +158,16 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
                 v = min(v)
             seq.append(v)
 
+    if x_end is None:
+        x_end = len(x_labels)
+
+    x_labels = x_labels[x_start:x_end]
+
     last_points = {}
     label_locations = []
     max_value = 0.0
     for test, series in sequences.items():
+        series[:] = series[x_start:x_end]
         for i in range(len(series) - 1, -1, -1):
             v = series[i]
             if v is not None:
@@ -219,6 +226,10 @@ def main():
     parser.add_argument('--label-dates-from-git-tree',
                         help=("label revisions with commit dates"
                               " using this tree"))
+    parser.add_argument('--x-start', type=int, default=0,
+                        help="start graph at this point")
+    parser.add_argument('--x-end', type=int,
+                        help="end graph at this point")
 
     args = parser.parse_args()
 
@@ -236,7 +247,9 @@ def main():
                                                 args.absolute_times,
                                                 args.norm_index,
                                                 args.sort_refs,
-                                                args.tidy_names)
+                                                args.tidy_names,
+                                                args.x_start,
+                                                args.x_end)
 
 
     import_matplotlib(we_have_x)
