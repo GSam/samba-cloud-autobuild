@@ -63,10 +63,12 @@ def update_cache(name, force=False):
         if force or not os.path.exists(ffn):
             print "unpacking %s" % fn
             f = open(ffn, 'w')
-            content = get_content(msg, name)
-            f.write(content)
-            f.close()
-
+            try:
+                content = get_content(msg, name)
+                f.write(content)
+                f.close()
+            except KeyError, e:
+                print e
 
 def main():
     parser = argparse.ArgumentParser()
