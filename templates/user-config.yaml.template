@@ -280,8 +280,10 @@ write_files:
        /usr/local/bin/perf-record-build-samba
     else
        su {user} -l -c /usr/local/bin/build-samba
-       su {user} -l -c /usr/local/bin/edit-config
-       su {user} -l -c /usr/local/bin/start-wintest
+       if [ {run_wintest} == "True" ]; then
+          su {user} -l -c /usr/local/bin/edit-config
+          su {user} -l -c /usr/local/bin/start-wintest
+       fi
     fi
     if [ $? ]; then
       /usr/local/bin/{onfail}-host
