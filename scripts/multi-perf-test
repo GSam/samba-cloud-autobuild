@@ -302,7 +302,7 @@ def main():
                         help="test these branches/refspecs")
     parser.add_argument('-d', '--working-dir', default=None,
                         help="use this directory (default: a tmpdir)")
-    parser.add_argument('--temp-root-dir', default=None,
+    parser.add_argument('--temp-dir', default=os.environ.get('PERF_TEMP_DIR'),
                         help="if using a temp dir, put it in here")
     parser.add_argument('--preserve-tmp-dir', action='store_true',
                         help="do not clean up the tmp working directory")
@@ -368,13 +368,12 @@ def main():
         print "Stopping..."
         sys.exit(1)
 
-
     d = args.working_dir
 
     if args.flame_graph_path is not None:
         args.run_perf = True
 
-    tempfile.tempdir = args.temp_root_dir
+    tempfile.tempdir = args.temp_dir
 
     if not args.no_cflags_munging:
         CFLAGS = os.environ.get('CFLAGS', '')
