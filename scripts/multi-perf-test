@@ -346,6 +346,8 @@ def main():
                               '(-v -v -v for more)'))
     parser.add_argument('-t', '--test-regex',
                         help="restrict tests with this regex")
+    parser.add_argument('--test-list',
+                        help="use test scripts listed in this file")
     parser.add_argument('-o', '--output', default='samba-performance.json',
                         help="write data here")
     parser.add_argument('--best-of', metavar='N', type=int, default=1,
@@ -380,6 +382,12 @@ def main():
         os.environ['CFLAGS'] = ' '.join(("-O2 -fno-omit-frame-pointer",
                                          "-fno-inline -g",
                                          CFLAGS))
+
+    if args.test_list:
+        test_options = ['--test-list', args.test_list]
+        if 'TEST_OPTIONS' in os.environ:
+            test_options.append(os.environ['TEST_OPTIONS'])
+        os.environ['TEST_OPTIONS'] = ' '.join(test_options)
 
     try:
         if d is None:
