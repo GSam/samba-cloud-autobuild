@@ -55,6 +55,8 @@ PATCHES = {
     'samba-4-5': [os.path.join(HERE, '../perf/samba-4.5-ad_dc.patch'),
                   os.path.join(HERE, '../perf/samba-4.5-perf.patch'),
                   os.path.join(HERE, '../perf/ntlmssp-no-inline.patch')],
+    'misc':      [os.path.join(HERE, '../perf/waf-test-list.patch'),
+    ],
 }
 
 PATCH_FUZZINESS = {
@@ -243,7 +245,7 @@ class SambaGitTree(object):
             return PATCHES['samba-4-5']
         # now we don't know, so we TRY and SEE.
         patches = []
-        for p in PATCHES['samba-4-0']:
+        for p in PATCHES['samba-4-0'] + PATCHES['misc']:
             fuzziness = PATCH_FUZZINESS.get(p)
             if self.try_patch(p, ignore_whitespace, fuzziness=fuzziness):
                 patches.append(p)
