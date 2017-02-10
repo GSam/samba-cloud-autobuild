@@ -92,11 +92,15 @@ def tidy_revision_name(s):
 
 
 def tidy_test_name(s):
-    s = s[:s.rfind('(')]
-    s = s[s.rfind('.') + 1:]
-    s = s.replace('_', ' ')
-    if s[:5] == 'test ':
-        s = s[5:]
+    s = s.rstrip()
+    x = s.split('.')[-1]
+    if x[-1] == ')':
+        x = x[:x.rfind('(')]
+    x = x.replace('_', ' ')
+    if x[:5] == 'test ':
+        x = x[5:]
+    if x:
+        return x
     return s
 
 
