@@ -1,0 +1,8 @@
+#!/bin/bash
+set -x
+
+if [[ "$(hostname)" == '{{ env_prefix }}-{{ site_basename }}1-{{ node_basename }}1' ]]; then
+  /run/shm/samba-scripts/provision-dc
+else
+  /run/shm/samba-scripts/join-dc
+fi

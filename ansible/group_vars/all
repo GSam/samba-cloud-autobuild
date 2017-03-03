@@ -1,0 +1,118 @@
+---
+
+########################
+# Environment settings #
+########################
+
+## Remote user
+remote_user: ubuntu
+## Define how many sites to create
+sites: 3
+site_basename: s
+
+## Define how many hosts per site to create
+hosts_in_site: 2
+node_basename: dc
+
+## Default state is always 'present' but some parts still require
+## this to be set explicitly
+set_state: present
+
+## All resources will be prefixed with this string
+## Used to provision and manage multiple environments at the same time
+## NOTE: This needs to be explicitly specified in the command line
+## extra-var's '-e' due to the reasons described in the README.md
+##env_prefix: dev
+
+## Network base used (sorry, you can set only fist two octets)
+## Will be used to create x.x.{ 1..sites }.0/24 networks
+network_base: 172.16
+
+## Domain - just the hosts FQDN - not Samba domain (although related)
+domain: "test.net"
+
+
+#################################
+# Samba build and config params #
+#################################
+
+## Samba build variables
+samba_scripts_dir: '/run/shm/samba-scripts'
+samba_remote_name: 'catalyst'
+samba_remote_url: 'git://git.catalyst.net.nz/samba.git'
+samba_version: 'master'
+
+## Samba DC provisioning variables
+samba_realm: 'SAMDOM.TEST.NET'
+samba_domain: 'SAMDOM'
+samba_password: 'thaed7utahZe'
+has_rodc: 'false'
+use_samba_kcc: 'true'
+kcc_interval: '0'
+
+
+#####################################################
+# VM settings, users, packages and all common stuff #
+#####################################################
+
+## keypair_name
+keypair_name: grzegorz-X1
+
+## Porirua region DNS
+nameservers: [202.78.247.197, 202.78.247.198, 202.78.247.199]
+
+## Catalyst repo
+cat_keyid: '97E909BAA2BFB3DEA827CA882CA4EE29621846D9'
+cat_keyserver: 'pgp.net.nz'
+cat_repo: 'deb http://debian.catalyst.net.nz/catalyst stable catalyst'
+
+## Userpackages to install on all hosts
+userpackages:
+  - 'catalyst-grzegorzojrzanowski'
+  - 'catalyst-andrewbartlett'
+
+## Users to be added to sudo group
+sudo_users:
+  - 'grzegorz'
+  - 'abartlet'
+
+## Master host flavours (yes, I know, os_server property is flavor)
+master_flovour: c1.c4r4
+## Slace host flavours
+slave_flovour: c1.c1r1
+
+## OS image to use
+master_image: ubuntu-16.04-x86_64
+slave_image: ubuntu-16.04-x86_64
+
+## Security group names used
+master_security_group: "{{ env_prefix }}-master"
+slave_security_group: "{{ env_prefix }}-slave"
+
+## Packages to install on all hosts
+common_packages:
+  - 'vim'
+  - 'htop'
+  - 'screen'
+  - 'nmap'
+  - 'tcpdump'
+  - 'mlocate'
+  - 'sysstat'
+  - 'telnet'
+  - 'dnsutils'
+  - 'git'
+  - 'make'
+  - 'gcc'
+  - 'libpython2.7-dev'
+  - 'libgnutls-dev'
+  - 'libacl1-dev'
+  - 'libldap2-dev'
+
+## NTP settings
+ntp_enabled: true
+ntp_timezone: Etc/UTC
+ntp_manage_config: true
+ntp_servers:
+  - "ntp1.catalyst.net.nz iburst"
+  - "ntp2.catalyst.net.nz iburst"
+  - "ntp3.catalyst.net.nz iburst"

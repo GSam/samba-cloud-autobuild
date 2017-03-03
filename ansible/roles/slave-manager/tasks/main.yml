@@ -1,0 +1,16 @@
+---
+# tasks file for slave-manager
+
+# If you have sourced an OpenStack RC file, connecting to the Catalyst
+# Cloud is as simple as running the os_auth module with no additional
+# parameters.
+- name: Connect to the Catalyst Cloud
+  os_auth:
+
+
+- include: tasks/slave.yml
+  with_sequence: start=1 end="{{ sites }}"
+  loop_control:
+    loop_var: site_num
+  tags:
+    - slaves

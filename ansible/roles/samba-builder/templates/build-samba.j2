@@ -1,0 +1,11 @@
+#!/bin/bash
+set -x
+set -e
+cd ~/samba
+git remote rm {{ samba_remote_name }} && echo "Removed old remote"
+git remote add {{ samba_remote_name }} {{ samba_remote_url }}
+git fetch {{ samba_remote_name }}
+git checkout {{ samba_remote_name }}/{{ samba_version }}
+./configure.developer
+make -j
+sudo make install

@@ -1,0 +1,11 @@
+---
+
+- include: pre-run-checks.yml
+
+- name: Destroy all instances and network elements in the Catalyst Cloud
+  hosts: localhost
+  roles:
+    - slave-manager
+    - master-manager
+    - netinf-manager
+    - inventory-manager

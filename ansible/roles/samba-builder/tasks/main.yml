@@ -1,0 +1,36 @@
+---
+# tasks file for samba-builder
+
+# TODO handle more than one master
+- name: Set master hostame fact
+  set_fact:
+    master_hostname: "{{ env_prefix }}-{{ site_basename }}1-{{ node_basename }}1"
+  tags:
+    - always
+
+- name: Set master private IP fact
+  set_fact:
+    master_priv_ip: "{{ hostvars[item].openstack.private_v4 }}"
+  with_items: "{{ master_hostname }}"
+  tags:
+    - always
+
+- include: tasks/clone.yml
+  tags:
+    - clone
+
+- include: tasks/build.yml
+  tags:
+    - build
+
+- include: tasks/dns-switch.yml
+  tags:
+    - dns
+
+- name: Run samba deploy scripts
+  shell: "{{ samba_scripts_dir }}/provision-dc >> {{ samba_scripts_dir }}/slave-build.log"
+  args:
+    creates: /usr/local/samba/etc/smb.conf
+  become: true
+  tags:
+    - provision-dc

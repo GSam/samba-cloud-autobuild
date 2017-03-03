@@ -1,0 +1,69 @@
+---
+# tasks file for samba-slave
+
+# Rsync scripts
+- name: Check if deploy scripts exists
+  stat:
+    path: "{{ samba_scripts_dir }}"
+  register: slave_scripts
+  tags:
+    - slave-rsync
+
+- name: Rsync samba scripts from master
+  command: rsync -a --delete "{{ master_priv_ip }}::samba_deploy_scripts" "{{ samba_scripts_dir }}"
+  become: true
+  when: ( recompile is defined and recompile == 'true' ) or ( slave_scripts.stat is defined and not slave_scripts.stat.exists )
+  tags:
+    - slave-rsync
+
+
+# Rsync binaries
+- name: Check if bin/samba exists
+  stat:
+    path: "/home/{{ remote_user }}/samba/bin/samba"
+  register: slave_bin_samba
+  tags:
+    - slave-rsync
+
+- name: Rsync samba build dir from master
+  command: rsync -a --delete "{{ master_priv_ip }}::samba_deploy_binaries" "/home/{{ remote_user }}/samba"
+  become: true
+  when: ( recompile is defined and recompile == 'true' ) or ( slave_bin_samba.stat is defined and not slave_bin_samba.stat.exists )
+  tags:
+    - slave-rsync
+
+
+# Install binaries
+- name: Check if /usr/local/samba/sbin/samba exists
+  stat:
+    path: "/usr/local/samba/sbin/samba"
+  register: slave_usr_sbin_samba
+  tags:
+    - install
+
+- name: Install samba
+  command: make install
+  args:
+    chdir: "/home/{{ remote_user }}/samba"
+  become: true
+  when: ( recompile is defined and recompile == 'true' ) or ( slave_usr_sbin_samba.stat is defined and not slave_usr_sbin_samba.stat.exists )
+  tags:
+    - install
+
+
+# Restart samba
+- name: Check if there are running samba processes
+  command: pidof samba
+  ignore_errors: true
+  register: samba_slave_running
+  changed_when: samba_slave_running.rc == 1
+  failed_when: samba_slave_running.rc > 1
+  tags:
+    - install
+
+- name: Call handler to restart samba if it's running
+  debug: msg="Restaring samba processes after reinstall"
+  notify: Restart samba on a slave
+  when: ( recompile is defined and recompile == 'true' ) and ( samba_slave_running is defined ) and ( samba_slave_running.rc == 0 )
+  tags:
+    - install

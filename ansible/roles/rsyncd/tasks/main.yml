@@ -1,0 +1,27 @@
+---
+# tasks file for rsyncd
+
+- name: Install rsync daemon
+  apt: name=rsync
+  become: true
+
+- name: Configure rsync daemon
+  template:
+    src: "rsyncd.conf.j2"
+    dest: "/etc/rsyncd.conf"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  notify: restart rsync daemon
+  become: true
+  tags:
+    - rsync
+
+- name: Enable rsync service
+  service:
+    name: rsync
+    state: started
+    enabled: yes
+  become: true
+  tags:
+    - rsync

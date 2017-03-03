@@ -1,0 +1,10 @@
+#!/bin/bash -x
+# put localhost in resolv.conf
+# resolvconf(8) wants to look after it via symlinks and so forth.
+# To be sure we nuke its copies too.
+
+cat /etc/resolv.conf >  /etc/resolv.conf.old
+printf 'nameserver {{ master_priv_ip }}\n' > /etc/resolv.conf.new
+printf 'search {{ samba_domain }}.{{ domain }}\n' >> /etc/resolv.conf.new
+mv /etc/resolv.conf.new /etc/resolv.conf
+chattr +i  /etc/resolv.conf

@@ -1,0 +1,12 @@
+#!/bin/bash
+set -x
+set -e
+cd ~
+if [ ! -d samba ]; then
+  git clone {{ samba_remote_url }}
+  cd samba
+  git remote add {{ samba_remote_name }} {{ samba_remote_url }}
+  git remote add abartlet git://git.samba.org/abartlet/samba.git
+  git remote set-url origin git://git.samba.org/samba.git
+  git fetch {{ samba_remote_name }}
+fi

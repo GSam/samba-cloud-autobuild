@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -x
+
+if [[ "{{ kcc_interval }}" != "0" ]]; then
+   KCC_INTERVAL_OPT="--option=kccsrv:periodic_interval={{ kcc_interval }}"
+fi
+
+/usr/local/samba/bin/samba-tool domain provision --use-rfc2307 \
+  --realm={{ samba_realm }} \
+  --domain={{ samba_domain }} \
+  --server-role=dc \
+  --adminpass='{{ samba_password }}' \
+  --krbtgtpass='{{ samba_password }}' \
+  --machinepass='{{ samba_password }}' \
+  --ldapadminpass='{{ samba_password }}' \
+  --dnspass='{{ samba_password }}' \
+  --option='dns forwarder={{ nameservers.0 }}' \
+  --option='kccsrv:samba_kcc={{ use_samba_kcc }}' \
+  --option='ldapserverrequirestrongauth=no' \
+  $KCC_INTERVAL_OPT \
+  -d 3
+
+for i in $(seq 1 {{ sites }} ); do
+  /usr/local/samba/bin/samba-tool sites create site-$i
+
+done
+
+/usr/local/samba/sbin/samba
+
+for i in {1..100}; do
+  /usr/local/samba/bin/smbclient -L localhost -U% && break
+  sleep 10
+done
+for i in {1..10}; do
+  /usr/local/samba/bin/smbclient //localhost/netlogon  -P -c 'ls' && break
+  sleep 10
+done

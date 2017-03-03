@@ -1,0 +1,13 @@
+---
+# tasks file for netinf-manager
+
+- name: Manage subnets
+  os_subnet:
+    state: "{{ set_state | default('present') }}"
+    name: "{{ env_prefix }}-subnet{{ item }}"
+    network_name: "{{ env_prefix }}-network{{ item }}"
+    cidr: "{{ network_base }}.{{ item }}.0/24"
+    allocation_pool_start: "{{ network_base }}.{{ item }}.2"
+    allocation_pool_end: "{{ network_base }}.{{ item }}.254"
+    dns_nameservers: "{{ nameservers }}"
+  with_sequence: start=1 end="{{ sites }}"

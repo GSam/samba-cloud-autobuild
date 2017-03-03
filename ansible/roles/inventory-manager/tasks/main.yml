@@ -1,0 +1,6 @@
+---
+# tasks file for inventory-manager
+
+- meta: refresh_inventory
+  tags:
+    - always

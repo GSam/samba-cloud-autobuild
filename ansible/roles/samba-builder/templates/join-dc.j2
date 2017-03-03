@@ -1,0 +1,46 @@
+#!/bin/bash
+
+set -x
+for i in {1..100}; do
+  host {{ samba_domain }}.{{ domain }} && break
+  sleep 10
+done
+
+echo -e '[libdefaults]\ndns_lookup_realm = false\ndns_lookup_kdc = true\ndefault_realm = {{ samba_realm }}' > /etc/krb5.conf
+
+for i in {1..10}; do
+  /usr/local/samba/bin/smbclient -L {{ samba_realm }} -U% && break
+  sleep 10
+done
+
+for i in {1..10}; do
+   /usr/local/samba/bin/ldbsearch -H \
+     ldap://$(host {{ samba_domain }}.{{ domain }} | cut -d ' ' -f4) \
+     -UAdministrator --password='{{ samba_password }}' && break
+  sleep 10
+done
+
+if [[ "$(hostname)" =~ ^{{ env_prefix }}-{{ site_basename }}.-{{ node_basename }}2$ && {{ has_rodc }} == 'true' ]]; then
+  /usr/local/samba/bin/samba-tool domain join {{ samba_realm }} RODC -UAdministrator \
+                        --machinepass='{{ samba_password }}' \
+                        --password='{{ samba_password }}' --realm={{ samba_realm }} -d 3 \
+                        --option='ldapserverrequirestrongauth=no'
+else
+  /usr/local/samba/bin/samba-tool domain join {{ samba_realm }} DC -UAdministrator \
+                        --machinepass='{{ samba_password }}' \
+                        --password='{{ samba_password }}' --realm={{ samba_realm }} -d 3 \
+                        --option='ldapserverrequirestrongauth=no'
+fi
+
+/usr/local/samba/sbin/samba
+
+for i in {1..10}; do
+  /usr/local/samba/bin/smbclient //$(hostname)/netlogon -P -c 'ls' && break
+  sleep 10
+done
+
+ip=$(ip -o -4 addr show | grep -oP "`echo {{ network_base }} | sed -e 's/\./\\./g'`\.\d+\.\d+(?=/\d+)")
+
+if ! /usr/local/samba/bin/samba-tool dns query {{ master_priv_ip }} {{ samba_realm }} $(hostname) A -Uadministrator%{{ samba_password }} ; then
+  /usr/local/samba/bin/samba-tool dns add {{ master_priv_ip }} {{ samba_realm }} $(hostname) A  $ip -Uadministrator%{{ samba_password }}
+fi

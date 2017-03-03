@@ -1,0 +1,118 @@
+---
+
+catalyst_akl: 114.110.38.54/32
+catalyst_wlg: 202.78.240.7/32
+
+security_groups:
+  "{{ master_security_group }}":
+    description: "Master node security group in {{ env_prefix }} environment"
+  "{{ slave_security_group }}":
+    description: "Slave node security group in {{ env_prefix }} environment"
+
+  # CIDR protocol rules
+cidr_protocol_secgroups:
+  # Add ICMP rules
+  icmp-all-to-master:
+    remote_ip_prefix: 0.0.0.0/0
+    security_group: "{{ master_security_group }}"
+    protocol: icmp
+  icmp-akl-to-master:
+    remote_ip_prefix: "{{ catalyst_akl }}"
+    security_group: "{{ master_security_group }}"
+    protocol: icmp
+  icmp-wlg-to-master:
+    remote_ip_prefix: "{{ catalyst_wlg }}"
+    security_group: "{{ master_security_group }}"
+    protocol: icmp
+  icmp-all-to-slaves:
+    remote_ip_prefix: 0.0.0.0/0
+    security_group: "{{ slave_security_group }}"
+    protocol: icmp
+  icmp-akl-to-slaves:
+    remote_ip_prefix: "{{ catalyst_akl }}"
+    security_group: "{{ slave_security_group }}"
+    protocol: icmp
+  icmp-wlg-to-slaves:
+    remote_ip_prefix: "{{ catalyst_wlg }}"
+    security_group: "{{ slave_security_group }}"
+    protocol: icmp
+
+# All port rules
+cidr_port_secgroups:
+  # SSH
+  ssh-akl-to-master:
+    protocol: tcp
+    port_range_min: 22
+    port_range_max: 22
+    remote_ip_prefix: "{{ catalyst_akl }}"
+    security_group: "{{ master_security_group }}"
+  ssh-wlg-to-master:
+    protocol: tcp
+    port_range_min: 22
+    port_range_max: 22
+    remote_ip_prefix: "{{ catalyst_wlg }}"
+    security_group:   "{{ master_security_group }}"
+  ssh-akl-to-slaves:
+    protocol: tcp
+    port_range_min: 22
+    port_range_max: 22
+    remote_ip_prefix: "{{ catalyst_akl }}"
+    security_group: "{{ slave_security_group }}"
+  ssh-wlg-to-slaves:
+    protocol: tcp
+    port_range_min: 22
+    port_range_max: 22
+    remote_ip_prefix: "{{ catalyst_wlg }}"
+    security_group: "{{ slave_security_group }}"
+
+# Remote protocol rules
+remote_protocol_secgroups:
+  # Add ICMP rules
+  icmp-from-master-to-slaves:
+    protocol: icmp
+    security_group: "{{ slave_security_group }}"
+    remote_group:   "{{ master_security_group }}"
+  icmp-from-slaves-to-master:
+    protocol: icmp
+    security_group: "{{ master_security_group }}"
+    remote_group:   "{{ slave_security_group }}"
+
+remote_port_secgroups:
+  # All ports
+  all-tcp-ports-from-slaves-to-master:
+    protocol: tcp
+    port_range_min: 1
+    port_range_max: 65535
+    security_group: "{{ master_security_group }}"
+    remote_group:   "{{ slave_security_group }}"
+  all-tcp-ports-from-master-to-slaves:
+    protocol: tcp
+    port_range_min: 1
+    port_range_max: 65535
+    security_group: "{{ slave_security_group }}"
+    remote_group:   "{{ master_security_group }}"
+  all-udp-ports-from-slaves-to-master:
+    protocol: udp
+    port_range_min: 1
+    port_range_max: 65535
+    security_group: "{{ master_security_group }}"
+    remote_group:   "{{ slave_security_group }}"
+  all-udp-ports-from-master-to-slaves:
+    protocol: udp
+    port_range_min: 1
+    port_range_max: 65535
+    security_group: "{{ slave_security_group }}"
+    remote_group:   "{{ master_security_group }}"
+
+  all-tcp-ports-between-slaves:
+    protocol: tcp
+    port_range_min: 1
+    port_range_max: 65535
+    security_group: "{{ slave_security_group }}"
+    remote_group:   "{{ slave_security_group }}"
+  all-udp-ports-between-slaves:
+    protocol: udp
+    port_range_min: 1
+    port_range_max: 65535
+    security_group: "{{ slave_security_group }}"
+    remote_group:   "{{ slave_security_group }}"

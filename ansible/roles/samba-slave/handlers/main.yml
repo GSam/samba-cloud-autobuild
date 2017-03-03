@@ -1,0 +1,5 @@
+---
+# handlers file for samba-slave
+
+- name: Restart samba on a slave
+  command: killall samba ; sleep 5 && /usr/local/samba/sbin/samba &

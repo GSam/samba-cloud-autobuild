@@ -1,0 +1,10 @@
+
+[samba_deploy_scripts]
+  path = {{ samba_scripts_dir }}
+  comment = Samba deploy scripts
+  read only = true
+
+[samba_deploy_binaries]
+  path = /home/{{ remote_user }}/samba
+  comment = Samba deploy binaries
+  read only = true

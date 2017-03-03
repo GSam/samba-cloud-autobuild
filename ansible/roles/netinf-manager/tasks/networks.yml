@@ -1,0 +1,8 @@
+---
+# tasks file for netinf-manager
+
+- name: Manage networks
+  os_network:
+    state: "{{ set_state | default('present') }}"
+    name:  "{{ env_prefix }}-network{{ item }}"
+  with_sequence: start=1 end="{{ sites }}"

@@ -1,0 +1,4 @@
+
+* Once https://github.com/ansible/ansible/issues/16590 is supported, reapply commit 2ded67b9e3e1a33b56564c899f620457f392e413
+* Consider jumping through the master to reach slaves (Proxy command in slave group variables should work but setting ansible_ssh_host on slaves is hard) - use floating IPs for all hosts for now
+

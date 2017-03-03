@@ -1,0 +1,32 @@
+---
+# tasks file for netinf-manager
+
+# OpenStack won't allow to delete networks if there are ports attached to them
+# so deleting the router first if set_state=absent
+- name: Delete routers
+  os_router:
+    state: "{{ set_state | default('absent') }}"
+    name: "{{ env_prefix }}-router"
+    network: public-net
+  when: set_state == 'absent'
+
+# Add required routers.
+# Because os_router expects interfaces as an array, we need to build this array first
+- name: Initialize a helper fact to add ports to all subnets on our router
+  set_fact:
+    subnet_list: []
+  when: set_state == 'present'
+
+- name: Add subnet names to a list
+  set_fact:
+    subnet_list: "{{ subnet_list }} + [ '{{ env_prefix }}-subnet{{ item }}' ]"
+  with_sequence: start=1 end="{{ sites }}"
+  when: set_state == 'present'
+
+- name: Create routers
+  os_router:
+    state: "{{ set_state | default('present') }}"
+    name: "{{ env_prefix }}-router"
+    network: public-net
+    interfaces: "{{ subnet_list }}"
+  when: set_state == 'present'

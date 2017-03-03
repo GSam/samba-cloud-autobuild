@@ -1,0 +1,64 @@
+---
+# tasks file for netinf-manager
+
+# CIDR protocol rules
+- name: Manage CIDR protocol rules
+  os_security_group_rule:
+    state: "{{ item.value.state | default('present') }}"
+    security_group: "{{ item.value.security_group }}"
+    protocol: "{{ item.value.protocol }}"
+    remote_ip_prefix: "{{ item.value.remote_ip_prefix }}"
+    direction: "{{ item.value.direction | default ('ingress') }}"
+    ethertype: "{{ item.value.ethertype | default ('IPv4') }}"
+  with_dict: "{{ cidr_protocol_secgroups | default({}) }}"
+  when: cidr_protocol_secgroups is defined and set_state == 'present'
+  tags:
+    - security-group-rules
+
+# CIDR port rules
+- name: Manage CIDR port rules
+  os_security_group_rule:
+    state: "{{ item.value.state | default('present') }}"
+    security_group: "{{ item.value.security_group }}"
+    protocol: "{{ item.value.protocol }}"
+    port_range_min: "{{ item.value.port_range_min }}"
+    port_range_max: "{{ item.value.port_range_max }}"
+    remote_ip_prefix: "{{ item.value.remote_ip_prefix }}"
+    direction: "{{ item.value.direction | default ('ingress') }}"
+    ethertype: "{{ item.value.ethertype | default ('IPv4') }}"
+  with_dict: "{{ cidr_port_secgroups | default({}) }}"
+  when: cidr_port_secgroups is defined and set_state == 'present'
+  tags:
+    - security-group-rules
+
+
+# Remote security group protocol rules
+- name: Manage remote security group protocol rules
+  os_security_group_rule:
+    state: "{{ item.value.state | default('present') }}"
+    security_group: "{{ item.value.security_group }}"
+    protocol: "{{ item.value.protocol }}"
+    remote_group: "{{ item.value.remote_group }}"
+    direction: "{{ item.value.direction | default ('ingress') }}"
+    ethertype: "{{ item.value.ethertype | default ('IPv4') }}"
+  with_dict: "{{ remote_protocol_secgroups | default({}) }}"
+  when: remote_protocol_secgroups is defined and set_state == 'present'
+  tags:
+    - security-group-rules
+
+# Remote security group port rules
+- name: Manage remote security group port rules
+  os_security_group_rule:
+    state: "{{ item.value.state | default('present') }}"
+    security_group: "{{ item.value.security_group }}"
+    protocol: "{{ item.value.protocol }}"
+    port_range_min: "{{ item.value.port_range_min }}"
+    port_range_max: "{{ item.value.port_range_max }}"
+    remote_group: "{{ item.value.remote_group }}"
+    direction: "{{ item.value.direction | default ('ingress') }}"
+    ethertype: "{{ item.value.ethertype | default ('IPv4') }}"
+  with_dict: "{{ remote_port_secgroups | default({}) }}"
+  when: remote_port_secgroups is defined and set_state == 'present'
+  tags:
+    - security-group-rules
+

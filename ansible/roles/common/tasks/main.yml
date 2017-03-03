@@ -1,0 +1,69 @@
+---
+# tasks file for common
+
+- name: Test connection to instances
+  ping:
+
+- name: Add own address to /etc/hosts
+  lineinfile: dest=/etc/hosts
+              regexp="^\s?{{ ansible_all_ipv4_addresses.0 }}\s+.*"
+              line="{{ ansible_all_ipv4_addresses.0 }} {{ ansible_hostname }}.{{ domain }} {{ ansible_hostname }}"
+              state=present
+  become: yes
+
+- name: Add catalyst repository key
+  apt_key:
+    keyserver: "{{ cat_keyserver}}"
+    id: "{{ cat_keyid }}"
+  become: yes
+
+- name: Add catalyst repository location
+  apt_repository:
+    repo: "{{ cat_repo }}"
+    state: present
+  become: yes
+
+- name: Install userpackages
+  apt:
+    name: "{{ item }}"
+  with_items: "{{ userpackages }}"
+  become: yes
+
+- name: Add users to sudo group
+  user:
+    name: "{{ item }}"
+    append: yes
+    groups: 'sudo'
+  with_items: "{{ sudo_users }}"
+  become: yes
+
+- name: Install common packages
+  apt:
+    name: "{{ item }}"
+  with_items: "{{ common_packages }}"
+  become: yes
+
+- name: Adjust $PATH for all
+  lineinfile:
+    state: 'present'
+    dest: "{{ item }}"
+    create: yes
+    insertafter: EOF
+    line: PATH="/usr/local/samba/bin:$PATH"
+  become: yes
+  with_items:
+    - '/etc/profile'
+    - '/root/.profile'
+    - "/home/{{ remote_user }}/.profile"
+
+- name: Adjust $PYTHONPATH for root and remote_user
+  lineinfile:
+    state: 'present'
+    dest: "{{ item }}"
+    create: yes
+    insertafter: EOF
+    line: PYTHONPATH=/usr/local/samba/lib/python2.7
+  become: yes
+  with_items:
+    - '/root/.profile'
+    - "/home/{{ remote_user }}/.profile"

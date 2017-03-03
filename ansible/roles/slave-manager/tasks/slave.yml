@@ -1,0 +1,75 @@
+---
+# tasks file for slave-manager
+
+- name: Clear slave facts
+  set_fact:
+    sequence_start: 1
+    master_node: false
+  tags:
+    - slaves
+
+- name: Adjust sequence start for master site to create slaves in it
+  set_fact:
+    sequence_start: 2
+  when: site_num == '1' and hosts_in_site > 1
+  tags:
+    - slaves
+
+- name: Mark as master if there is only one host per site
+  set_fact:
+    master_node: true
+  when: site_num == '1' and hosts_in_site <= 1
+  tags:
+    - slaves
+
+- name: Disassociate floating IP from a slave
+  os_floating_ip:
+    state: 'absent'
+    purge: true
+    server: "{{ env_prefix }}-{{ site_basename }}{{ site_num }}-{{ node_basename }}{{ item }}"
+    wait: true
+  ignore_errors: true
+  with_sequence: start="{{ sequence_start }}" end="{{ hosts_in_site }}"
+  when: not master_node and set_state == 'absent'
+  tags:
+    - slaves
+    - floating_ip
+
+
+- name: Manage slave compute instances
+  os_server:
+    state: "{{ set_state | default('present') }}"
+    name: "{{ env_prefix }}-{{ site_basename }}{{ site_num }}-{{ node_basename }}{{ item }}"
+    key_name: "{{ keypair_name }}"
+    flavor: "{{ slave_flovour }}"
+    nics:
+      - net-name: "{{ env_prefix }}-network{{ site_num }}"
+    auto_ip: false
+    image: "{{ slave_image }}"
+    security_groups: "{{ slave_security_group }}"
+    meta: "group=slaves_group,{{ env_prefix }}=env_slaves,groups={{ env_prefix }}_slaves"
+    user_data: |
+      #cloud-config
+      hostname: "{{ env_prefix }}-{{ site_basename }}{{ site_num }}-{{ node_basename }}{{ item }}"
+      fqdn: "{{ env_prefix }}-{{ site_basename }}{{ site_num }}-{{ node_basename }}{{ item }}.{{ domain }}"
+      manage_etc_hosts: false
+      packages:
+        - python-minimal
+        - language-pack-en
+  with_sequence: start="{{ sequence_start }}" end="{{ hosts_in_site }}"
+  when: not master_node
+  tags:
+    - slaves
+  register: os_hosts
+
+- name: Assign a floating IP to a slave
+  os_floating_ip:
+    state: 'present'
+    server: "{{ env_prefix }}-{{ site_basename }}{{ site_num }}-{{ node_basename }}{{ item }}"
+    wait: true
+  with_sequence: start="{{ sequence_start }}" end="{{ hosts_in_site }}"
+  when: not master_node and set_state == 'present'
+  tags:
+    - slaves
+    - floating_ip
+

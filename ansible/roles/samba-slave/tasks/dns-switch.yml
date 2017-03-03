@@ -1,0 +1,29 @@
+---
+
+# Switch DNS servers to samba master
+- name: Wait for new DNS to become reachable
+  shell: "{{ samba_scripts_dir }}/wait-for-dns"
+  register: dns_wait
+  changed_when: dns_wait.rc > 0
+  failed_when: dns_wait.rc > 0
+
+- name: Check current /etc/resolv.conf
+  stat:
+    path: /etc/resolv.conf
+  register: resolvconf
+
+- name: Remove resolvconf link
+  file:
+    path: /etc/resolv.conf
+    state: absent
+  become: true
+  when: resolvconf.stat.islnk is defined and resolvconf.stat.islnk
+
+- name: Update /etc/resolv.conf
+  template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    mode: 644
+    owner: root
+    group: root
+  become: true

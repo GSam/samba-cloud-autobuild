@@ -1,0 +1,34 @@
+---
+
+# Switch DNS servers to samba master
+
+- name: Check current /etc/resolv.conf
+  stat:
+    path: /etc/resolv.conf
+  register: resolvconf
+
+- name: Remove resolvconf link
+  file:
+    path: /etc/resolv.conf
+    state: absent
+  become: true
+  when: resolvconf.stat.islnk is defined and resolvconf.stat.islnk
+
+- name: Update /etc/resolv.conf
+  template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    mode: 644
+    owner: root
+    group: root
+  become: true
+
+- name: Create a link to krb5.conf
+  file:
+    dest: /etc/krb5.conf
+    src: /usr/local/samba/private/krb5.conf
+    force: true
+    state: link
+    owner: root
+    group: root
+  become: true

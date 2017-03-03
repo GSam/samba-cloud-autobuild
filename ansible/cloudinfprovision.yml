@@ -1,0 +1,11 @@
+---
+
+- include: pre-run-checks.yml
+
+- name: Deploy required network elements and instances in the Catalyst Cloud
+  hosts: localhost
+  roles:
+    - netinf-manager
+    - master-manager
+    - slave-manager
+    - inventory-manager

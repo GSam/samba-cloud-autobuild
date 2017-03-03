@@ -1,0 +1,9 @@
+---
+# tasks file for netinf-manager
+
+- name: Manage security groups
+  os_security_group:
+    state: "{{ set_state | default('present') }}"
+    name: "{{ item.key }}"
+    description: "{{ item.value.description | default(item.key) }}"
+  with_dict: "{{ security_groups }}"

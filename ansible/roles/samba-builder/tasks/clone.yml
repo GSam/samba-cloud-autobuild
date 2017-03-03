@@ -1,0 +1,39 @@
+---
+# tasks file for samba-builder
+
+- name: Create samba scripts dir
+  file:
+    path: "{{ samba_scripts_dir }}"
+    state: 'directory'
+    mode: 0755
+  tags:
+    - clone
+
+- name: Deploy samba clone and build scripts
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ samba_scripts_dir }}/{{ item }}"
+    owner: "{{ remote_user }}"
+    group: "{{ remote_group | default(remote_user) }}"
+    mode: 0755
+  with_items:
+    - 'clone-samba'
+    - 'build-samba'
+    - 'provision-dc'
+    - 'join-dc'
+    - 'wait-for-dns'
+    - 'mangle-dns'
+    - 'run'
+  tags:
+    - clone
+
+## git clone part
+- name: Clone samba gitrepo
+  git:
+    repo: "{{ samba_remote_url }}"
+    dest: "/home/{{ remote_user }}/samba"
+    remote: "{{ samba_remote_name }}"
+    version: "{{ samba_version }}"
+    update: "{{ git_update | default('no') }}"
+  tags:
+    - clone

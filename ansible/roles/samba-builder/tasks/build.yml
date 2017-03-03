@@ -1,0 +1,72 @@
+---
+# tasks file for samba-builder
+
+# Configure
+- name: Check if bin/config.log exists
+  stat:
+    path: "/home/{{ remote_user }}/samba/bin/config.log"
+  register: config_log
+  tags:
+    - configure
+
+- name: Run configure
+  command: ./configure.developer
+  args:
+    chdir: "/home/{{ remote_user }}/samba"
+  when: ( recompile is defined and recompile == 'true' ) or ( config_log.stat is defined and not config_log.stat.exists )
+  tags:
+    - configure
+
+
+
+# Compile
+- name: Check if bin/samba exists
+  stat:
+    path: "/home/{{ remote_user }}/samba/bin/samba"
+  register: bin_samba
+  tags:
+    - compile
+
+- name: Compile samba
+  command: make -j
+  args:
+    chdir: "/home/{{ remote_user }}/samba"
+  when: ( recompile is defined and recompile == 'true' ) or ( bin_samba.stat is defined and not bin_samba.stat.exists )
+  tags:
+    - compile
+
+
+
+# Install
+- name: Check if /usr/local/samba/sbin/samba exists
+  stat:
+    path: "/usr/local/samba/sbin/samba"
+  register: usr_sbin_samba
+  tags:
+    - install
+
+- name: Install samba
+  command: make install
+  args:
+    chdir: "/home/{{ remote_user }}/samba"
+  become: true
+  when: ( recompile is defined and recompile == 'true' ) or ( usr_sbin_samba.stat is defined and not usr_sbin_samba.stat.exists )
+  tags:
+    - install
+
+# Restart if running
+- name: Check if there are running samba processes
+  command: pidof samba
+  ignore_errors: true
+  register: samba_master_running
+  changed_when: samba_master_running.rc == 1
+  failed_when: samba_master_running.rc > 1
+  tags:
+    - install
+
+- name: Call handler to restart samba if it's running
+  debug: msg="Restaring samba processes after reinstall"
+  notify: Restart samba on master
+  when: ( recompile is defined and recompile == 'true' ) and ( samba_master_running is defined ) and ( samba_master_running.rc == 0 )
+  tags:
+    - install

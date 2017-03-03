@@ -1,0 +1,16 @@
+---
+
+- name: Pre-run checks
+  hosts: localhost
+  tasks:
+    - name: Check if env_prefix variable is set
+      local_action: fail msg="env_prefix is not defined, run ansible with -e env_prefix=<your_unique_env_prefix> option (unquoted)"
+      when: ( env_prefix is not defined ) or ( env_prefix is none ) or ( env_prefix | trim == '' )
+      tags:
+        - always
+
+    - name: Check if keypair_name variable is set
+      local_action: fail msg="keypair_name is not defined, define it in group_vars/all or as ansible '-e' option parameter"
+      when: ( keypair_name is not defined ) or ( keypair_name is none ) or ( keypair_name | trim == '' )
+      tags:
+        - always

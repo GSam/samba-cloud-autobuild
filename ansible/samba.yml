@@ -1,0 +1,28 @@
+---
+
+- include: pre-run-checks.yml
+
+- name: Deploy and configure samba on the master node
+  hosts: "{{ env_prefix }}_master"
+  remote_user: "{{ remote_user }}"
+  roles:
+    - common
+    - geerlingguy.ntp
+    - samba-builder
+    - rsyncd
+  tags:
+    - common
+    - samba-builder
+    - dc
+
+- name: Deploy and configure samba on slave nodes
+  hosts: "{{ env_prefix }}_slaves"
+  remote_user: "{{ remote_user }}"
+  roles:
+    - common
+    - geerlingguy.ntp
+    - samba-slave
+  tags:
+    - common
+    - samba-slave
+    - dc-slave

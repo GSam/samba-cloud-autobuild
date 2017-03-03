@@ -1,0 +1,5 @@
+---
+# handlers file for samba-builder
+
+- name: Restart samba on master
+  command: killall samba ; sleep 5 && /usr/local/samba/sbin/samba &
