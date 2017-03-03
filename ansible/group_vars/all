@@ -56,7 +56,7 @@ kcc_interval: '0'
 #####################################################
 
 ## keypair_name
-keypair_name: grzegorz-X1
+keypair_name:
 
 ## Porirua region DNS
 nameservers: [202.78.247.197, 202.78.247.198, 202.78.247.199]
