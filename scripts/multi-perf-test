@@ -120,7 +120,7 @@ class SambaGitTree(object):
         for d, s in ((svg, perf_folded),
                      (svg_samba, perf_folded_samba)):
             with open(d, 'w') as f:
-                cmd = [flamegraph, '--minwidth', '0.2', '--width', '1060',
+                cmd = [flamegraph, '--minwidth', '0.1', '--width', '1060',
                        '--hash', s]
                 subprocess.check_call(cmd, stdout=f)
             shutil.copy(d, dest)
