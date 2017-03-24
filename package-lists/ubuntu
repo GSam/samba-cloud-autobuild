@@ -16,6 +16,7 @@ packages:
  - flex
  - gdb
  - git
+ - libjansson-dev
  - jed
  - krb5-user
  - libacl1-dev
