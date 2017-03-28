@@ -403,9 +403,14 @@ def main():
 
         branches = []
         for b in args.branches:
-            if re.match('^[0-9A-Fa-f]+\^?\.\.[0-9A-Fa-f]+$', b):
-                print "expanding '%s' ..." % b
-                commits = tree.git('log', '--pretty=format:%h', b, output=True)
+            if '..' in b:
+                print "trying to expand '%s' ..." % b
+                try:
+                    commits = tree.git('log', '--pretty=format:%h', b, output=True)
+                except subprocess.CalledProcessError as e:
+                    print "... expansion failed!"
+                    branches.append(b)
+                    continue
                 commits = commits.split()
                 commits.reverse()
                 print " to %s" % ' '.join(commits)
