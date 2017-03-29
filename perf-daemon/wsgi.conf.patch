@@ -1,0 +1,23 @@
+--- /home/douglasb/src/mod-wsgi-4.3.0/debian/wsgi.conf	2009-12-20 00:59:29.000000000 +1300
++++ wsgi.conf	2017-04-19 16:12:18.631735488 +1200
+@@ -119,5 +119,20 @@
+     #after they have forked from the Apache parent process. 
+ 
+         #WSGILazyInitialization On|Off
++  #SetEnv FLASK_DEBUG 1
++  
++  WSGIDaemonProcess perfdaemon user=samba-test-bot group=www-data  threads=2
++  WSGIScriptAlias / /home/douglasb/samba-cloud-autobuild/perf-daemon/perf_web_interface.wsgi
++
++  <Directory /home/douglasb/samba-cloud-autobuild/perf-daemon>
++    WSGIProcessGroup perfdaemon
++    WSGIApplicationGroup %{GLOBAL}
++    AuthType Basic
++    AuthName "By Invitation Only"
++    AuthUserFile "/home/douglasb/htpasswords"
++    Require valid-user
++  </Directory>
++
++  LogLevel info
+ 
+ </IfModule>

@@ -1,0 +1,45 @@
+#!/usr/bin/python
+"""Send an email to samba-dev@catalyst.net.nz."""
+import sys
+import smtplib
+import email
+import os
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart as Message
+from email.mime.text import MIMEText
+import argparse
+
+SERVER = 'smtp1.catalyst.net.nz'
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__,
+                        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('attachments', nargs='*',
+                        help="attach these files")
+    parser.add_argument('-t', '--to', action='append',
+                        help="send to this address")
+    parser.add_argument('-f', '--from', default='samba-dev@catalyst.net.nz',
+                        help="from this address")
+    parser.add_argument('-s', '--subject', default='A message from the cloud',
+                        help="use this subject")
+
+    args = parser.parse_args()
+
+    if not args.to:
+        args.to = ['samba-dev@catalyst.net.nz']
+
+    msg = Message()
+    msg['Subject'] = args.subject
+    msg['To'] = ', '.join(args.to)
+    msg['From'] = args.from
+
+    for fn in args.attachments:
+        f = open(fn, 'rb')
+        a = MIMEApplication(f.read())
+        f.close()
+        save_fn = os.path.basename(fn)
+        a.add_header('Content-Disposition','attachment', filename=save_fn)
+        msg.attach(a)
+
+    s = smtplib.SMTP(SERVER)
+    s.sendmail(args.from, args.to, str(msg))

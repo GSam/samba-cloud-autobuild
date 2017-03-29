@@ -1,0 +1,305 @@
+#!/usr/bin/python
+
+import time
+import json
+import argparse
+import re
+import subprocess
+import sys
+import os
+import random
+import shutil
+import tempfile
+import smtplib
+import traceback
+import email
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart as Message
+from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
+
+
+HERE = os.path.dirname(__file__)
+QUEUE_DIR = os.environ.get('PERF_TEST_QUEUE_DIR',
+                           os.path.join(HERE, 'perf-queue'))
+SUCCESS_DIR = os.environ.get('PERF_TEST_SUCCESS_DIR',
+                             os.path.join(HERE, 'perf-queue-done'))
+FAIL_DIR = os.environ.get('PERF_TEST_FAIL_DIR',
+                          os.path.join(HERE, 'perf-queue-fail'))
+
+MULTI_PERF_SCRIPT = os.path.join(HERE, '../scripts/multi-perf-test')
+GRAPH_SCRIPT = os.path.join(HERE, '../scripts/graph-perf-json')
+
+DEFAULT_OPTS = ['-r', 'git://git.catalyst.net.nz/samba.git', '--best-of', '5']
+
+TEMP_DIR = os.environ.get('PERF_TEMP_DIR')
+
+EMAIL_RECIPIENT = 'samba-dev@catalyst.net.nz'
+EMAIL_SERVER = 'smtp1.catalyst.net.nz'
+
+
+def slurp(fn):
+    f = open(fn, 'rb')
+    s = f.read()
+    f.close()
+    return s
+
+def always(x):
+    return True
+
+def true_or_false(x, default=None):
+    x = x.lower()
+    if x in ('true', 'yes', '1'):
+        return True
+    if x in ('false', 'no', '0'):
+        return False
+    return default
+
+def parse_request(s, output_dir):
+    commit_re = re.compile(r'\w[\w/^~-]*') # a guess
+
+    cmdline = [MULTI_PERF_SCRIPT,
+               '-o', os.path.join(output_dir, 'results.json'),
+               '--no-cflags-munging']
+
+    cmdline.extend(DEFAULT_OPTS)
+    commits = []
+    metadata = {}
+    lines = s.split('\n')
+    flags = {'--test-releases',
+             '--preserve-tmp-dir',
+             '-c', '--clean-between-revisions'}
+
+    remotes = set(["http://git.catalyst.net.nz/samba.git",
+                   "git://git.samba.org/samba.git",
+                   "https://github.com/douglasbagnall/samba.git",
+                   "https://github.com/gsam/samba.git",
+                   "/home/samba-test-bot/samba-mirror.git"])
+
+    options = {'--sample-last-n-weeks': re.compile('^\d+/\d+$').match,
+               '--last-n-weeks': re.compile('^\d+$').match,
+               '-b': re.compile('^[\w-]+$').match,
+               '--branch': re.compile('^[\w-]+$').match,
+               '-r': remotes.__contains__,
+               '--remote': remotes.__contains__,
+               '-t': always,
+               '--test-regex': always,
+               '--best-of': re.compile('^\d+$').match,
+    }
+
+    # meta converts rather than restricts, so e.g. graphs: can be boolean
+    meta = {'title:': lambda x: x,
+            'graphs:': true_or_false,
+    }
+
+    for line in lines:
+        line = line.strip()
+        if line == '' or line[0] == '#':
+            # blank lines and comments are OK
+            continue
+
+        tokens = line.split()
+        opt = tokens[0]
+
+        if opt in meta:
+            v = line.split(None, 1)[1]
+            v2 = meta[opt](v)
+            if v2 is not None:
+                metadata[opt] = v2
+
+        elif opt in flags and len(tokens) == 1:
+            cmdline.append(opt)
+        elif opt in options and len(tokens) == 2:
+            v = tokens[1]
+            if options[opt](v):
+                cmdline.extend(tokens)
+            else:
+                print >> sys.stderr, "rejecting malformed %s %s" % (opt, v)
+        else:
+            for x in tokens:
+                if commit_re.match(x):
+                    commits.append(x)
+                else:
+                    print >> sys.stderr, "ignoring token %r" % x
+
+    return cmdline + commits, metadata
+
+
+def send_email(subject, body, results=(), recipient=EMAIL_RECIPIENT):
+    msg = Message()
+    msg['Subject'] = subject
+    msg['To'] = recipient
+    msg['From'] = recipient
+
+    a = MIMEText(body, 'plain')
+    msg.attach(a)
+
+    ext_lut = {
+        'svg': (MIMEImage, 'svg+xml'),
+        'png': (MIMEImage, 'png'),
+        'json': (MIMEApplication, 'json'),
+        'txt': (MIMEText, 'plain'),
+    }
+
+    for fn in results:
+        content = slurp(fn)
+        save_fn = os.path.basename(fn)
+        ext = save_fn[save_fn.rfind('.') + 1:]
+        mimeclass, subtype = ext_lut.get(ext, ext_lut['txt'])
+        a = mimeclass(content, subtype)
+        a.add_header('Content-Disposition','attachment', filename=save_fn)
+        msg.attach(a)
+
+    s = smtplib.SMTP(EMAIL_SERVER)
+    s.sendmail(recipient, [recipient], str(msg))
+    s.quit()
+
+
+def generate_results(output_dir, graphs=True):
+    src = os.path.join(output_dir, 'results.json')
+    if not graphs:
+        return [src]
+
+    rel_png = os.path.join(output_dir, 'results.png')
+    abs_png = os.path.join(output_dir, 'results-absolute.png')
+    graph_log = os.path.join(output_dir, 'graph.log')
+    logf = open(graph_log, 'w')
+    try:
+        subprocess.check_call([GRAPH_SCRIPT, '-t',
+                               '-i', src,
+                               '-o', rel_png],
+                              stdout=logf, stderr=subprocess.STDOUT)
+        subprocess.check_call([GRAPH_SCRIPT, '-t',
+                               '-i', src,
+                               '-a',
+                               '-o', abs_png],
+                              stdout=logf, stderr=subprocess.STDOUT)
+        logf.close()
+    except (subprocess.CalledProcessError, OSError) as e:
+        # we problably don't have the PNGs so return a message
+        # instead.
+        msg = os.path.join(output_dir, 'error.txt')
+        f = open(msg, 'w')
+        print >> f, "PNG generation failed with:\n"
+        print >> f, traceback.format_exc()
+        f.close()
+        logf.close()
+        return [src, msg, graph_log]
+
+    return [src, rel_png, abs_png, graph_log]
+
+FAILED_ONCE = {}
+
+def process_queue():
+    failures = {}
+    files = os.listdir(QUEUE_DIR)
+    print "queue is %s" % ' '.join(files)
+    for fn in files:
+        ffn = os.path.join(QUEUE_DIR, fn)
+        s = slurp(ffn)
+        output_dir = tempfile.mkdtemp(prefix='perf-results-', dir=TEMP_DIR)
+        test_log = os.path.join(output_dir, 'test.log')
+        f = open(test_log, 'w')
+        cmdline, metadata = parse_request(s, output_dir)
+        try:
+            subprocess.check_call(cmdline, stdout=f, stderr=subprocess.STDOUT)
+            results = generate_results(output_dir, graphs=metadata.get('graphs:'))
+            subject = 'perf test results for %s' % metadata.get('title:',
+                                                                'some test')
+            body = 'The command line was\n\n   %s' % ' '.join(cmdline)
+            body += '\n\ncheers,\nsamba-test-bot'
+            f.close()
+            results.append(test_log)
+            send_email(subject, body, results)
+            shutil.move(ffn, os.path.join(SUCCESS_DIR, fn))
+            if not '--preserve-tmp-dir' in cmdline:
+                shutil.rmtree(output_dir)
+
+        except subprocess.CalledProcessError as e:
+            failures.setdefault(fn, []).append((cmdline, e))
+            if fn not in FAILED_ONCE:
+                FAILED_ONCE[fn] = traceback.format_exc()
+                continue
+
+            subject = 'perf test failure for %s' % metadata.get('title:',
+                                                                'some test')
+            body = '\n'.join(('The command line was\n',
+                              ' '.join(cmdline),
+                              '\nbut it failed TWICE!',
+                              'the first error was:\n',
+                              FAILED_ONCE[fn],
+                              'and the second error was:\n',
+                              traceback.format_exc()))
+            body += '\n\nThe request follows. It will not be retried.\n\n'
+            body += s
+            body += '\n\ncheers,\nsamba-test-bot'
+            f.close()
+            send_email(subject, body, [test_log])
+            shutil.move(ffn, os.path.join(FAIL_DIR, fn))
+            if not '--preserve-tmp-dir' in cmdline:
+                shutil.rmtree(output_dir)
+    return failures
+
+
+def process_background():
+    failures = {}
+    s = """# Parse as if a submitted job.
+    title: autobuild background task
+    --sample-last-n-weeks 2/52
+    -c
+    -t ad_dc_medley
+    -r /home/samba-test-bot/samba-mirror.git"""
+    output_dir = tempfile.mkdtemp(prefix='background-results-', dir=TEMP_DIR)
+    test_log = os.path.join(output_dir, 'test.log')
+    f = open(test_log, 'w')
+    cmdline, metadata = parse_request(s, output_dir)
+    try:
+        subprocess.check_call(cmdline, stdout=f, stderr=subprocess.STDOUT)
+        results = generate_results(output_dir, graphs=False)
+        subject = "more background perf results"
+        body = 'The command line was\n\n   %s' % ' '.join(cmdline)
+        f.close()
+        results.append(test_log)
+        send_email(subject, body, results)
+
+    except subprocess.CalledProcessError as e:
+        subject = "Another background perf failure!"
+        body = 'The command line was\n\n   %s' % ' '.join(cmdline)
+        f.close()
+        send_email(subject, body, [test_log])
+    return failures
+
+
+def main():
+    global QUEUE_DIR, SUCCESS_DIR, FAIL_DIR
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-q', '--queue-dir', default=QUEUE_DIR,
+                        help='save queued jobs here')
+    parser.add_argument('--success-dir', default=SUCCESS_DIR,
+                        help='successful jobs end up here')
+    parser.add_argument('--fail-dir', default=FAIL_DIR,
+                        help='failed jobs jobs go here')
+    args = parser.parse_args()
+
+    QUEUE_DIR = args.queue_dir
+    SUCCESS_DIR = args.success_dir
+    FAIL_DIR = args.fail_dir
+
+    # For these tests, where we aren't doing flame graphs, we don't
+    # need the likes of -fno-inline -g -fno-omit-frame-pointer
+    os.environ['CFLAGS'] = "-O2 -g"
+
+    while True:
+        if os.listdir(QUEUE_DIR):
+            print "processing queue"
+            process_queue()
+        else:
+            print "procesing background"
+            process_background()
+
+        sys.stderr.flush()
+        sys.stdout.flush()
+        time.sleep(5)
+
+main()

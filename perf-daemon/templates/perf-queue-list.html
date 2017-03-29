@@ -1,0 +1,19 @@
+<html>
+  <style>
+    h2 {color: #740; font: sans-serif smaller; }
+    </style>
+
+  <body>
+    <h1>Queued jobs</h1>
+    {% if jobs %}
+    {% for id, title, text in jobs %}
+    <h2>{{ title }}</h2>
+    <i>id: {{ id }}</i>
+    <pre>
+{{ text }} </pre>
+    {% endfor %}
+    {% else %}
+    <p>There are no queued jobs!</p>
+    {% endif %}
+  </body>
+</html>

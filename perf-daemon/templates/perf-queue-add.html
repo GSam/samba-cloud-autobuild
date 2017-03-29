@@ -1,0 +1,61 @@
+<html>
+  <style>
+    label {display: inline-block; min-width: 10em;}
+    input[type=text], input:not([type]) {min-width: 30em}
+    .msg {margin: 2em; color: #870; font-size: 1.5em;}
+    </style>
+
+  <body>
+    <h1>Add a performance test job</h1>
+    <p class=msg>{{ msg }}</p>
+
+    <p>You can <a href=/list>see a list of existing jobs</a> but you can't
+      cancel one without sshing into the box.</p>
+
+
+    <form action='/'>
+
+      <label for="job-name">Job name</label>
+      <input id="job-name" name="job-name" value="{{job_name}}">
+      (<i>{now}</i> for timestamp, <i>{commits}</i> for commit list, <i>{tests}</i> for test regex)<br>
+
+
+      <datalist id="remotes">
+        <option value="http://git.catalyst.net.nz/samba.git">
+        <option value="git://git.samba.org/samba.git">
+        <option value="https://github.com/douglasbagnall/samba.git">
+        <option value="https://github.com/gsam/samba.git">
+        <option value="git://git.samba.org/abartlet/samba.git">
+        <option value="git://git.samba.org/garming/samba.git">
+        <option value="/home/samba-test-bot/samba-mirror.git">
+      </datalist>
+
+      <label for=remote>Remote</label>
+        <input name=remote id=remote list=remotes value="{{remote}}"><br>
+
+      <label for=commits>Commits</label>
+        <input name=commits id=commits value="{{commits}}"> (space separated list)<br>
+
+      <label for=testregex>Restrict tests </label>
+        <input name=testregex id=testregex value="{{testregex}}"> (regular expression)<br>
+
+        <label for=bestof>number of runs</label>
+        <input name=bestof id=bestof value="{{bestof}}"> <br>
+
+        <label for="preserve-tmp-dir">keep working directories</label>
+        <input type=checkbox name="preserve-tmp-dir" id="preserve-tmp-dir" value="yes"
+               {% if preserve_tmp_dir %}
+               checked
+               {%endif %}> <br>
+
+        <label for="graphs">draw graphs</label>
+        <input type=checkbox name="graphs" id="graphs" value="yes"
+               {% if graphs %}
+               checked
+               {%endif %}> <br>
+
+        <input type="submit" value="Submit">
+    </form>
+
+  </body>
+</html>
