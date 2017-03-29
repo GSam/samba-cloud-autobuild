@@ -1,0 +1,105 @@
+#!/usr/bin/python
+"""Convert the results of multi-perf-test into a form usable by javascript."""
+
+import json
+import argparse
+import re
+import sys
+import subprocess
+
+def find_commit_message(git_tree, commit, maxlen=75, date_only=False):
+    if date_only:
+        cmd = ['git', '-C', git_tree,
+               'log', '--pretty=tformat:%cd', '--date=format:%Y-%m-%d %H:%M',
+               '-n1', commit]
+    else:
+        cmd = ['git', '-C', git_tree,
+               'log', '--pretty=oneline', '--abbrev-commit', '-n1', commit]
+    try:
+        s = subprocess.check_output(cmd).strip()
+    except subprocess.CalledProcessError, e:
+        print >> sys.stderr, "commit name %s not found?: %s" % (commit, e)
+        return commit
+    s = s.strip()
+    if len(s) > maxlen:
+        s = s[:maxlen - 3] + '...'
+    return s
+
+
+DATE_CACHE = {}
+def find_commit_date(reference_tree, k):
+    if k in DATE_CACHE:
+        return DATE_CACHE[k]
+    date = find_commit_message(reference_tree, k, date_only=True)
+    DATE_CACHE[k] = date
+    return date
+
+
+def tidy_revision_name(s):
+    return re.sub(r'(remotes/)?(origin/)?', '', s)
+
+
+def tidy_test_name(s):
+    s = s[:s.rfind('(')]
+    s = s[s.rfind('.') + 1:]
+    s = s.replace('_', ' ')
+    if s[:5] == 'test ':
+        s = s[5:]
+    return s
+
+
+def get_dated_sequences(input_files, reference_tree, tidy_names=True):
+    dated = []
+    
+    for fn in input_files:
+        f = open(fn)
+        d = json.load(f)
+        f.close()
+        
+        for k, v in d:
+            date = find_commit_date(reference_tree, k)
+
+            if tidy_names:
+                k = tidy_revision_name(k)
+                v = {tidy_test_name(test): time
+                     for test, time in v.items()}
+            dated.append([k, v, date])
+    return dated
+
+
+def thoroughly_mangle(sequences):
+    # target:
+    s
+    
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__,
+                    formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('-i', '--input-file', action='append',
+                        help="read JSON form here")
+
+    parser.add_argument('-o', '--output', type=argparse.FileType('w'),
+                        help="write mangled JSON here ('-' for stdout)")
+    
+    parser.add_argument('-t', '--tidy-names', action='store_true',
+                        help="try to remove cruft from test/branch names")
+
+    parser.add_argument('-T', '--be-thorough', action='store_true',
+                        help="really THOROUGHLY mangle everything")
+
+    parser.add_argument('-g', '--reference-git-tree',
+                        help="use this tree to find dates")
+
+    args = parser.parse_args()
+
+    sequences = get_dated_sequences(args.input_file, args.reference_git_tree,
+                                    args.tidy_names)
+
+    if args.be_thorough:
+        sequences = thoroughly_mangle(sequences)
+
+    json.dump(sequences, args.output,
+              sort_keys=True, indent=2, separators=(',', ': '))
+        
+main()
