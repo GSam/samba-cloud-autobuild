@@ -1,6 +1,10 @@
 ---
 # tasks file for common
 
+# Include variables containing a list of build dependencies specified outside of ansible directory
+# only supports ubuntu for now
+- include_vars: ../package-lists/ubuntu
+
 - name: Test connection to instances
   ping:
 
@@ -41,6 +45,13 @@
   apt:
     name: "{{ item }}"
   with_items: "{{ common_packages }}"
+  become: yes
+
+- name: Install build deps
+  apt:
+    name: "{{ item }}"
+  with_items: "{{ packages }}"
+  when: packages is defined
   become: yes
 
 - name: Adjust $PATH for all

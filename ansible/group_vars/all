@@ -55,9 +55,6 @@ kcc_interval: '0'
 # VM settings, users, packages and all common stuff #
 #####################################################
 
-## keypair_name
-keypair_name:
-
 ## Porirua region DNS
 nameservers: [202.78.247.197, 202.78.247.198, 202.78.247.199]
 
@@ -93,20 +90,14 @@ slave_security_group: "{{ env_prefix }}-slave"
 common_packages:
   - 'vim'
   - 'htop'
-  - 'screen'
   - 'nmap'
   - 'tcpdump'
   - 'mlocate'
   - 'sysstat'
   - 'telnet'
-  - 'dnsutils'
-  - 'git'
   - 'make'
   - 'gcc'
   - 'libpython2.7-dev'
-  - 'libgnutls-dev'
-  - 'libacl1-dev'
-  - 'libldap2-dev'
 
 ## NTP settings
 ntp_enabled: true
