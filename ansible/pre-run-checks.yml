@@ -19,8 +19,8 @@
 
     - name: Set keypair_name to be current username by default
       set_fact:
-        keypair_name: "{{ whoami.stdout_lines }}"
-      when: ( whoami is defined ) and ( whoami.stdout_lines is defined )
+        keypair_name: "{{ whoami.stdout_lines[0] }}"
+      when: ( whoami is defined ) and ( whoami.stdout_lines[0] is defined )
       tags:
         - always
 
