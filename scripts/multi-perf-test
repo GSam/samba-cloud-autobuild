@@ -36,6 +36,7 @@ import shutil
 import traceback
 import json
 import re
+import random
 
 HERE = os.path.dirname(__file__)
 
@@ -271,6 +272,12 @@ class SambaGitTree(object):
         results.reverse()
         return results
 
+    def get_random_weekly_autobuilds(self, n, n_weeks,
+                                     reference='last Saturday',
+                                     branch='origin/master'):
+        results = self.get_last_n_weeks(n_weeks, reference, branch)
+        return random.sample(results, n)
+
 
 class PerfTestException(Exception):
     pass
@@ -313,8 +320,12 @@ def main():
                         const='origin/v4-[0-9]*-stable',
                         help=("test stable release branches from 4.0 "
                               "(or the supplied pattern)"))
-    parser.add_argument('--last-n-weeks', type=int,
-                        help=("test autobuilds from this many recent Saturdays"))
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--last-n-weeks', type=int,
+                       help=("test autobuilds from this many recent Saturdays"))
+    group.add_argument('--sample-last-n-weeks',
+                       help=("randomly select autobuilds "
+                             "[e.g 3/52 for 3 weeks of a year]"))
     parser.add_argument('-b', '--branch', default='master',
                         help="git branch to use (for e.g. --last-n-weeks)")
     parser.add_argument('-r', '--remote',
@@ -423,11 +434,18 @@ def main():
             # (because we have to assume something).
             branches = tree.list_branches(args.test_releases) + branches
 
-        if args.last_n_weeks:
+        if args.last_n_weeks or args.sample_last_n_weeks:
             if '/' not in args.branch:
                 args.branch = 'origin/' + args.branch
-            commits = tree.get_last_n_weeks(args.last_n_weeks,
-                                            branch=args.branch)
+            if args.last_n_weeks:
+                commits = tree.get_last_n_weeks(args.last_n_weeks,
+                                                branch=args.branch)
+            else:
+                n, n_weeks = [int(x) for x in
+                              args.sample_last_n_weeks.split('/', 1)]
+                commits =  tree.get_random_weekly_autobuilds(n, n_weeks,
+                                                             branch=args.branch)
+
             branches = commits + branches
 
         for i in range(args.best_of):
