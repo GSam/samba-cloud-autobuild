@@ -61,6 +61,8 @@ PATCHES = {
                   find_patch('samba-4.5-perf.patch'),
                   find_patch('ntlmssp-no-inline.patch')],
     'misc':      [find_patch('waf-test-list.patch'),
+                  find_patch('open-close-db-performance.patch'),
+                  find_patch('ndrpack-performance.patch'),
                   find_patch('search-performance.patch'),
                   find_patch('medley-performance.patch'),
     ],
