@@ -58,6 +58,7 @@ PATCHES = {
                   os.path.join(HERE, '../perf/ntlmssp-no-inline.patch')],
     'misc':      [os.path.join(HERE, '../perf/waf-test-list.patch'),
                   os.path.join(HERE, '../perf/search-performance.patch'),
+                  os.path.join(HERE, '../perf/medley-performance.patch'),
     ],
 }
 
