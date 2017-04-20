@@ -39,31 +39,35 @@ import re
 import random
 
 HERE = os.path.dirname(__file__)
+PATCH_DIR = os.path.join(HERE, '../perf/')
+
+def find_patch(x):
+    return os.path.join(PATCH_DIR, x)
 
 PATCHES = {
-    'samba-4-0': [os.path.join(HERE, '../perf/samba-4.5-ad_dc.patch'),
-                  os.path.join(HERE, '../perf/samba-4.5-perf.patch'),
-                  os.path.join(HERE, '../perf/samba-4.2-perf.patch'),
-                  os.path.join(HERE, '../perf/samba-4-0-pidl.patch'),
-                  os.path.join(HERE, '../perf/samba-4-0-gnutls.patch'),
-                  os.path.join(HERE, '../perf/samba-4.0-ccan-memset.patch'),
-                  os.path.join(HERE, '../perf/ntlmssp-no-inline.patch'),
+    'samba-4-0': [find_patch('samba-4.5-ad_dc.patch'),
+                  find_patch('samba-4.5-perf.patch'),
+                  find_patch('samba-4.2-perf.patch'),
+                  find_patch('samba-4-0-pidl.patch'),
+                  find_patch('samba-4-0-gnutls.patch'),
+                  find_patch('samba-4.0-ccan-memset.patch'),
+                  find_patch('ntlmssp-no-inline.patch'),
                   ],
-    'samba-4-2': [os.path.join(HERE, '../perf/samba-4.5-ad_dc.patch'),
-                  os.path.join(HERE, '../perf/samba-4.5-perf.patch'),
-                  os.path.join(HERE, '../perf/samba-4.2-perf.patch'),
-                  os.path.join(HERE, '../perf/ntlmssp-no-inline.patch')],
-    'samba-4-5': [os.path.join(HERE, '../perf/samba-4.5-ad_dc.patch'),
-                  os.path.join(HERE, '../perf/samba-4.5-perf.patch'),
-                  os.path.join(HERE, '../perf/ntlmssp-no-inline.patch')],
-    'misc':      [os.path.join(HERE, '../perf/waf-test-list.patch'),
-                  os.path.join(HERE, '../perf/search-performance.patch'),
-                  os.path.join(HERE, '../perf/medley-performance.patch'),
+    'samba-4-2': [find_patch('samba-4.5-ad_dc.patch'),
+                  find_patch('samba-4.5-perf.patch'),
+                  find_patch('samba-4.2-perf.patch'),
+                  find_patch('ntlmssp-no-inline.patch')],
+    'samba-4-5': [find_patch('samba-4.5-ad_dc.patch'),
+                  find_patch('samba-4.5-perf.patch'),
+                  find_patch('ntlmssp-no-inline.patch')],
+    'misc':      [find_patch('waf-test-list.patch'),
+                  find_patch('search-performance.patch'),
+                  find_patch('medley-performance.patch'),
     ],
 }
 
 PATCH_FUZZINESS = {
-    os.path.join(HERE, '../perf/ntlmssp-no-inline.patch'): 1,
+    find_patch('ntlmssp-no-inline.patch'): 1,
 }
 
 
