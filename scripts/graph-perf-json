@@ -93,14 +93,16 @@ def tidy_revision_name(s):
 
 def tidy_test_name(s):
     s = s.rstrip()
-    x = s.split('.')[-1]
-    if x[-1] == ')':
-        x = x[:x.rfind('(')]
-    x = x.replace('_', ' ')
-    if x[:5] == 'test ':
-        x = x[5:]
-    if x:
-        return x
+
+    m = re.match('^.+\.__main__\.\w+\.test_(.+)$', s)
+    if m:
+        s = m.group(1)
+
+    if s.endswith('(ad_dc_ntvfs)'):
+        s = s[:-13]
+
+    s = s.replace('_', ' ')
+
     return s
 
 
