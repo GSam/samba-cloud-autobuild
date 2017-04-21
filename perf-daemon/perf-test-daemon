@@ -138,6 +138,7 @@ def send_email(subject, body, results=(), recipient=EMAIL_RECIPIENT):
         'svg': (MIMEImage, 'svg+xml'),
         'png': (MIMEImage, 'png'),
         'json': (MIMEApplication, 'json'),
+        'gz': (MIMEApplication, 'gzip'),
         'txt': (MIMEText, 'plain'),
     }
 
@@ -154,6 +155,9 @@ def send_email(subject, body, results=(), recipient=EMAIL_RECIPIENT):
     s.sendmail(recipient, [recipient], str(msg))
     s.quit()
 
+def gzip_file(name):
+    subprocess.check_call(['gzip', name])
+    return name + '.gz'
 
 def generate_results(output_dir, graphs=True):
     src = os.path.join(output_dir, 'results.json')
@@ -176,7 +180,7 @@ def generate_results(output_dir, graphs=True):
                               stdout=logf, stderr=subprocess.STDOUT)
         logf.close()
     except (subprocess.CalledProcessError, OSError) as e:
-        # we problably don't have the PNGs so return a message
+        # we probably don't have the PNGs so return a message
         # instead.
         msg = os.path.join(output_dir, 'error.txt')
         f = open(msg, 'w')
@@ -259,14 +263,14 @@ def process_background():
         subject = "more background perf results"
         body = 'The command line was\n\n   %s' % ' '.join(cmdline)
         f.close()
-        results.append(test_log)
+        results.append(gzip_file(test_log))
         send_email(subject, body, results)
 
     except subprocess.CalledProcessError as e:
         subject = "Another background perf failure!"
         body = 'The command line was\n\n   %s' % ' '.join(cmdline)
         f.close()
-        send_email(subject, body, [test_log])
+        send_email(subject, body, [gzip_file(test_log)])
     return failures
 
 
