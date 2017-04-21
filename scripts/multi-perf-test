@@ -213,11 +213,14 @@ class SambaGitTree(object):
             self.git('am', '-3', patch)
 
     def try_patch(self, patch, ignore_whitespace=False,
-                  fuzziness=None):
+                  fuzziness=None, reverse=False):
         cmd = self._get_patch_command(patch, ignore_whitespace,
                                       no_questions=True,
                                       fuzziness=fuzziness)
-        cmd.extend(['--dry-run', '--quiet'])
+        cmd.extend(['--quiet'])
+        if reverse:
+            cmd.append('-R')
+
         try:
             suppressed_output = subprocess.check_output(cmd)
         except subprocess.CalledProcessError:
@@ -262,6 +265,16 @@ class SambaGitTree(object):
             else:
                 print "We are IGNORING patch %s" % p
 
+        for p in reversed(PATCHES['samba-4-0'] + PATCHES['misc']):
+            fuzziness = PATCH_FUZZINESS.get(p)
+            if self.try_patch(p, ignore_whitespace, fuzziness=fuzziness, reverse=True):
+                print "Cleaned up patch %s" % p
+            else:
+                print "Failed to clean up patch %s" % p
+
+
+        self.git('reset', '--hard')
+        #self.git('clean')
         return patches
 
     def get_last_n_weeks(self, n, reference='last Saturday',
