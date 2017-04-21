@@ -252,6 +252,7 @@ def process_background():
     --sample-last-n-weeks 2/52
     -c
     -t ad_dc_medley
+    --preserve-tmp-dir
     -r /home/samba-test-bot/samba-mirror.git"""
     output_dir = tempfile.mkdtemp(prefix='background-results-', dir=TEMP_DIR)
     test_log = os.path.join(output_dir, 'test.log')
