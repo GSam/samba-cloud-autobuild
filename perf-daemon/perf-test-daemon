@@ -158,9 +158,11 @@ def send_email(subject, body, results=(), recipient=EMAIL_RECIPIENT):
     s.sendmail(recipient, [recipient], str(msg))
     s.quit()
 
+
 def gzip_file(name):
     subprocess.check_call(['gzip', name])
     return name + '.gz'
+
 
 def generate_results(output_dir, graphs=True):
     src = os.path.join(output_dir, 'results.json')
@@ -195,7 +197,9 @@ def generate_results(output_dir, graphs=True):
 
     return [src, rel_png, abs_png, graph_log]
 
+
 FAILED_ONCE = {}
+
 
 def process_queue():
     failures = {}
@@ -210,7 +214,8 @@ def process_queue():
         cmdline, metadata = parse_request(s, output_dir)
         try:
             subprocess.check_call(cmdline, stdout=f, stderr=subprocess.STDOUT)
-            results = generate_results(output_dir, graphs=metadata.get('graphs:'))
+            results = generate_results(output_dir,
+                                       graphs=metadata.get('graphs:'))
             subject = 'perf test results for %s' % metadata.get('title:',
                                                                 'some test')
             body = 'The command line was\n\n   %s' % ' '.join(cmdline)
