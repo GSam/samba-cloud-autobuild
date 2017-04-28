@@ -238,6 +238,8 @@ def main():
                         help="end graph at this point")
     parser.add_argument('--median', action='store_true',
                         help="use median rather than minimum time")
+    parser.add_argument('--maximum', action='store_true',
+                        help="use maximum rather than minimum time")
 
     args = parser.parse_args()
 
@@ -251,6 +253,8 @@ def main():
     if args.median:
         def value_selector(a):
             return sorted(a)[len(a)//2]
+    elif args.maximum:
+        value_selector = max
     else:
         value_selector = min
 
