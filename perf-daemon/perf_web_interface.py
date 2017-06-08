@@ -20,6 +20,8 @@ def always(x):
     return True
 
 def true_or_false(x, default=None):
+    if isinstance(x, bool):
+        return x
     x = x.lower()
     if x in ('true', 'yes', '1'):
         return True
