@@ -27,7 +27,7 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
                       maxtime, tmpfs=False, ramfs=False,
                       dont_fail_immediately=False, run_wintest=False,
                       skip_samba_build=False, skip_samba_autobuild=False,
-                      verbose_logs=False, no_secrets=False, server_name=None,
+                      verbose_logs='', no_secrets=False, server_name=None,
                       email_recipient=EMAIL_RECIPIENT,
                       flame_graphs=False, restrict_tests='', on_success=None,
                       ident='', password='penguin12#', use_default_pass=False,
@@ -68,7 +68,7 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
                  skip_samba_autobuild=skip_samba_autobuild,
                  run_wintest=run_wintest,
                  dont_fail_immediately=int(dont_fail_immediately),
-                 verbose=('--verbose' if verbose_logs else ''),
+                 verbose=verbose_logs,
                  server_name=server_name, flame_graphs=flame_graphs,
                  restrict_tests=restrict_tests, on_success=on_success,
                  generated_id=("%04d" % ident), generated_password=password,
@@ -143,7 +143,8 @@ def main():
     parser.add_argument('--dont-fail-immediately', action='store_true',
                         help=("don't stop testing on the first error"))
 
-    parser.add_argument('--verbose-logs', action='store_true',
+    parser.add_argument('--verbose-logs', action='store_const',
+                        const='--verbose', default='',
                         help=("run autobuild.py --verbose"))
 
     parser.add_argument('--flame-graphs', action='store_true',
@@ -194,25 +195,25 @@ def main():
 
     server_name = sanitise_hostname(server_name)
 
-    autobuild_env = ' '.join((args.optimise, args.tdb_no_fsync))
+    autobuild_env = ' '.join((args.optimise, args.tdb_no_fsync,
+                              args.use_ccache))
 
-    yaml_file = write_yaml_config(args.remote, args.branch, args.image,
-                                  args.region, args.onfail, args.readahead,
-                                  args.maxtime, args.tmpfs, args.ramfs,
-                                  args.dont_fail_immediately,
-                                  run_wintest=args.run_wintest,
-                                  skip_samba_build=args.skip_samba_build,
-                                  skip_samba_autobuild=args.skip_samba_autobuild,
-                                  verbose_logs=args.verbose_logs,
-                                  no_secrets=args.no_secrets,
-                                  server_name=server_name,
-                                  flame_graphs=args.flame_graphs,
-                                  restrict_tests=args.restrict_tests,
-                                  ident=ident, password=password,
-                                  use_default_pass=args.use_default_pass,
-                                  email_recipient=args.email_recipient,
-                                  on_success=args.on_success,
-                                  autobuild_env=autobuild_env)
+    yaml_argnames = {'remote', 'branch', 'image',
+                     'region', 'onfail', 'readahead',
+                     'maxtime', 'tmpfs', 'ramfs',
+                     'dont_fail_immediately', 'run_wintest',
+                     'skip_samba_build', 'skip_samba_autobuild',
+                     'verbose_logs', 'no_secrets',
+                     'flame_graphs', 'restrict_tests',
+                     'use_default_pass', 'email_recipient',
+                     'on_success'}
+
+    yaml_kwargs = {k: v for k, v in vars(args).items()
+                   if k in yaml_argnames}
+
+    yaml_file = write_yaml_config(ident=ident, password=password,
+                                  autobuild_env=autobuild_env,
+                                  server_name=server_name, **yaml_kwargs)
 
     if args.verbose:
         print >> sys.stderr, "YAML file is %s" % yaml_file
@@ -222,8 +223,14 @@ def main():
     else:
         net_id = args.net_id
 
-    boot(args.flavor, args.image, yaml_file, server_name, args.key_name,
-         region=args.region, dry_run=args.dry_run, net_id=net_id)
+    boot_argnames = {'flavor', 'image',
+                     'key_name', 'region', 'dry_run'}
+
+    boot_kwargs = {k: v for k, v in vars(args).items()
+                   if k in boot_argnames}
+
+    boot(yaml_file=yaml_file, server_name=server_name, net_id=net_id,
+         **boot_kwargs)
 
 
 main()
