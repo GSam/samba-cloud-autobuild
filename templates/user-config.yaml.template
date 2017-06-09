@@ -123,7 +123,7 @@ write_files:
     [ {skip_samba_autobuild} == "True" ] && exit 0
     export SMBD_MAXTIME={maxtime}
     export AUTOBUILD_NO_FAIL_IMMEDIATELY={dont_fail_immediately}
-    CC="ccache gcc" ./script/autobuild.py --email-from={email_recipient} \
+    {autobuild_env} ./script/autobuild.py --email-from={email_recipient} \
                           --email={email_recipient} \
                           --email-server=smtp1.catalyst.net.nz \
                           --always-email --attach-logs \

@@ -173,6 +173,9 @@ def main():
                         const='TDB_NO_FSYNC=1',
                         help="Don't wait for fsync")
 
+    parser.add_argument('--use-ccache', action='store_const', default='',
+                        const='CC="ccache gcc"',
+                        help="Use ccache (faster build; uses ~2GB disk)")
 
     args = parser.parse_args()
     process_common_args(args)
