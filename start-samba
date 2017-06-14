@@ -166,10 +166,6 @@ def main():
     parser.add_argument('--use-default-pass', action='store_true',
                         help=("use a default (insecure) password for machines and samba"))
 
-    parser.add_argument('--optimise', action='store_const', default='',
-                        const='CFLAGS=-O2',
-                        help="Don't be slow please autobuild! CFLAGS=-O2")
-
     parser.add_argument('--tdb-no-fsync', action='store_const', default='',
                         const='TDB_NO_FSYNC=1',
                         help="Don't wait for fsync")
@@ -195,7 +191,7 @@ def main():
 
     server_name = sanitise_hostname(server_name)
 
-    autobuild_env = ' '.join((args.optimise, args.tdb_no_fsync,
+    autobuild_env = ' '.join((args.tdb_no_fsync,
                               args.use_ccache))
 
     yaml_argnames = {'remote', 'branch', 'image',
