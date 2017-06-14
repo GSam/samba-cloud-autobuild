@@ -74,6 +74,7 @@ def parse_request(s, output_dir):
              '-c', '--clean-between-revisions'}
 
     remotes = set(["http://git.catalyst.net.nz/samba.git",
+                   "git://git.catalyst.net.nz/samba.git",
                    "git://git.samba.org/samba.git",
                    "https://github.com/douglasbagnall/samba.git",
                    "https://github.com/gsam/samba.git",
