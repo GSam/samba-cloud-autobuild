@@ -222,7 +222,7 @@ def process_queue():
             body = 'The command line was\n\n   %s' % ' '.join(cmdline)
             body += '\n\ncheers,\nsamba-test-bot'
             f.close()
-            results.append(test_log)
+            results.append(gzip_file(test_log))
             send_email(subject, body, results)
             shutil.move(ffn, os.path.join(SUCCESS_DIR, fn))
             if not '--preserve-tmp-dir' in cmdline:
@@ -247,7 +247,7 @@ def process_queue():
             body += s
             body += '\n\ncheers,\nsamba-test-bot'
             f.close()
-            send_email(subject, body, [test_log])
+            send_email(subject, body, [gzip_file(test_log)])
             shutil.move(ffn, os.path.join(FAIL_DIR, fn))
             if not '--preserve-tmp-dir' in cmdline:
                 shutil.rmtree(output_dir)
