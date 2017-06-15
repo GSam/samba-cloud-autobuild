@@ -311,7 +311,7 @@ def main():
             print "processing queue"
             process_queue()
         else:
-            print "procesing background"
+            print "processing background"
             process_background()
 
         sys.stderr.flush()
