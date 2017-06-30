@@ -135,6 +135,13 @@ def process_common_args(args):
     if args.dry_run:
         print " This is what we WOULD be doing without -n/--dry-run:\n"
 
+    for nova_cmd in ("image_list",
+                     "flavor_list"):
+        if vars(args)[nova_cmd]:
+            print(run_nova_cmd([nova_cmd.replace('_', '-')],
+                               region=args.region, dry_run=args.dry_run))
+            sys.exit()
+
     if args.branch is None:
         print "You have not specified a branch!"
         print "Use '-b master' if you want the master branch."
@@ -146,14 +153,6 @@ def process_common_args(args):
     except:
         print "ERROR: Specified git repository or branch does not exist."
         raise
-
-    for nova_cmd in ("image_list",
-                     "flavor_list"):
-        if vars(args)[nova_cmd]:
-            print(run_nova_cmd([nova_cmd.replace('_', '-')],
-                               region=args.region, dry_run=args.dry_run))
-            sys.exit()
-
 
 def sanitise_hostname(hostname):
     fixed_name = re.sub(r'[^a-z0-9-]+', '-', hostname.lower())
