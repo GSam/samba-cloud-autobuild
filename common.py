@@ -111,7 +111,7 @@ def add_common_args(parser):
     parser.add_argument('--readahead', default=8192, type=int,
                         help=("block device readahead (default 8192)"))
 
-    parser.add_argument('--maxtime', default=3600 * 4, type=int,
+    parser.add_argument('--maxtime', default=3600 * 6, type=int,
                         help=("how long to wait before timing out"))
 
     parser.add_argument('--tmpfs', action='store_true',
