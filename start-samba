@@ -19,7 +19,7 @@ HERE = os.path.dirname(__file__)
 YAML_TEMPLATE = os.path.join(HERE, 'templates/user-config.yaml.template')
 YAML_TEMPLATE_1204 = os.path.join(HERE, 'templates/user-config-12.04.yaml.template')
 
-SERVER_NAME = "samba-build-%s-%s"
+SERVER_NAME = "samba-build-%s-%s-%s-%s"
 
 EMAIL_RECIPIENT = 'samba-dev@catalyst.net.nz'
 
@@ -185,7 +185,8 @@ def main():
     if args.whole_name:
         server_name = args.suffix
     else:
-        server_name = SERVER_NAME % (args.branch, args.suffix)
+        server_name = SERVER_NAME % (args.branch, args.suffix,
+                                     args.flavor, args.image)
         if args.no_secrets:
             server_name += '-no-secrets'
 
