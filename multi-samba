@@ -99,7 +99,7 @@ def main():
     process_common_args(args)
 
     if args.stack_id is None:
-        stack_id = "%s-%s" % (os.environ.get('USER')[:3],
+        stack_id = "%s-%s" % (os.environ.get('USER')[:4],
                               args.branch[:3])
         if args.no_secrets:
             stack_id += '-no-secrets'
