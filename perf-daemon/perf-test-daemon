@@ -208,8 +208,12 @@ def process_queue():
     print "queue is %s" % ' '.join(files)
     for fn in files:
         ffn = os.path.join(QUEUE_DIR, fn)
-        s = slurp(ffn)
-        output_dir = tempfile.mkdtemp(prefix='perf-results-', dir=TEMP_DIR)
+        try:
+            s = slurp(ffn)
+            output_dir = tempfile.mkdtemp(prefix='perf-results-', dir=TEMP_DIR)
+        except IOError as e:
+            send_email("perf queue failure", traceback.format_exc())
+
         test_log = os.path.join(output_dir, 'test.log')
         f = open(test_log, 'w')
         cmdline, metadata = parse_request(s, output_dir)
