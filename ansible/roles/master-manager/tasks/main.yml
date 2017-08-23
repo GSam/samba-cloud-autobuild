@@ -27,7 +27,7 @@
     state: "{{ set_state | default('present') }}"
     name: "{{ env_prefix }}-{{ site_basename }}1-{{ node_basename }}1"
     key_name: "{{ keypair_name }}"
-    flavor: "{{ master_flovour }}"
+    flavor: "{{ master_flavour }}"
     nics:
       - net-name: "{{ env_prefix }}-network1"
     auto_ip: false

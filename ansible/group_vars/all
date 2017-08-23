@@ -84,9 +84,9 @@ sudo_users:
   - 'bobcampbell'
 
 ## Master host flavours (yes, I know, os_server property is flavor)
-master_flovour: c1.c4r4
+master_flavour: c1.c4r4
 ## Slace host flavours
-slave_flovour: c1.c1r1
+slave_flavour: c1.c1r1
 
 ## OS image to use
 master_image: ubuntu-16.04-x86_64
