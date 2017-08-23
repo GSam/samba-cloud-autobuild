@@ -75,8 +75,13 @@ userpackages:
 
 ## Users to be added to sudo group
 sudo_users:
-  - 'grzegorz'
   - 'abartlet'
+  - 'alesandro'
+  - 'garming'
+  - 'douglasb'
+  - 'timbeale'
+  - 'gary'
+  - 'bobcampbell'
 
 ## Master host flavours (yes, I know, os_server property is flavor)
 master_flovour: c1.c4r4
