@@ -2,7 +2,7 @@
 # tasks file for samba-builder
 
 # TODO handle more than one master
-- name: Set master hostame fact
+- name: Set master hostname fact
   set_fact:
     master_hostname: "{{ env_prefix }}-{{ site_basename }}1-{{ node_basename }}1"
   tags:
