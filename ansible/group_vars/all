@@ -107,6 +107,7 @@ common_packages:
   - 'telnet'
   - 'make'
   - 'gcc'
+  - 'emacs-nox'
   - 'libpython2.7-dev'
 
 ## NTP settings
