@@ -65,8 +65,13 @@ cat_repo: 'deb http://debian.catalyst.net.nz/catalyst stable catalyst'
 
 ## Userpackages to install on all hosts
 userpackages:
-  - 'catalyst-grzegorzojrzanowski'
+  - 'catalyst-alessandrodalsasso'
   - 'catalyst-andrewbartlett'
+  - 'catalyst-bobcampbell'
+  - 'catalyst-douglasbagnall'
+  - 'catalyst-garmingsam'
+  - 'catalyst-garylockyer'
+  - 'catalyst-timbeale'
 
 ## Users to be added to sudo group
 sudo_users:
