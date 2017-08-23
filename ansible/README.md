@@ -2,9 +2,10 @@
 
 This repository contains ansible playbooks that can create a multi site, multi DC samba4 environment in the Catalyst Cloud.
 
-It is based on http://git.catalyst.net.nz/gw?p=samba-cloud-autobuild.git;a=blob_plain;f=yaml/single-site.yaml;h=b5d8e7a7f2edd2fba5cacf2cb30c37afd463d78c;hb=HEAD
+It is based on the old [heat templates](http://git.catalyst.net.nz/gw?p=samba-cloud-autobuild.git;a=blob_plain;f=yaml/single-site.yaml;h=b5d8e7a7f2edd2fba5cacf2cb30c37afd463d78c;hb=HEAD).
 
 The playbooks can be used to:
+
 * provision the entire infrastructure required to host samba servers
 * create and configure a master node which then builds samba and becomes the first DC
 * create and configure all slaves that rsync's compiled samba binaries from master, then install samba and join the domain
@@ -12,12 +13,28 @@ The playbooks can be used to:
 
 # Setup
 
-You will need to install ansible (at least version 2.2.x)i. Follow http://docs.catalystcloud.io/first-instance/ansible.html#launching-your-first-instance-using-ansible for instructions on how to set it up.
+You will need to install ansible (at least version 2.2.x). Follow <http://docs.catalystcloud.io/first-instance/ansible.html#launching-your-first-instance-using-ansible> for instructions on how to set it up. Or **just use `apt-get`**, which seems to work (at least with Ubuntu 17.04).
 
-All included playbooks rely on using ansible dynamic inventory, so consider setting up your machine as described on http://docs.catalystcloud.io/tutorials/ansible-openstack-dynamic-inventory.html
+You will need the `shade` python library:
+```
+apt install python-shade
+```
+
+All included playbooks rely on using ansible dynamic inventory, so consider setting up your machine as described on <http://docs.catalystcloud.io/tutorials/ansible-openstack-dynamic-inventory.html>
 The inventory script and its configuration file are already included in inventory/ directory. If you don't want to put anything in /etc/ansible/ you can still use the included scripts explicitly by using '-i' parameter when running ansible:
 ```
 ansible-playbook -i inventory/openstack.py site.yml -e env_prefix=your_env_prefix
+```
+
+## Nothing works!
+
+If you are getting this message:
+
+`ERROR! Attempted to execute "inventory/openstack.py" as inventory script: Inventory script (inventory/openstack.py) had an execution error: Error fetching server list on defaults::`
+
+the chances are you don't have the openstack environment variables set up. Do this:
+```
+. ~/path-to-your-openrc.sh
 ```
 
 # Before first run
@@ -44,7 +61,7 @@ ansible-playbook site.yml -e 'set_state=absent' -e env_prefix=your_env_prefix
 Note on 'set_state' variable: It defaults to 'present' when not set and is used in every ansible module that accepts 'state=' parameter, so it's easy to create and destroy resources using the same module. There are some exceptions when creating and destroying resources is order dependant (on create networks go first then routers, but on destroy router first then networks), so this variable is also used in conditionals.
 
 *Note on 'env_prefix' variable and environment separation:* The infrastructure deploy/destroy playbooks honour 'env_prefix' variable value when it is set in vars files and will not touch any cloud resources outside of the environment set.
-While samba.yml playbook revies on that variable to only manage the hosts from specific environment, it can't access it if it is set in hostvars (this is the limitation of playbook hosts: field - https://github.com/ansible/ansible/issues/16931 ), so it needs to be specified, unquoted on the command line as an 'extra var'.
+While samba.yml playbook revies on that variable to only manage the hosts from specific environment, it can't access it if it is set in hostvars (this is the limitation of playbook hosts: field - <https://github.com/ansible/ansible/issues/16931> ), so it needs to be specified, unquoted on the command line as an 'extra var'.
 There is a pre-run-check.yml playbook responsible for making sure it is set.
 
 
