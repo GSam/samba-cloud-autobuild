@@ -183,6 +183,46 @@ def generate_results(output_dir, graphs=True):
 
 
 def save_current_state(mode, job_id, output_dir):
+def reduce_log(fn):
+    f = open(fn)
+    accepted = ["NOTE: this log has been ABBREVIATED, with uninteresting lines removed",
+                "-" * 70]
+    rejectors = [
+        re.compile(r'^\[\s*\d+/\s*\d+\] (?:Link|Compil|Remov|Generat)ing ').search,
+        re.compile(r'^Checking .+ : ').search,
+        re.compile(r'^Note: Writing ').search,
+        re.compile(r'^Dynconfig\[').search,
+        re.compile(r'^Removing ').search,
+        re.compile(r'^symlink: ').search,
+        re.compile(r'WARNING: The "lsa over netlogon"').search,
+        re.compile(r'samba: setproctitle not initialized').search,
+    ]
+    prev = None
+    skipped = 0
+    for line in f:
+        for r in rejectors:
+            if r(line):
+                prev = line
+                skipped += 1
+                break
+        else:
+            # if we are not rejecting this line, we also print the
+            # previous line for context
+            if skipped:
+                if skipped > 1:
+                    accepted.append('     ...skipping %d lines...\n' %
+                                    (skipped - 1))
+                accepted.append(prev)
+                skipped = 0
+            accepted.append(line)
+    f.close()
+    fn2 = fn + '.reduced.log'
+    f = open(fn2, 'w')
+    f.write(''.join(accepted))
+    f.close()
+    return fn2
+
+
     tmpfn = CURRENT_STATE_FILE + '-new'
     f = open(tmpfn, 'w')
     print >> f, mode
