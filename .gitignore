@@ -5,3 +5,6 @@
 /images/
 /*.json
 /*.svg
+/perf-daemon/perf-queue-done/*
+/perf-daemon/perf-queue-fail/*
+/perf-daemon/perf-results/*
