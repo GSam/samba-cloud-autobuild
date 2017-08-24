@@ -6,11 +6,19 @@
   <body>
     <h1>Queued jobs</h1>
     {% if jobs %}
-    {% for id, title, text in jobs %}
+    {% for id, title, text, dest_dir in jobs %}
     <h2>{{ title }}</h2>
     <i>id: {{ id }}</i>
     <pre>
-{{ text }} </pre>
+      {{ text }} </pre>
+
+    {% if dest_dir %}
+    <b>Currently running</b> in {{ dest_dir }}<br>
+    <a href=/meddle?job={{id}}>meddle</a>
+    {% endif %}
+    <br>
+    <a href=/cancel?job={{id}}>cancel</a>
+
     {% endfor %}
     {% else %}
     <p>There are no queued jobs!</p>

@@ -7,12 +7,7 @@ from collections import defaultdict
 import time
 
 from flask import Flask, render_template, request, make_response
-
-HERE = os.path.dirname(__file__)
-TEMPLATE_DIR = os.path.join(HERE, 'templates')
-
-QUEUE_DIR = os.environ.get('PERF_TEST_QUEUE_DIR',
-                           os.path.join(HERE, 'perf-queue'))
+from perf_config import HERE, QUEUE_DIR, TEMPLATE_DIR, CURRENT_STATE_FILE
 
 app = Flask(__name__)#, template_folder=TEMPLATE_DIR)
 
@@ -29,12 +24,16 @@ def true_or_false(x, default=None):
         return False
     return default
 
+
+def get_get(r):
+    if r.method == 'POST':
+        return request.form.get
+    return r.args.get
+
+
 @app.route('/', methods=['GET', 'POST'])
 def add_job():
-    if request.method == 'POST':
-        get = request.form.get
-    else:
-        get = request.args.get
+    get = get_get(request)
 
     validators = {
         'remote': ["http://git.catalyst.net.nz/samba.git",
@@ -115,8 +114,21 @@ def add_job():
                            graphs=graphs)
 
 
+def read_current_state():
+    try:
+        f = open(CURRENT_STATE_FILE)
+    except IOError as e:
+        print >> sys.stderr, "could not read curent_state; guessing no jobs."
+        return None, None, None
+    mode, job_id, output_dir = f.read().strip().split('\n')
+    f.close()
+    return mode, job_id, output_dir
+
+
 @app.route('/list', methods=['GET', 'POST'])
 def list_jobs():
+    mode, job_id, output_dir = read_current_state()
+
     jobs = []
     for fn in os.listdir(QUEUE_DIR):
         ffn = os.path.join(QUEUE_DIR, fn)
@@ -129,9 +141,41 @@ def list_jobs():
         else:
             title = '[untitled]'
 
-        jobs.append((fn, title, s))
+        if mode == 'queue' and job_id == fn:
+            dest_dir = output_dir
+        else:
+            dest_dir = None
+
+        jobs.append((fn, title, s, dest_dir))
 
     return render_template('perf-queue-list.html', jobs=jobs)
+
+
+@app.route('/meddle', methods=['GET', 'POST'])
+def meddle_with_active_job():
+    get = get_get(request)
+    job = get('job')
+    mode, current_job, output_dir = read_current_state()
+    if current_job != job:
+        return "no"
+    return "WIP"
+
+
+@app.route('/cancel', methods=['GET', 'POST'])
+def cancel_queued_job():
+    get = get_get(request)
+    job = get('job')
+    mode, current_job, output_dir = read_current_state()
+    if job == current_job:
+        return "this will be complicated..., doing nothing yet!"
+
+    if job in os.listdir(QUEUE_DIR):
+        try:
+            os.unlink(os.path.join(QUEUE_DIR, job))
+            return "that was easy! cancelled!"
+        except OSError as e:
+            return "no: %s" % e
+    return "no"
 
 
 def main():

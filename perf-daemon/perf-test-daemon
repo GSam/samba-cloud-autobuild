@@ -18,28 +18,11 @@ from email.mime.multipart import MIMEMultipart as Message
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 
-
-HERE = os.path.dirname(__file__)
-QUEUE_DIR = os.environ.get('PERF_TEST_QUEUE_DIR',
-                           os.path.join(HERE, 'perf-queue'))
-SUCCESS_DIR = os.environ.get('PERF_TEST_SUCCESS_DIR',
-                             os.path.join(HERE, 'perf-queue-done'))
-FAIL_DIR = os.environ.get('PERF_TEST_FAIL_DIR',
-                          os.path.join(HERE, 'perf-queue-fail'))
-
-RESULT_DIR = os.environ.get('PERF_RESULT_DIR',
-                            os.path.join(HERE, 'perf-results'))
-
-MULTI_PERF_SCRIPT = os.path.join(HERE, '../scripts/multi-perf-test')
-GRAPH_SCRIPT = os.path.join(HERE, '../scripts/graph-perf-json')
+from perf_config import HERE, QUEUE_DIR, SUCCESS_DIR, FAIL_DIR, RESULT_DIR
+from perf_config import MULTI_PERF_SCRIPT, GRAPH_SCRIPT, TEMP_DIR
+from perf_config import EMAIL_RECIPIENT, EMAIL_SERVER, CURRENT_STATE_FILE
 
 DEFAULT_OPTS = ['-r', 'git://git.catalyst.net.nz/samba.git', '--best-of', '5']
-
-TEMP_DIR = os.environ.get('PERF_TEMP_DIR')
-
-EMAIL_RECIPIENT = 'samba-dev@catalyst.net.nz'
-EMAIL_SERVER = 'smtp1.catalyst.net.nz'
-
 
 def slurp(fn):
     f = open(fn, 'rb')
@@ -199,6 +182,16 @@ def generate_results(output_dir, graphs=True):
     return [src, rel_png, abs_png, graph_log]
 
 
+def save_current_state(mode, job_id, output_dir):
+    tmpfn = CURRENT_STATE_FILE + '-new'
+    f = open(tmpfn, 'w')
+    print >> f, mode
+    print >> f, job_id
+    print >> f, output_dir
+    f.close()
+    os.rename(tmpfn, CURRENT_STATE_FILE)
+
+
 FAILED_ONCE = {}
 
 
@@ -215,6 +208,7 @@ def process_queue():
             send_email("perf queue failure", traceback.format_exc())
 
         test_log = os.path.join(output_dir, 'test.log')
+        save_current_state('queue', fn, output_dir)
         f = open(test_log, 'w')
         cmdline, metadata = parse_request(s, output_dir)
         try:
@@ -274,6 +268,7 @@ def process_background():
     test_log = os.path.join(output_dir, 'test.log')
     f = open(test_log, 'w')
     cmdline, metadata = parse_request(s, output_dir)
+    save_current_state('background', 'background', output_dir)
 
     try:
         subprocess.check_call(cmdline, stdout=f, stderr=subprocess.STDOUT)

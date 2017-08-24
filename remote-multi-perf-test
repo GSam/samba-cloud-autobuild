@@ -1,0 +1,52 @@
+#!/usr/bin/python
+"""Run Samba performance tests on a remote server."""
+
+import argparse
+import requests
+import os
+
+from requests.auth import HTTPBasicAuth
+
+PASSWORD = os.environ.get('SAMBA_PERF_TEST_PASSWORD')
+USER = os.environ.get('USER')
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__,
+                        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('commits', nargs='+',
+                        help="test these commits")
+    parser.add_argument('-r', '--remote',
+                        default='git://git.catalyst.net.nz/samba.git',
+                        help="git remote to use")
+    parser.add_argument('--server',
+                        default='http://cat-wlgwil-prod-sambatest1',
+                        help='remote performance test server to use')
+    parser.add_argument('-t', '--test-regex',
+                        help="restrict tests with this regex")
+    parser.add_argument('--best-of', metavar='N', type=int, default=1,
+                        help="run this many times")
+    parser.add_argument('-p', '--password', default=PASSWORD,
+                        help='server web interface password')
+    parser.add_argument('-u', '--user', default=USER,
+                        help='user on the remote server')
+
+    args = parser.parse_args()
+
+    if args.password is None:
+        from getpass import getpass
+        password = getpass("password: ")
+    else:
+        password = args.password
+
+    query = {
+        'commits': ' '.join(args.commits),
+        'remote': args.remote,
+        'testregex': args.test_regex,
+        'bestof': args.best_of,
+        'response-type': 'text',
+    }
+    r = requests.get(args.server, params=query,
+                     auth=HTTPBasicAuth(args.user, password))
+    print r.content
+
+main()
