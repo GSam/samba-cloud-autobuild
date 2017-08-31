@@ -43,6 +43,7 @@ packages:
  - pkg-config
  - python-all-dev
  - python-crypto
+ - python-dbg
  - python-dev
  - python-dnspython
  - python3-dnspython
