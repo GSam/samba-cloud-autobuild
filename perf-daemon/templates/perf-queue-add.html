@@ -36,9 +36,12 @@
       <label for=commits>Commits</label>
         <input name=commits id=commits value="{{commits}}"> (space separated list)<br>
 
-      <label for=testregex>Restrict tests </label>
+        <label for=testregex>Restrict tests </label>
+       {% if testregex == '' %}
+        <input name=testregex id=testregex value="ad_dc_medley"> (regular expression)<br>
+       {% else %}
         <input name=testregex id=testregex value="{{testregex}}"> (regular expression)<br>
-
+       {% endif %}
         <label for=bestof>number of runs</label>
         <input name=bestof id=bestof value="{{bestof}}"> <br>
 

@@ -41,7 +41,7 @@ def true_or_false(x, default=None):
         return False
     return default
 
-def parse_request(s, output_dir):
+def parse_request(s, output_dir, workdir=None):
     commit_re = re.compile(r'\w[\w/^~-]*') # a guess
 
     cmdline = [MULTI_PERF_SCRIPT,
@@ -49,6 +49,10 @@ def parse_request(s, output_dir):
                '--no-cflags-munging']
 
     cmdline.extend(DEFAULT_OPTS)
+
+    if workdir is not None:
+        cmdline.extend(['-d', workdir])
+
     commits = []
     metadata = {}
     lines = s.split('\n')
@@ -148,7 +152,7 @@ def gzip_file(name):
     return name + '.gz'
 
 
-def generate_results(output_dir, graphs=True):
+def generate_results(output_dir, workdir, graphs=True):
     src = os.path.join(output_dir, 'results.json')
     if not graphs:
         return [src]
@@ -159,10 +163,12 @@ def generate_results(output_dir, graphs=True):
     logf = open(graph_log, 'w')
     try:
         subprocess.check_call([GRAPH_SCRIPT, '-t',
+                               '--label-commits-from-git-tree', workdir,
                                '-i', src,
                                '-o', rel_png],
                               stdout=logf, stderr=subprocess.STDOUT)
         subprocess.check_call([GRAPH_SCRIPT, '-t',
+                               '--label-commits-from-git-tree', workdir,
                                '-i', src,
                                '-a',
                                '-o', abs_png],
@@ -182,7 +188,6 @@ def generate_results(output_dir, graphs=True):
     return [src, rel_png, abs_png, graph_log]
 
 
-def save_current_state(mode, job_id, output_dir):
 def reduce_log(fn):
     f = open(fn)
     accepted = ["NOTE: this log has been ABBREVIATED, with uninteresting lines removed",
@@ -223,17 +228,30 @@ def reduce_log(fn):
     return fn2
 
 
+def save_current_state(mode, job_id, output_dir, workdir, pid=''):
     tmpfn = CURRENT_STATE_FILE + '-new'
     f = open(tmpfn, 'w')
     print >> f, mode
     print >> f, job_id
     print >> f, output_dir
+    print >> f, workdir
+    print >> f, pid
     f.close()
     os.rename(tmpfn, CURRENT_STATE_FILE)
 
 
-FAILED_ONCE = {}
+def run_timed_subprocess(mode, cmdline, job_id, output_dir, workdir):
+    logfile = os.path.join(output_dir, 'test.log')
+    start = time.time()
+    with open(logfile, 'w') as f:
+        p = subprocess.Popen(cmdline, stdout=f, stderr=subprocess.STDOUT)
+        save_current_state(mode, job_id, output_dir, workdir, p.pid)
+        p.wait()
 
+    return int(time.time() - start), logfile
+
+
+FAILED_ONCE = {}
 
 def process_queue():
     failures = {}
@@ -244,23 +262,30 @@ def process_queue():
         try:
             s = slurp(ffn)
             output_dir = tempfile.mkdtemp(prefix='perf-results-', dir=TEMP_DIR)
+            workdir = tempfile.mkdtemp(prefix='perf-working-', dir=TEMP_DIR)
         except IOError as e:
             send_email("perf queue failure", traceback.format_exc())
 
-        test_log = os.path.join(output_dir, 'test.log')
-        save_current_state('queue', fn, output_dir)
-        f = open(test_log, 'w')
-        cmdline, metadata = parse_request(s, output_dir)
+        cmdline, metadata = parse_request(s, output_dir, workdir=workdir)
         try:
-            subprocess.check_call(cmdline, stdout=f, stderr=subprocess.STDOUT)
+            duration, logfile = run_timed_subprocess('queue',
+                                                     cmdline,
+                                                     fn,
+                                                     output_dir,
+                                                     workdir)
+
             results = generate_results(output_dir,
+                                       workdir,
                                        graphs=metadata.get('graphs:'))
             subject = 'perf test results for %s' % metadata.get('title:',
                                                                 'some test')
-            body = 'The command line was\n\n   %s' % ' '.join(cmdline)
+            body = 'The command line was\n\n   %s\n\n' % ' '.join(cmdline)
+            body += 'That took %d:%02d:%02d\n' % (duration // 3600,
+                                                  (duration % 60) // 60,
+                                                  duration % 60)
+            body += 'and was seemingly successful.'
             body += '\n\ncheers,\nsamba-test-bot'
-            f.close()
-            results.append(gzip_file(test_log))
+            results.append(gzip_file(reduce_log(logfile)))
             send_email(subject, body, results)
             shutil.move(ffn, os.path.join(SUCCESS_DIR, fn))
             if not '--preserve-tmp-dir' in cmdline:
@@ -284,8 +309,7 @@ def process_queue():
             body += '\n\nThe request follows. It will not be retried.\n\n'
             body += s
             body += '\n\ncheers,\nsamba-test-bot'
-            f.close()
-            send_email(subject, body, [gzip_file(test_log)])
+            send_email(subject, body, [gzip_file(logfile)])
             shutil.move(ffn, os.path.join(FAIL_DIR, fn))
             if not '--preserve-tmp-dir' in cmdline:
                 shutil.rmtree(output_dir)
@@ -303,16 +327,19 @@ def process_background():
     #--preserve-tmp-dir
     -r /home/samba-test-bot/samba-mirror.git"""
     output_dir = tempfile.mkdtemp(prefix='background-results-', dir=TEMP_DIR)
+    workdir = tempfile.mkdtemp(prefix='perf-working-', dir=TEMP_DIR)
     dest_file = os.path.join(RESULT_DIR,
                              time.strftime('background-%Y-%m-%d-%H-%M-%S.json'))
-    test_log = os.path.join(output_dir, 'test.log')
-    f = open(test_log, 'w')
-    cmdline, metadata = parse_request(s, output_dir)
-    save_current_state('background', 'background', output_dir)
+    cmdline, metadata = parse_request(s, output_dir, workdir=workdir)
 
     try:
-        subprocess.check_call(cmdline, stdout=f, stderr=subprocess.STDOUT)
-        results = generate_results(output_dir, graphs=False)
+        duration, logfile = run_timed_subprocess('background',
+                                                 cmdline,
+                                                 'background',
+                                                 output_dir,
+                                                 workdir)
+
+        results = generate_results(output_dir, workdir, graphs=False)
         shutil.move(results[0], dest_file)
         shutil.rmtree(output_dir)
 
@@ -320,8 +347,7 @@ def process_background():
         subject = "Another background perf failure!"
         body = 'The command line was\n\n   %s' % ' '.join(cmdline)
         body += '\n\nNOTE: we no longer get told about the successes.'
-        f.close()
-        send_email(subject, body, [gzip_file(test_log)])
+        send_email(subject, body, [gzip_file(logfile)])
     return failures
 
 
@@ -346,6 +372,7 @@ def main():
     os.environ['CFLAGS'] = "-O2 -g"
 
     while True:
+        print time.strftime('%Y-%m-%d %H:%M:%S'),
         if os.listdir(QUEUE_DIR):
             print "processing queue"
             process_queue()

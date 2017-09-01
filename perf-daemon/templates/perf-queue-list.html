@@ -6,7 +6,7 @@
   <body>
     <h1>Queued jobs</h1>
     {% if jobs %}
-    {% for id, title, text, dest_dir in jobs %}
+    {% for id, title, text, dest_dir, progress in jobs %}
     <h2>{{ title }}</h2>
     <i>id: {{ id }}</i>
     <pre>
@@ -14,7 +14,16 @@
 
     {% if dest_dir %}
     <b>Currently running</b> in {{ dest_dir }}<br>
-    <a href=/meddle?job={{id}}>meddle</a>
+    Completed {{progress.rounds}}/{{progress.target_rounds}}<br>
+
+    {% if progress.comment %}
+    {{progress.comment}}<br>
+    {% endif %}
+
+    {% if progress.percent %}
+    <i>approximately</i> {{progress.percent}}% complete<br>
+    {% endif %}
+    <a href=/details?job={{id}}>details</a>
     {% endif %}
     <br>
     <a href=/cancel?job={{id}}>cancel</a>

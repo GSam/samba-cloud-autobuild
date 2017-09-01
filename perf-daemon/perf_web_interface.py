@@ -3,8 +3,9 @@ import random, re
 import os, sys
 import tempfile
 import shutil
-from collections import defaultdict
+from collections import defaultdict, Counter
 import time
+import json
 
 from flask import Flask, render_template, request, make_response
 from perf_config import HERE, QUEUE_DIR, TEMPLATE_DIR, CURRENT_STATE_FILE
@@ -91,7 +92,7 @@ def add_job():
     print >> f, 'title: ', job_name
     print >> f, '\n# options'
     print >> f, '-r', remote
-    print >> f, '-t', testregex
+    print >> f, '--test-regex', testregex
     print >> f, '--best-of', bestof
     if preserve_tmp_dir:
         print >> f, '--preserve-tmp-dir'
@@ -119,18 +120,66 @@ def read_current_state():
         f = open(CURRENT_STATE_FILE)
     except IOError as e:
         print >> sys.stderr, "could not read curent_state; guessing no jobs."
-        return None, None, None
-    mode, job_id, output_dir = f.read().strip().split('\n')
+        return None, None, None, None, None
+    state = f.read().strip().split('\n')
     f.close()
-    return mode, job_id, output_dir
+    return state
+
+
+class Namespace(object):
+    pass
+
+
+def get_progress_report(job_id, output_dir, workdir):
+    progress = Namespace()
+    progress.percent = 0
+    progress.rounds = 0
+    progress.target_rounds = 0
+    progress.comment = ''
+    result_file = os.path.join(output_dir, 'results.json')
+    job_file = os.path.join(QUEUE_DIR, job_id)
+    try:
+        f = open(result_file)
+        results = json.load(f)
+        f.close()
+    except (ValueError, OSError) as e:
+        print >> sys.stderr, e
+        results = None
+
+    try:
+        f = open(job_file)
+        for line in f:
+            m = re.match(r'^--best-of\s+(\d+)', line)
+            if m is not None:
+                progress.target_rounds = int(m.group(1))
+        f.close()
+    except OSError as e:
+        print >> sys.stderr, e
+
+    if results:
+        all_commits = [x[0] for x in results]
+        c = Counter(all_commits).most_common()
+        if not c:
+            progress.comment = 'no results!'
+            return progress
+        progress.rounds = c[0][1]
+        if c[-1][1] != progress.rounds:
+            progress.comment = 'flakey results (%s run %d times)' % c[-1]
+
+        if progress.target_rounds:
+            progress.percent = progress.rounds * 100 // progress.target_rounds
+
+    return progress
 
 
 @app.route('/list', methods=['GET', 'POST'])
 def list_jobs():
-    mode, job_id, output_dir = read_current_state()
+    mode, job_id, output_dir, workdir, pid = read_current_state()
 
     jobs = []
-    for fn in os.listdir(QUEUE_DIR):
+    filenames = os.listdir(QUEUE_DIR)
+
+    for fn in filenames:
         ffn = os.path.join(QUEUE_DIR, fn)
         f = open(ffn)
         s = f.read()
@@ -142,20 +191,25 @@ def list_jobs():
             title = '[untitled]'
 
         if mode == 'queue' and job_id == fn:
+            progress = get_progress_report(job_id, output_dir, workdir)
             dest_dir = output_dir
         else:
             dest_dir = None
+            progress = None
 
-        jobs.append((fn, title, s, dest_dir))
+        jobs.append((fn, title, s, dest_dir, progress))
+
+    if job_id not in filenames:
+        jobs.append((job_id, "A background test", "", output_dir, None))
 
     return render_template('perf-queue-list.html', jobs=jobs)
 
 
-@app.route('/meddle', methods=['GET', 'POST'])
-def meddle_with_active_job():
+@app.route('/details', methods=['GET', 'POST'])
+def details_of_active_job():
     get = get_get(request)
     job = get('job')
-    mode, current_job, output_dir = read_current_state()
+    mode, current_job, output_dir, workdir, pid = read_current_state()
     if current_job != job:
         return "no"
     return "WIP"
@@ -165,17 +219,27 @@ def meddle_with_active_job():
 def cancel_queued_job():
     get = get_get(request)
     job = get('job')
-    mode, current_job, output_dir = read_current_state()
-    if job == current_job:
-        return "this will be complicated..., doing nothing yet!"
-
+    mode, current_job, output_dir, workdir, pid = read_current_state()
+    messages = []
     if job in os.listdir(QUEUE_DIR):
         try:
             os.unlink(os.path.join(QUEUE_DIR, job))
-            return "that was easy! cancelled!"
+            messages.append("removed from the queue!")
         except OSError as e:
-            return "no: %s" % e
-    return "no"
+            messages.append("no such job: %s" % e)
+
+    if job == current_job:
+        for k in (15, 15, 9):
+            try:
+                os.kill(int(pid), k)
+                time.sleep(1)
+            except OSError as e:
+                if e.errno == 3:
+                    messages.append("killed the controlling process")
+                    break
+                raise
+
+    return "\n".join(messages)
 
 
 def main():
