@@ -4,6 +4,10 @@
 import os
 
 HERE = os.path.dirname(__file__)
+
+# NOTE: {QUEUE,SUCCESS,FAIL}_DIR can be changed on the command line
+# in one process and will remain the default in the other.
+
 QUEUE_DIR = os.environ.get('PERF_TEST_QUEUE_DIR',
                            os.path.join(HERE, 'perf-queue'))
 SUCCESS_DIR = os.environ.get('PERF_TEST_SUCCESS_DIR',
