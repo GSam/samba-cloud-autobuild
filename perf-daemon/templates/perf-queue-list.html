@@ -9,9 +9,10 @@
     {% for id, title, text, dest_dir, progress in jobs %}
     <h2>{{ title }}</h2>
 
-    {% if progress is None %}
-       {# a background job, only action is cancel #}
-      testing a random autobuild commit from origin/master  <a href=/cancel?job={{id}}>cancel</a>
+    {% if not progress %}
+    {# a background job, only action is cancel #}
+    this is a random autobuild commit from <code>origin/master</code><br>
+    <a href=/cancel?job={{id}}>kill it now</a>
 
     {% else %}
 
