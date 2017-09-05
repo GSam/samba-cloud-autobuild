@@ -96,8 +96,6 @@ def add_job():
     print >> f, '--best-of', bestof
     if preserve_tmp_dir:
         print >> f, '--preserve-tmp-dir'
-    else:
-        print >> f, '--nuke-working-dir'
     print >> f, '\n# meta-options'
     print >> f, 'graphs:', graphs
     print >> f, '\n# commits'

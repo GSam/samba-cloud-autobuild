@@ -339,8 +339,6 @@ def main():
                         help="if using a temp dir, put it in here")
     parser.add_argument('--preserve-tmp-dir', action='store_true',
                         help="do not clean up the tmp working directory")
-    parser.add_argument('--nuke-working-dir', action='store_true',
-                        help="clean up non-temp working directory")
     parser.add_argument('--test-releases', nargs='?',
                         const='origin/v4-[0-9]*-stable',
                         help=("test stable release branches from 4.0 "
@@ -535,11 +533,7 @@ def main():
 
     finally:
         tree.write_json(args.output, backup=True)
-        if args.working_dir is None:
-            if not args.preserve_tmp_dir:
-                shutil.rmtree(d)
-        elif args.nuke_working_dir:
+        if args.working_dir is None and not args.preserve_tmp_dir:
             shutil.rmtree(d)
-
 
 main()
