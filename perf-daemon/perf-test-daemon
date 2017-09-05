@@ -58,6 +58,7 @@ def parse_request(s, output_dir, workdir=None):
     lines = s.split('\n')
     flags = {'--test-releases',
              '--preserve-tmp-dir',
+             '--nuke-working-dir',
              '-c', '--clean-between-revisions'}
 
     remotes = set(["http://git.catalyst.net.nz/samba.git",
@@ -325,6 +326,7 @@ def process_background():
     --best-of 1
     -t ad_dc_medley
     #--preserve-tmp-dir
+    --nuke-working-dir
     -r /home/samba-test-bot/samba-mirror.git"""
     output_dir = tempfile.mkdtemp(prefix='background-results-', dir=TEMP_DIR)
     workdir = tempfile.mkdtemp(prefix='perf-working-', dir=TEMP_DIR)
