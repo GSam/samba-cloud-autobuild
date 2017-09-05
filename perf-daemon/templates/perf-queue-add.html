@@ -3,6 +3,7 @@
     label {display: inline-block; min-width: 10em;}
     input[type=text], input:not([type]) {min-width: 30em}
     .msg {margin: 2em; color: #870; font-size: 1.5em;}
+    .red {color: #c00}
     </style>
 
   <body>
@@ -45,7 +46,7 @@
         <label for=bestof>number of runs</label>
         <input name=bestof id=bestof value="{{bestof}}"> <br>
 
-        <label for="preserve-tmp-dir">keep working directories</label>
+        <label for="preserve-tmp-dir">keep working directories (<span class=red><b>warning:</b> eats disk</span>)</label>
         <input type=checkbox name="preserve-tmp-dir" id="preserve-tmp-dir" value="yes"
                {% if preserve_tmp_dir %}
                checked
