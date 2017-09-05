@@ -289,12 +289,15 @@ def process_queue():
             send_email(subject, body, results)
             shutil.move(ffn, os.path.join(SUCCESS_DIR, fn))
             if not '--preserve-tmp-dir' in cmdline:
+                shutil.rmtree(workdir)
                 shutil.rmtree(output_dir)
 
         except subprocess.CalledProcessError as e:
             failures.setdefault(fn, []).append((cmdline, e))
             if fn not in FAILED_ONCE:
                 FAILED_ONCE[fn] = traceback.format_exc()
+                if not '--preserve-tmp-dir' in cmdline:
+                    shutil.rmtree(workdir)
                 continue
 
             subject = 'perf test failure for %s' % metadata.get('title:',
@@ -312,6 +315,7 @@ def process_queue():
             send_email(subject, body, [gzip_file(logfile)])
             shutil.move(ffn, os.path.join(FAIL_DIR, fn))
             if not '--preserve-tmp-dir' in cmdline:
+                shutil.rmtree(workdir)
                 shutil.rmtree(output_dir)
     return failures
 
