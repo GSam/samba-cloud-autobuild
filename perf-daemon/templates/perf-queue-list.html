@@ -8,12 +8,20 @@
     {% if jobs %}
     {% for id, title, text, dest_dir, progress in jobs %}
     <h2>{{ title }}</h2>
+
+    {% if progress is None %}
+       {# a background job, only action is cancel #}
+      testing a random autobuild commit from origin/master  <a href=/cancel?job={{id}}>cancel</a>
+
+    {% else %}
+
     <i>id: {{ id }}</i>
     <pre>
       {{ text }} </pre>
 
-    {% if dest_dir %}
-    <b>Currently running</b> in {{ dest_dir }}<br>
+
+    <b>Currently running</b> in <code>{{ dest_dir }}</code><br>
+
     Completed {{progress.rounds}}/{{progress.target_rounds}}<br>
 
     {% if progress.comment %}
@@ -23,13 +31,21 @@
     {% if progress.percent %}
     <i>approximately</i> {{progress.percent}}% complete<br>
     {% endif %}
+
     <a href=/details?job={{id}}>details</a>
-    {% endif %}
     <br>
+
+    {% if progress.percent %}
+    <a href=/cancel?job={{id}}>stop now</a>
+    {% else %}
     <a href=/cancel?job={{id}}>cancel</a>
+    {% endif%}  {# progress.percent #}
+
+    {% endif %} {# progress #}
 
     {% endfor %}
-    {% else %}
+
+    {% else %} {# no jobs #}
     <p>There are no queued jobs!</p>
     {% endif %}
   </body>

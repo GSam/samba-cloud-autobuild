@@ -200,7 +200,7 @@ def list_jobs():
         jobs.append((fn, title, s, dest_dir, progress))
 
     if job_id not in filenames:
-        jobs.append((job_id, "A background test", "", output_dir, None))
+        jobs.append((job_id, "a background test", "", output_dir, None))
 
     return render_template('perf-queue-list.html', jobs=jobs)
 
