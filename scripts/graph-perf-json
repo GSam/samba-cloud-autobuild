@@ -7,6 +7,8 @@ import re
 import subprocess
 import sys
 import os
+from collections import Counter
+
 
 def import_matplotlib(we_have_x):
     global matplotlib, plt, cm
@@ -130,7 +132,7 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
                   x_start=0, x_end=None, value_selector=min,
                   ordering_git_tree=None):
     data = {}
-    x_labels = []
+    commits = []
     concatenated = []
     input_files = expand_directories(input_files)
 
@@ -143,12 +145,14 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
     if ordering_git_tree is not None:
         order_by_git_tree(concatenated, ordering_git_tree)
 
+    data_counts = Counter(x[0] for x in concatenated)
 
-    for k, v in concatenated:
+    for commit, v in concatenated:
         if tidy_names:
-            k = tidy_revision_name(k)
-        if k not in x_labels:
-            x_labels.append(k)
+            k = tidy_revision_name(commit)
+        c = (commit, k)
+        if c not in commits:
+            commits.append(c)
         rev_times = data.setdefault(k, {})
         for row in v.items():
             if len(row) == 3:
@@ -163,10 +167,6 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
     for v in data.values():
         sequence_names.update(v.keys())
 
-    if sort_refs:
-        # XXX this works with samba-v4-* tags, not with random hashes!
-        x_labels.sort()
-
     if filter_re is not None:
         accept = re.compile(filter_re).search
     else:
@@ -178,8 +178,8 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
         reject = never
 
     sequences = {k: [] for k in sequence_names if accept(k) and not reject(k)}
-    for branch in x_labels:
-        tests = data[branch]
+    for commit, label in commits:
+        tests = data[label]
         for k, seq in sequences.items():
             v = tests.get(k, None)
             if isinstance(v, list):
@@ -187,9 +187,11 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
             seq.append(v)
 
     if x_end is None:
-        x_end = len(x_labels)
+        x_end = len(commits)
 
-    x_labels = x_labels[x_start:x_end]
+    commits = commits[x_start:x_end]
+    x_labels = [x[1] for x in commits]
+    x_counts = [data_counts[x[0]] for x in commits]
 
     last_points = {}
     label_locations = []
@@ -224,7 +226,7 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
 
     location_map = find_spaced_label_locations(label_locations, max_value)
 
-    return x_labels, sequences, location_map, last_points
+    return x_labels, sequences, location_map, last_points, x_counts
 
 
 def main():
@@ -283,38 +285,41 @@ def main():
     else:
         value_selector = min
 
-    (xlabels, sequences,
-     location_map, last_points) = get_sequences(args.input_file,
-                                                args.filter_tests,
-                                                args.exclude_tests,
-                                                args.absolute_times,
-                                                args.norm_index,
-                                                args.sort_refs,
-                                                args.tidy_names,
-                                                args.x_start,
-                                                args.x_end,
-                                                value_selector,
-                                                args.order_commits_from_git_tree)
+    (xlabels,
+     sequences,
+     location_map,
+     last_points,
+     x_counts) = get_sequences(args.input_file,
+                               args.filter_tests,
+                               args.exclude_tests,
+                               args.absolute_times,
+                               args.norm_index,
+                               args.sort_refs,
+                               args.tidy_names,
+                               args.x_start,
+                               args.x_end,
+                               value_selector,
+                               args.order_commits_from_git_tree)
 
 
     import_matplotlib(we_have_x)
 
-    if args.log_scale:
-        plot = plt.semilogy
-    else:
-        plot = plt.plot
-
-    fig = plt.figure()
+    fig, ax = plt.subplots()
 
     scale = 1.0 / len(sequences)
     colours = set(cm.brg(x * scale) for x in range(len(sequences)))
+
+    x_size = [(x ** 0.5) * 2 for x in x_counts]
+    print x_counts
 
     for test, colour in zip(sequences, colours):
         seq = sequences[test]
         loc = location_map[test]
         last_point = last_points[test]
-        plot(seq, '-', color=colour)
-        plot(seq, '.', color=colour)
+        plt.plot(seq, '-', color=colour)
+
+        plt.scatter(range(len(seq)), seq, s=x_size, color=colour)
+
         plt.annotate(test, last_point,
                      (len(seq) - 0.5, loc),
                      arrowprops={'color': '#666666',
@@ -325,7 +330,7 @@ def main():
         )
 
     plt.grid(True)
-    plot([len(xlabels)], [0])
+    plt.plot([len(xlabels)], [0])
 
     if args.label_commits_from_git_tree is not None:
         xlabels = [find_commit_message(args.label_commits_from_git_tree, x)
@@ -333,7 +338,8 @@ def main():
         plt.xticks(range(len(xlabels)), xlabels, rotation=-12, va='top',
                    ha='left')
     elif args.label_dates_from_git_tree is not None:
-        xlabels = [find_commit_message(args.label_dates_from_git_tree, x, date_only=True)
+        xlabels = [find_commit_message(args.label_dates_from_git_tree, x,
+                                       date_only=True)
                    for x in xlabels]
         angle = max(len(xlabels) / -0.7, -90)
         plt.xticks(range(len(xlabels)), xlabels, rotation=angle, va='top',
@@ -342,8 +348,10 @@ def main():
         plt.xticks(range(len(xlabels)), xlabels)
 
     plt.margins(x=0.1)
-    ax = fig.axes[0]
     ax.set_xlim([-0.25, len(xlabels) * 3 // 2])
+
+    if args.log_scale:
+        ax.set_yscale('log')
 
     if not args.output:
         plt.show()
