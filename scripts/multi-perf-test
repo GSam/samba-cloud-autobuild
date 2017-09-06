@@ -283,7 +283,6 @@ class SambaGitTree(object):
         #
         #git log -n 1 --before="12 weeks ago" origin/master --grep Autobuild-Date --decorate --pretty='tformat:%h %cI %s'
         results = []
-        latest_commit = None
         for i in range(n):
             datestr = "%s - %d weeks" % (reference, i)
             s = self.git('rev-list', '-n1',
@@ -497,7 +496,7 @@ def main():
                         except subprocess.CalledProcessError, e:
                             print >> sys.stderr, "Patch failed with %s" % e
                             if not args.no_patch_questions:
-                               raise
+                                raise
 
                     try_and_try_again(args.interactive, tree.configure,
                                       configure_developer=args.configure_developer)
