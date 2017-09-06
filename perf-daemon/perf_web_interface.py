@@ -1,9 +1,8 @@
 #!/usr/bin/python
-import random, re
+import re
 import os, sys
 import tempfile
-import shutil
-from collections import defaultdict, Counter
+from collections import Counter
 import time
 import json
 
@@ -12,8 +11,10 @@ from perf_config import HERE, QUEUE_DIR, TEMPLATE_DIR, CURRENT_STATE_FILE
 
 app = Flask(__name__)#, template_folder=TEMPLATE_DIR)
 
+
 def always(x):
     return True
+
 
 def true_or_false(x, default=None):
     if isinstance(x, bool):
@@ -84,7 +85,6 @@ def add_job():
     job_name = job_name.format(now=time.strftime('%Y-%m-%d %H:%M:%S'),
                                commits=commits,
                                tests=testregex)
-
 
     fh, fn = tempfile.mkstemp(prefix='job-', dir=QUEUE_DIR)
     f = open(fn, 'w')
