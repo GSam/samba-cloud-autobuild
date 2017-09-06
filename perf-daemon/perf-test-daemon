@@ -1,18 +1,15 @@
 #!/usr/bin/python
 
 import time
-import json
-import argparse
 import re
 import subprocess
 import sys
 import os
-import random
 import shutil
 import tempfile
 import smtplib
 import traceback
-import email
+import argparse
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart as Message
 from email.mime.text import MIMEText
@@ -24,14 +21,17 @@ from perf_config import EMAIL_RECIPIENT, EMAIL_SERVER, CURRENT_STATE_FILE
 
 DEFAULT_OPTS = ['-r', 'git://git.catalyst.net.nz/samba.git', '--best-of', '5']
 
+
 def slurp(fn):
     f = open(fn, 'rb')
     s = f.read()
     f.close()
     return s
 
+
 def always(x):
     return True
+
 
 def true_or_false(x, default=None):
     x = x.lower()
@@ -40,6 +40,7 @@ def true_or_false(x, default=None):
     if x in ('false', 'no', '0'):
         return False
     return default
+
 
 def parse_request(s, output_dir, workdir=None):
     commit_re = re.compile(r'\w[\w/^~-]*') # a guess
@@ -139,7 +140,7 @@ def send_email(subject, body, results=(), recipient=EMAIL_RECIPIENT):
         ext = save_fn[save_fn.rfind('.') + 1:]
         mimeclass, subtype = ext_lut.get(ext, ext_lut['txt'])
         a = mimeclass(content, subtype)
-        a.add_header('Content-Disposition','attachment', filename=save_fn)
+        a.add_header('Content-Disposition', 'attachment', filename=save_fn)
         msg.attach(a)
 
     s = smtplib.SMTP(EMAIL_SERVER)
@@ -253,6 +254,7 @@ def run_timed_subprocess(mode, cmdline, job_id, output_dir, workdir):
 
 FAILED_ONCE = {}
 
+
 def process_queue():
     failures = {}
     files = os.listdir(QUEUE_DIR)
@@ -288,7 +290,7 @@ def process_queue():
             results.append(gzip_file(reduce_log(logfile)))
             send_email(subject, body, results)
             shutil.move(ffn, os.path.join(SUCCESS_DIR, fn))
-            if not '--preserve-tmp-dir' in cmdline:
+            if '--preserve-tmp-dir' not in cmdline:
                 shutil.rmtree(workdir)
                 shutil.rmtree(output_dir)
 
@@ -296,7 +298,7 @@ def process_queue():
             failures.setdefault(fn, []).append((cmdline, e))
             if fn not in FAILED_ONCE:
                 FAILED_ONCE[fn] = traceback.format_exc()
-                if not '--preserve-tmp-dir' in cmdline:
+                if '--preserve-tmp-dir' not in cmdline:
                     shutil.rmtree(workdir)
                 continue
 
@@ -314,7 +316,7 @@ def process_queue():
             body += '\n\ncheers,\nsamba-test-bot'
             send_email(subject, body, [gzip_file(logfile)])
             shutil.move(ffn, os.path.join(FAIL_DIR, fn))
-            if not '--preserve-tmp-dir' in cmdline:
+            if '--preserve-tmp-dir' not in cmdline:
                 shutil.rmtree(workdir)
                 shutil.rmtree(output_dir)
     return failures
@@ -357,7 +359,6 @@ def process_background():
 
 def main():
     global QUEUE_DIR, SUCCESS_DIR, FAIL_DIR
-    import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('-q', '--queue-dir', default=QUEUE_DIR,
                         help='save queued jobs here')
@@ -387,5 +388,6 @@ def main():
         sys.stderr.flush()
         sys.stdout.flush()
         time.sleep(5)
+
 
 main()
