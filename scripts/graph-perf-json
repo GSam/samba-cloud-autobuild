@@ -116,12 +116,6 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
         d = json.load(f)
         f.close()
 
-        if isinstance(d, dict): #XXX deprecated remove this soon
-            d = d.items()
-            print "hello"
-            if not sort_refs:
-                print >> sys.stderr, "WARNING: load order randomised by dict"
-
         for k, v in d:
             if tidy_names:
                 k = tidy_revision_name(k)
