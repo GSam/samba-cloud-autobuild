@@ -106,30 +106,58 @@ def tidy_test_name(s):
     return s
 
 
+def order_by_git_tree(data, tree):
+    commits = set(x[0] for x in data)
+    dates = {x: find_commit_message(tree, x, date_only=True) for x in commits}
+
+    data.sort(key=lambda x: dates[x[0]])
+
+
+def expand_directories(input_files, exts=['json', 'JSON']):
+    out = []
+    for fn in input_files:
+        if os.path.isdir(fn):
+            out.extend([os.path.join(fn, x)
+                        for x in os.listdir(fn)
+                        if x[x.rfind('.') + 1:] in exts])
+        else:
+            out.append(fn)
+    return out
+
+
 def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
                   norm_index=0, sort_refs=False, tidy_names=True,
-                  x_start=0, x_end=None, value_selector=min):
+                  x_start=0, x_end=None, value_selector=min,
+                  ordering_git_tree=None):
     data = {}
     x_labels = []
+    concatenated = []
+    input_files = expand_directories(input_files)
+
     for fn in input_files:
         f = open(fn)
         d = json.load(f)
         f.close()
+        concatenated.extend(d)
 
-        for k, v in d:
+    if ordering_git_tree is not None:
+        order_by_git_tree(concatenated, ordering_git_tree)
+
+
+    for k, v in concatenated:
+        if tidy_names:
+            k = tidy_revision_name(k)
+        if k not in x_labels:
+            x_labels.append(k)
+        rev_times = data.setdefault(k, {})
+        for row in v.items():
+            if len(row) == 3:
+                test, time, date = row
+            else:
+                test, time = row
             if tidy_names:
-                k = tidy_revision_name(k)
-            if k not in x_labels:
-                x_labels.append(k)
-            rev_times = data.setdefault(k, {})
-            for row in v.items():
-                if len(row) == 3:
-                    test, time, date = row
-                else:
-                    test, time = row
-                if tidy_names:
-                    test = tidy_test_name(test)
-                rev_times.setdefault(test, []).append(time)
+                test = tidy_test_name(test)
+            rev_times.setdefault(test, []).append(time)
 
     sequence_names = set()
     for v in data.values():
@@ -226,6 +254,9 @@ def main():
     parser.add_argument('--label-dates-from-git-tree',
                         help=("label revisions with commit dates"
                               " using this tree"))
+    parser.add_argument('--order-commits-from-git-tree',
+                        help=("pretend the data was provided in order"
+                              " of this repo's chronology"))
     parser.add_argument('--x-start', type=int, default=0,
                         help="start graph at this point")
     parser.add_argument('--x-end', type=int,
@@ -262,7 +293,8 @@ def main():
                                                 args.tidy_names,
                                                 args.x_start,
                                                 args.x_end,
-                                                value_selector)
+                                                value_selector,
+                                                args.order_commits_from_git_tree)
 
 
     import_matplotlib(we_have_x)
