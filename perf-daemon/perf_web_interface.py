@@ -226,7 +226,7 @@ def details_of_active_job():
     #    return "no"
 
     return render_template('perf-job-details.html',
-                           url='/results.json')
+                           json_url='/results.json')
 
 
 

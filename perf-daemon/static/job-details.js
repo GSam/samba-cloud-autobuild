@@ -52,7 +52,7 @@ function load_chart_callback(err, data)
         }
         commits.push(c);
     }
-
+    console.log(data);
     var tests = [];
     for (t in data[0][1]) {
         tests.push(t);
