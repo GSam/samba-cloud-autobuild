@@ -13,8 +13,8 @@ import time
 import config
 from email_utils import filter_by_date, count_lines, draw_histogram
 
-CACHE = os.path.join(os.path.dirname(__file__), 'cache/autobuild')
-
+SAMBA_CACHE = os.path.join(os.path.dirname(__file__), 'cache/autobuild')
+FLAKEY_LOG_CACHE = os.path.join(os.path.dirname(__file__), 'cache/flakey_log')
 
 def get_cvs_email():
     mbox = mailbox.mbox(config.MAILBOX)
@@ -38,23 +38,27 @@ def get_cvs_links():
     return links
 
 
-def update_stdout_cache(force=False):
+def update_cache(cache, link_end, force=False):
     try:
-        os.makedirs(CACHE)
+        os.makedirs(cache)
     except OSError, e:
         if e.errno != errno.EEXIST:
             raise
 
     for url in get_cvs_links():
-        if not url.endswith('samba.stdout'):
+        if not url.endswith(link_end):
             continue
         fn = re.sub(r'[^\w.-]+', '+', url[7:])
-        ffn = os.path.join(CACHE, fn)
+        ffn = os.path.join(cache, fn)
         if force or not os.path.exists(ffn):
             print >> sys.stderr, "fetching %s" % url
-            r = requests.get(url)
+            try:
+                r = requests.get(url)
+            except requests.ConnectionError as e:
+                print >> sys.stderr, "could not fetch '%s': %s" % (url, e)
+                continue
             f = open(ffn, 'w')
-            f.write(r.text.encode('utf=8'))
+            f.write(r.text.encode('utf-8'))
             f.close()
 
 
@@ -87,25 +91,38 @@ def main():
     parser.add_argument('--histogram', action='store_true',
                         help=("draw a graph of monthly counts"))
 
+    parser.add_argument('--flakey-log', action='store_true',
+                        help=("print statistics from flakey.log"))
+
     args = parser.parse_args()
 
     if args.print_links:
         print_all_links()
         sys.exit()
 
-    update_stdout_cache()
+    if args.flakey_log:
+        update_cache(FLAKEY_LOG_CACHE, 'flakey.log')
+        count_lines(fn_re='flakey_log$',
+                    line_re=r"\w+: \[\w+\] failed '.+' with status",
+                    cache=FLAKEY_LOG_CACHE,
+                    count=args.count,
+                    since=args.since,
+                    filter_re=args.filter_line)
+        sys.exit()
+
+    update_cache(STDOUT_CACHE, 'samba.stdout')
 
     if args.histogram:
         draw_histogram(fn_re=args.file_regex,
                        line_re=args.line_regex,
-                       cache=CACHE,
+                       cache=SAMBA_CACHE,
                        since=args.since,
                        filter_re=args.filter_line)
         sys.exit()
 
     count_lines(fn_re=args.file_regex,
                 line_re=args.line_regex,
-                cache=CACHE,
+                cache=SAMBA_CACHE,
                 count=args.count,
                 since=args.since,
                 filter_re=args.filter_line)
