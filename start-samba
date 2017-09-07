@@ -177,8 +177,8 @@ def main():
     args = parser.parse_args()
     process_common_args(args)
 
-    if (args.ramfs or args.tmpfs) and 'r4' in args.flavor:
-        print "--ramfs and --tmpfs WILL NOT WORK with %s" % args.flavor
+    if ('r8' in args.flavor or 'r4' in args.flavor):
+        print "Samba WILL NOT WORK with %s" % args.flavor
         print "Stopping now to save your time!"
         sys.exit(1)
 
