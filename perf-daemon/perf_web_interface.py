@@ -205,14 +205,29 @@ def list_jobs():
     return render_template('perf-queue-list.html', jobs=jobs)
 
 
+
+@app.route('/results.json', methods=['GET', 'POST'])
+def results_json():
+    mode, current_job, output_dir, workdir, pid = read_current_state()
+    f = open(os.path.join(output_dir, 'results.json'))
+    s = f.read()
+    f.close()
+    response = make_response(s)
+    response.mimetype = 'application/json'
+    return response
+
+
 @app.route('/details', methods=['GET', 'POST'])
 def details_of_active_job():
-    get = get_get(request)
-    job = get('job')
-    mode, current_job, output_dir, workdir, pid = read_current_state()
-    if current_job != job:
-        return "no"
-    return "WIP"
+    #get = get_get(request)
+    #job = get('job')
+    #mode, current_job, output_dir, workdir, pid = read_current_state()
+    #if current_job != job:
+    #    return "no"
+
+    return render_template('perf-job-details.html',
+                           url='/results.json')
+
 
 
 @app.route('/cancel', methods=['GET', 'POST'])
