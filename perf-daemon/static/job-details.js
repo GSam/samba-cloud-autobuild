@@ -71,35 +71,39 @@ function load_chart_callback(err, data)
             if (d[c] === undefined) {
                 d[c] = [];
             }
-            d[c].append(results[t]);
+            d[c].push(results[t]);
         }
     }
-
     /* squash down to the minimum */
     for (t in tmp) {
         d = tmp[t];
         for (c in d) {
-            d[t] = Math.min(d[t]);
+            d[c] = Math.min(d[c]);
         }
     }
-
 
     var reformatted = [];
 
     for (j = 0; j < tests.length; j++) {
         t = tests[j];
-        var line = [t];
+        var tidy = t.match(/.+__main__\..+\.test_(?:\d+_\d+_)?(.+?)(?:\(ad_dc_ntvfs\))?$/);
+        var line = [tidy[1] || t];
         for (i = 0; i < commits.length; i++) {
             c = commits[i];
-            line.push(tmp[t][c]);
+            line.push(tmp[t][c] || null);
         }
         reformatted.push(line);
     }
 
+    //console.log(reformatted);
     var chart = c3.generate({
         bindto: '#chart',
         data: {
             columns: reformatted
+      },
+      size: {
+          height: 1800,
+          width: 800
       }
     });
     return chart;
@@ -108,5 +112,5 @@ function load_chart_callback(err, data)
 
 function load_chart(url)
 {
-    d3.xhr(url, 'application/json', load_chart_callback);
+    d3.json(url, load_chart_callback);
 }
