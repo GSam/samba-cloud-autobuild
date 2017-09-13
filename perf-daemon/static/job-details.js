@@ -71,7 +71,9 @@ function load_chart_callback(err, data)
             if (d[c] === undefined) {
                 d[c] = [];
             }
-            d[c].push(results[t]);
+            if (results[t]) {
+                d[c].push(results[t]);
+            }
         }
     }
     /* squash down to the minimum */
