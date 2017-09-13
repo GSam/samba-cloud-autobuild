@@ -354,6 +354,10 @@ def process_background():
         body = 'The command line was\n\n   %s' % ' '.join(cmdline)
         body += '\n\nNOTE: we no longer get told about the successes.'
         send_email(subject, body, [gzip_file(logfile)])
+
+    finally:
+        shutil.rmtree(workdir)
+
     return failures
 
 
