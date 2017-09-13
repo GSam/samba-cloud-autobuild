@@ -102,7 +102,7 @@ def main():
 
     if args.flakey_log:
         update_cache(FLAKEY_LOG_CACHE, 'flakey.log')
-        count_lines(fn_re='flakey_log$',
+        count_lines(fn_re='flakey.log$',
                     line_re=r"\w+: \[\w+\] failed '.+' with status",
                     cache=FLAKEY_LOG_CACHE,
                     count=args.count,
