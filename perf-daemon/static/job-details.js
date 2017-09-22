@@ -80,7 +80,7 @@ function load_chart_callback(err, data)
     for (t in tmp) {
         d = tmp[t];
         for (c in d) {
-            d[c] = Math.min(d[c]);
+            d[c] = Math.min.apply(null, d[c]);
         }
     }
 
