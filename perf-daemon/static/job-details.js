@@ -106,6 +106,10 @@ function load_chart_callback(err, data)
       size: {
           height: 1800,
           width: 800
+      },
+      zoom: {
+          enabled: true,
+          rescale: true
       }
     });
     return chart;
