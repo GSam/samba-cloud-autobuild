@@ -1,0 +1,42 @@
+---
+- hosts: localhost
+  become: false
+  gather_facts: false
+  tasks:
+
+    - name: load samba dependencies package list
+      include_vars: "../package-lists/ubuntu"
+
+    - name: create temp dir for Dockerfile
+      file:
+        path: /tmp/samba-docker-image
+        state: directory
+        mode: 0755
+
+    - name: render Dockerfile with package list
+      template:
+        src: templates/gitlab-runner/Dockerfile
+        dest: /tmp/samba-docker-image
+        force: yes
+
+    - name: pip install common packages
+      become: true
+      pip:
+        name: "{{ item }}"
+      with_items:
+        - docker-py  # required by docker_image
+
+    - name: build docker image
+      docker_image:
+        path: /tmp/samba-docker-image
+        name: gitlab.catalyst.net.nz:4567/samba/samba
+        tag: latest
+        push: no
+
+    - name: print help msg to login to docker registry
+      debug:
+        msg: run `docker login gitlab.catalyst.net.nz:4567`
+
+    - name: print help msg to push to docker registry
+      debug:
+        msg: run `docker push gitlab.catalyst.net.nz:4567/samba/samba`
