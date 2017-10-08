@@ -15,6 +15,7 @@ packages:
  - python3-devel
  - gdb
  - pkgconfig
+ - psmisc
  - krb5-workstation
  - zlib-devel
  - setroubleshoot-server

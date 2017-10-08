@@ -41,6 +41,7 @@ packages:
  - perl
  - perl-modules
  - pkg-config
+ - psmisc
  - python-all-dev
  - python-crypto
  - python-dbg
