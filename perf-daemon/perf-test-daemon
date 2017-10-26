@@ -293,6 +293,9 @@ def process_queue():
             if '--preserve-tmp-dir' not in cmdline:
                 shutil.rmtree(workdir)
                 shutil.rmtree(output_dir)
+        except EnvironmentError as e:
+            print >> sys.stderr, "Error in process queue:"
+            print >> sys.stderr, traceback.format_exc()
 
         except subprocess.CalledProcessError as e:
             failures.setdefault(fn, []).append((cmdline, e))
@@ -356,7 +359,11 @@ def process_background():
         send_email(subject, body, [gzip_file(logfile)])
 
     finally:
-        shutil.rmtree(workdir)
+        try:
+            shutil.rmtree(workdir)
+        except EnvironmentError as e:
+            print >> sys.stderr, "Error cleaning up in process_background():"
+            print >> sys.stderr, traceback.format_exc()
 
     return failures
 
