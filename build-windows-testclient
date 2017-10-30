@@ -104,6 +104,14 @@ def main():
         password=subprocess.check_output("pwgen -s 20", shell=True)[:20]
         
     cloud_init_file = write_cloud_init(password=password)
+
+    os.environ['PACKER_PASSWORD'] = password
+    os.environ['PACKER_IMAGE'] = args.image
+    os.environ['PACKER_FLAVOR'] = args.flavor
+    os.environ['PACKER_NET_ID'] = args.net_id
+    os.environ['PACKER_CLOUD_INIT_FILE'] = args.cloud_init_file
+    os.environ['PACKER_MS_DOWNLOADS'] = args.ms_downloads
+
     packer_file = write_packer_config(password=password,
                                       image=args.image,
                                       net_id = args.net_id,
