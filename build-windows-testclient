@@ -19,23 +19,6 @@ PACKER_TEMPLATE = os.path.join(HERE, 'templates/build-windows-image.json')
 CLOUD_INIT_TEMPLATE = os.path.join(HERE, 'templates/build-windows-image-user_data.ps1')
 
 
-def write_packer_config(password=None, net_id=None, image=None, flavor=None, ms_downloads=None,
-                        cloud_init_file=None):
-    template = PACKER_TEMPLATE
-
-
-    f = open(template)
-    s = f.read()
-    f.close()
-    s = s.format(image=image, generated_password=password, flavor=flavor, net_id=net_id,
-                 ms_downloads=ms_downloads, cloud_init_file=cloud_init_file)
-    f = tempfile.NamedTemporaryFile(suffix='.json',
-                                    prefix='build-windows-image-',
-                                    delete=False)
-    f.write(s)
-    f.close()
-    return f.name
-
 def write_cloud_init(password=None):
     template = CLOUD_INIT_TEMPLATE
 
@@ -106,23 +89,14 @@ def main():
     cloud_init_file = write_cloud_init(password=password)
 
     os.environ['PACKER_PASSWORD'] = password
+    os.environ['PACKER_CLOUD_INIT_FILE'] = cloud_init_file
+
     os.environ['PACKER_IMAGE'] = args.image
     os.environ['PACKER_FLAVOR'] = args.flavor
-    os.environ['PACKER_NET_ID'] = args.net_id
-    os.environ['PACKER_CLOUD_INIT_FILE'] = args.cloud_init_file
+    os.environ['PACKER_NET_ID'] = args.net_id or ''
     os.environ['PACKER_MS_DOWNLOADS'] = args.ms_downloads
 
-    packer_file = write_packer_config(password=password,
-                                      image=args.image,
-                                      net_id = args.net_id,
-                                      flavor=args.flavor,
-                                      ms_downloads=args.ms_downloads,
-                                      cloud_init_file=cloud_init_file)
-
-    if args.verbose:
-        print >> sys.stderr, "packer file is %s" % packer_file
-
-    run_packer(packer_file, args.region, args.dry_run)
+    run_packer(PACKER_TEMPLATE, args.region, args.dry_run)
 
 
 main()
