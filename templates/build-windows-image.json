@@ -22,18 +22,18 @@
     }],
     "provisioners": [{
         "type": "file",
-        "source": "{{user `ms_downloads`}}/Firefox Setup 48.0.2.exe",
+        "source": "{{user `ms_downloads`}}/firefox.exe",
         "destination": "c:\\firefox.exe"
     },
     {
         "type": "file",
-        "source": "{{user `ms_downloads`}}/winpcap-nmap-4.13.exe",
+        "source": "{{user `ms_downloads`}}/winpcap-nmap.exe",
         "destination": "c:\\winpcap-nmap.exe"
     },
     {
         "type": "file",
-        "source": "{{user `ms_downloads`}}/Wireshark-win64-2.0.5.exe",
-        "destination": "c:\\Wireshark.exe"
+        "source": "{{user `ms_downloads`}}/wireshark.exe",
+        "destination": "c:\\wireshark.exe"
     },
     {
         "type": "powershell",
@@ -43,7 +43,7 @@
     },
     {
         "type": "file",
-        "source": "{{user `ms_downloads`}}/setupssh-7.3p1-2.exe",
+        "source": "{{user `ms_downloads`}}/setupssh.exe",
         "destination": "c:\\setupssh.exe"
     },
     {
