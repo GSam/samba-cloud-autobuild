@@ -15,7 +15,7 @@ except ImportError:
 
 HERE = os.path.dirname(__file__)
 
-PACKER_TEMPLATE = os.path.join(HERE, 'templates/build-windows-image.json.template')
+PACKER_TEMPLATE = os.path.join(HERE, 'templates/build-windows-image.json')
 CLOUD_INIT_TEMPLATE = os.path.join(HERE, 'templates/build-windows-image-user_data.ps1')
 
 
