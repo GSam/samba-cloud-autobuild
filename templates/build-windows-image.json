@@ -1,30 +1,38 @@
 {
+    "variables": {
+        "image": "{{env `PACKER_IMAGE`}}",
+        "flavor": "{{env `PACKER_FLAVOR`}}",
+        "net_id": "{{env `PACKER_NET_ID`}}",
+        "password": "{{env `PACKER_PASSWORD`}}",
+        "user_data_file": "{{env `PACKER_CLOUD_INIT_FILE`}}",
+        "ms_downloads": "{{env `PACKER_MS_DOWNLOADS`}}"
+    },
     "builders": [{
         "type": "openstack",
         "image_name": "windows-test-image-template",
-        "source_image": "{image}",
-        "flavor": "{flavor}",
+        "source_image": "{{user `image`}}",
+        "flavor": "{{user `flavor`}}",
         "security_groups": ["winrm-ok"],
         "floating_ip_pool": "public-net",
-        "networks": ["{net_id}"],
+        "networks": ["{{user `net_id`}}"],
         "communicator": "winrm",
         "winrm_username": "Administrator",
-        "winrm_password": "{generated_password}",
-        "user_data_file": "{cloud_init_file}"
+        "winrm_password": "{{user `password`}}",
+        "user_data_file": "{{user `cloud_init_file`}}"
     }],
     "provisioners": [{
         "type": "file",
-        "source": "{ms_downloads}/Firefox Setup 48.0.2.exe",
+        "source": "{{user `ms_downloads`}}/Firefox Setup 48.0.2.exe",
         "destination": "c:\\firefox.exe"
     },
     {
         "type": "file",
-        "source": "{ms_downloads}/winpcap-nmap-4.13.exe",
+        "source": "{{user `ms_downloads`}}/winpcap-nmap-4.13.exe",
         "destination": "c:\\winpcap-nmap.exe"
     },
     {
         "type": "file",
-        "source": "{ms_downloads}/Wireshark-win64-2.0.5.exe",
+        "source": "{{user `ms_downloads`}}/Wireshark-win64-2.0.5.exe",
         "destination": "c:\\Wireshark.exe"
     },
     {
@@ -35,12 +43,12 @@
     },
     {
         "type": "file",
-        "source": "{ms_downloads}/setupssh-7.3p1-2.exe",
+        "source": "{{user `ms_downloads`}}/setupssh-7.3p1-2.exe",
         "destination": "c:\\setupssh.exe"
     },
     {
         "type": "powershell",
-        "inline": ["c:\\setupssh.exe /password={generated_password} /privsep=1 /S"]
+        "inline": ["c:\\setupssh.exe /password={{user `password`}} /privsep=1 /S"]
     },
     {
         "type": "powershell",
@@ -51,7 +59,7 @@
     },
     {
         "type": "file",
-        "source": "{ms_downloads}/ProtocolTestManager.msi",
+        "source": "{{user `ms_downloads`}}/ProtocolTestManager.msi",
         "destination": "c:\\ProtocolTestManager.msi"
     },
     {
@@ -60,17 +68,17 @@
     },
     {
         "type": "file",
-        "source": "{ms_downloads}/ADFamily_TestSuite_ServerEP.msi",
+        "source": "{{user `ms_downloads`}}/ADFamily_TestSuite_ServerEP.msi",
         "destination": "c:\\ADFamily_TestSuite_ServerEP.msi"
     },
     {
         "type": "file",
-        "source": "{ms_downloads}/Kerberos_TestSuite_ServerEP.msi",
+        "source": "{{user `ms_downloads`}}/Kerberos_TestSuite_ServerEP.msi",
         "destination": "c:\\Kerberos_TestSuite_ServerEP.msi"
     },
     {
         "type": "file",
-        "source": "{ms_downloads}/MS_AZOD_TestSuite_ODEP.msi",
+        "source": "{{user `ms_downloads`}}/MS_AZOD_TestSuite_ODEP.msi",
         "destination": "c:\\MS_AZOD_TestSuite_ODEP.msi"
     },
     {
