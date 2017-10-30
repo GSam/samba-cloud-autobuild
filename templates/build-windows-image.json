@@ -68,18 +68,18 @@
     },
     {
         "type": "file",
-        "source": "{{user `ms_downloads`}}/ADFamily_TestSuite_ServerEP.msi",
-        "destination": "c:\\ADFamily_TestSuite_ServerEP.msi"
+        "source": "{{user `ms_downloads`}}/ADFamily-TestSuite-ServerEP.msi",
+        "destination": "c:\\ADFamily-TestSuite-ServerEP.msi"
     },
     {
         "type": "file",
-        "source": "{{user `ms_downloads`}}/Kerberos_TestSuite_ServerEP.msi",
-        "destination": "c:\\Kerberos_TestSuite_ServerEP.msi"
+        "source": "{{user `ms_downloads`}}/Kerberos-TestSuite-ServerEP.msi",
+        "destination": "c:\\Kerberos-TestSuite-ServerEP.msi"
     },
     {
         "type": "file",
-        "source": "{{user `ms_downloads`}}/MS_AZOD_TestSuite_ODEP.msi",
-        "destination": "c:\\MS_AZOD_TestSuite_ODEP.msi"
+        "source": "{{user `ms_downloads`}}/MS-AZOD-TestSuite-ODEP.msi",
+        "destination": "c:\\MS-AZOD-TestSuite-ODEP.msi"
     },
     {
         "type": "windows-restart"
