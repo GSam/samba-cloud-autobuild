@@ -9,7 +9,7 @@
     },
     "builders": [{
         "type": "openstack",
-        "image_name": "windows-test-image-template",
+        "image_name": "windows-protocol-test-suites-packer-image",
         "source_image_name": "{{user `image`}}",
         "flavor": "{{user `flavor`}}",
         "security_groups": ["winrm-ok"],
