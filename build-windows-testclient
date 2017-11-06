@@ -76,20 +76,15 @@ def main():
     parser.add_argument('--ms-downloads',
                         help="directory of files for Windows (firefox, winpcap from nmap, wireshark)")
 
-
-   
     args = parser.parse_args()
 
     if args.use_default_pass:
         password="penguin12#"
     else:
         password=subprocess.check_output("pwgen -s 20", shell=True)[:20]
-        
-    cloud_init_file = write_cloud_init(password=password)
 
     os.environ['PACKER_PASSWORD'] = password
-    os.environ['PACKER_CLOUD_INIT_FILE'] = cloud_init_file
-
+    os.environ['PACKER_USER_DATA_FILE'] = write_cloud_init(password=password)
     os.environ['PACKER_IMAGE'] = args.image
     os.environ['PACKER_FLAVOR'] = args.flavor
     os.environ['PACKER_NET_ID'] = args.net_id

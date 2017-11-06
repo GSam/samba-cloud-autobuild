@@ -4,7 +4,7 @@
         "flavor": "{{env `PACKER_FLAVOR`}}",
         "net_id": "{{env `PACKER_NET_ID`}}",
         "password": "{{env `PACKER_PASSWORD`}}",
-        "user_data_file": "{{env `PACKER_CLOUD_INIT_FILE`}}",
+        "user_data_file": "{{env `PACKER_USER_DATA_FILE`}}",
         "ms_downloads": "{{env `PACKER_MS_DOWNLOADS`}}"
     },
     "builders": [{
@@ -18,7 +18,7 @@
         "communicator": "winrm",
         "winrm_username": "Administrator",
         "winrm_password": "{{user `password`}}",
-        "user_data_file": "{{user `cloud_init_file`}}"
+        "user_data_file": "{{user `user_data_file`}}"
     }],
     "provisioners": [{
         "type": "file",
