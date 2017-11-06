@@ -10,7 +10,7 @@
     "builders": [{
         "type": "openstack",
         "image_name": "windows-test-image-template",
-        "source_image": "{{user `image`}}",
+        "source_image_name": "{{user `image`}}",
         "flavor": "{{user `flavor`}}",
         "security_groups": ["winrm-ok"],
         "floating_ip_pool": "public-net",
