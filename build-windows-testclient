@@ -36,14 +36,10 @@ def write_cloud_init(password=None):
 
 
 def run_packer(packer_file, region, dry_run=False):
-    open_rc = OPENRC_TABLE[region]
-    args = ['.', open_rc, ';', 'packer', 'build']
-    args += [packer_file]
-    
-    if dry_run:
-        print ' '.join(args)
-    else:
-        subprocess.check_call(' '.join(args), shell=True)
+    cmd = '. {}; packer build {}'.format(OPENRC_TABLE[region], packer_file)
+    print(cmd)
+    if not dry_run:
+        subprocess.check_call(cmd, shell=True)
 
 
 def main():
