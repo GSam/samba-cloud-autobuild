@@ -27,8 +27,8 @@
     },
     {
         "type": "file",
-        "source": "{{user `ms_downloads`}}/winpcap-nmap.exe",
-        "destination": "c:\\winpcap-nmap.exe"
+        "source": "{{user `ms_downloads`}}/npcap.exe",
+        "destination": "c:\\npcap.exe"
     },
     {
         "type": "file",
@@ -38,7 +38,7 @@
     {
         "type": "powershell",
         "inline": ["c:\\firefox.exe -ms",
-                  "c:\\winpcap-nmap.exe /S",
+                  "c:\\npcap.exe /S",
                   "c:\\wireshark.exe /S"]
     },
     {
