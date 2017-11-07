@@ -26,7 +26,7 @@ def write_cloud_init(password=None):
     f = open(template)
     s = f.read()
     f.close()
-    s = s.format(generated_password=password)
+    s = s.format(password=password)
     f = tempfile.NamedTemporaryFile(suffix='.ps1',
                                     prefix='build-windows-image-',
                                     delete=False)

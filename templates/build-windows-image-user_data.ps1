@@ -1,6 +1,6 @@
 #ps1_sysnative
 wmic UserAccount set PasswordExpires=False
-net user Administrator {generated_password}
+net user Administrator {password}
 cmd /C netsh advfirewall set allprofiles state off
 winrm quickconfig -q
 winrm set winrm/config/winrs '@{{MaxMemoryPerShellMB="500"}}'
