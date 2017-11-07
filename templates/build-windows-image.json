@@ -37,35 +37,14 @@
             "destination": "c:\\wireshark.exe"
         },
         {
-            "type": "powershell",
-            "inline": ["c:\\firefox.exe -ms",
-                      "c:\\npcap.exe /S",
-                      "c:\\wireshark.exe /S"]
-        },
-        {
             "type": "file",
             "source": "{{user `ms_downloads`}}/setupssh.exe",
             "destination": "c:\\setupssh.exe"
         },
         {
-            "type": "powershell",
-            "inline": ["c:\\setupssh.exe /password={{user `password`}} /privsep=1 /S"]
-        },
-        {
-            "type": "powershell",
-            "inline": ["Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Microsoft/WindowsProtocolTestSuites/staging/InstallPrerequisites/InstallPrerequisites.ps1'  -OutFile 'C:\\InstallPrerequisites.ps1'",
-                      "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Microsoft/WindowsProtocolTestSuites/staging/InstallPrerequisites/PrerequisitesConfig.xml'  -OutFile 'C:\\PrerequisitesConfig.xml'",
-                      "Invoke-WebRequest -Uri 'https://github.com/Microsoft/WindowsProtocolTestSuites/archive/master.zip' -OutFile 'C:\\WindowsProtocolTestSuites.zip'",
-                      "c:\\InstallPrerequisites.ps1 -Category 'Kerberos' -ConfigPath c:\\PrerequisitesConfig.xml"]
-        },
-        {
             "type": "file",
             "source": "{{user `ms_downloads`}}/ProtocolTestManager.msi",
             "destination": "c:\\ProtocolTestManager.msi"
-        },
-        {
-            "type": "powershell",
-            "inline": ["c:\\ProtocolTestManager.msi /q"]
         },
         {
             "type": "file",
@@ -81,6 +60,20 @@
             "type": "file",
             "source": "{{user `ms_downloads`}}/MS-AZOD-TestSuite-ODEP.msi",
             "destination": "c:\\MS-AZOD-TestSuite-ODEP.msi"
+        },
+        {
+            "type": "powershell",
+            "inline": [
+                "c:\\firefox.exe -ms",
+                "c:\\npcap.exe /S",
+                "c:\\wireshark.exe /S",
+                "c:\\setupssh.exe /password={{user `password`}} /privsep=1 /S",
+                "c:\\ProtocolTestManager.msi /q",
+                "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Microsoft/WindowsProtocolTestSuites/staging/InstallPrerequisites/InstallPrerequisites.ps1'  -OutFile 'C:\\InstallPrerequisites.ps1'",
+                "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Microsoft/WindowsProtocolTestSuites/staging/InstallPrerequisites/PrerequisitesConfig.xml'  -OutFile 'C:\\PrerequisitesConfig.xml'",
+                "Invoke-WebRequest -Uri 'https://github.com/Microsoft/WindowsProtocolTestSuites/archive/master.zip' -OutFile 'C:\\WindowsProtocolTestSuites.zip'",
+                "c:\\InstallPrerequisites.ps1 -Category 'Kerberos' -ConfigPath c:\\PrerequisitesConfig.xml"
+            ]
         },
         {
             "type": "windows-restart"
