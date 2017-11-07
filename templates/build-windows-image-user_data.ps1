@@ -12,6 +12,7 @@ net stop winrm
 net start winrm
 
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force
+Install-WindowsFeature RSAT-AD-Tools
 
 dism /online /enable-feature /all /featurename:NetFx3 /norestart
 
