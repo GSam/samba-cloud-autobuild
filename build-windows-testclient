@@ -5,6 +5,7 @@ import sys
 import subprocess
 import tempfile
 import random
+from string import Template
 
 from common import get_credentials, get_package_list, DEFAULT_REGION, OPENRC_TABLE, SambaCloudError
 
@@ -20,17 +21,13 @@ CLOUD_INIT_TEMPLATE = os.path.join(HERE, 'templates/build-windows-image-user_dat
 
 
 def write_cloud_init(password=None):
-    template = CLOUD_INIT_TEMPLATE
+    with open(CLOUD_INIT_TEMPLATE) as f:
+        s = f.read()
 
-
-    f = open(template)
-    s = f.read()
-    f.close()
-    s = s.format(password=password)
     f = tempfile.NamedTemporaryFile(suffix='.ps1',
                                     prefix='build-windows-image-',
                                     delete=False)
-    f.write(s)
+    f.write(Template(s).substitute(password=password))
     f.close()
     return f.name
 
