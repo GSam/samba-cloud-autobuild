@@ -39,18 +39,22 @@ def construct_parameters(args, credentials):
                        ('package_list', ','.join(package_list))])
 
     #print parameters
-    return ';'.join("%s=%s" % (k, quote(v)) for k, v in sorted(parameters))
+    return ["%s=%s" % (k, quote(v)) for k, v in sorted(parameters)]
 
 
 def run(template_name, stack_id, parameters, credentials, dry_run=False,
         verbose=False):
-    cmd = ["heat"]
+    cmd = ["openstack"]
     if verbose:
         cmd += ['-d', '-v']
-    cmd += ["stack-create",
+    cmd += ["stack", "create",
            "-e", os.path.join(HERE, "yaml/env.yaml"),
-           "--template-file", template_name,
-           "--parameters", parameters, stack_id]
+           "--template", template_name]
+
+    for p in parameters:
+        cmd += ['--parameter', p]
+
+    cmd.append(stack_id)
 
     if dry_run:
         print ' '.join(quote(x) for x in cmd)
