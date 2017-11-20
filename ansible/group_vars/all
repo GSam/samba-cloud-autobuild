@@ -72,6 +72,7 @@ userpackages:
   - 'catalyst-garmingsam'
   - 'catalyst-garylockyer'
   - 'catalyst-timbeale'
+  - 'catalyst-joeg'
 
 ## Users to be added to sudo group
 sudo_users:
@@ -82,6 +83,7 @@ sudo_users:
   - 'timbeale'
   - 'gary'
   - 'bobcampbell'
+  - 'joeg'
 
 ## Master host flavours (yes, I know, os_server property is flavor)
 master_flavour: c1.c4r4
