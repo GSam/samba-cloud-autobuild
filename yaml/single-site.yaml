@@ -271,9 +271,10 @@ resources:
                     $KCC_INTERVAL_OPT \
                     -d 3
 
-                  for i in $(seq 0 $((_SUBNET_COUNT_ - 1)) ); do
+                  for i in $(seq 1 $((_SUBNET_COUNT_ - 1)) ); do
                     /usr/local/samba/bin/samba-tool sites create site-$i
-
+                    /usr/local/samba/bin/samba-tool sites subnet create 10.9.$i.0/24
+                    /usr/local/samba/bin/samba-tool sites subnet set-site 10.9.$i.0/24 site-$i
                   done
 
                   (/usr/local/samba/sbin/samba &)
