@@ -46,7 +46,7 @@ def run(template_name, stack_id, parameters, credentials, dry_run=False,
         verbose=False):
     cmd = ["openstack"]
     if verbose:
-        cmd += ['-d', '-v']
+        cmd += ['--debug', '-v', '-v']
     cmd += ["stack", "create",
            "-e", os.path.join(HERE, "yaml/env.yaml"),
            "--template", template_name]
