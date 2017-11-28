@@ -1,0 +1,83 @@
+---
+
+- import_playbook: site.yml
+
+# Initial setup of Windows box
+- name: Windows initial setup
+  hosts: "{{ env_prefix }}_windows"
+  vars:
+    ansible_user: Administrator
+    ansible_password: penguin12#
+    ansible_port: 5986
+    ansible_connection: winrm
+    ansible_winrm_server_cert_validation: ignore
+
+    master_hostname: "{{ env_prefix }}-{{ site_basename }}1-{{ node_basename }}1"
+    master_priv_ip: "{{ hostvars[master_hostname].openstack.private_v4 }}"
+
+  tasks:
+  - name: ping
+    win_ping:
+
+  - name: Install testsuite
+    win_shell: C:\\InstallPrerequisites.ps1 -Category Kerberos -ConfigPath 'C:\\PrerequisitesConfig.xml'
+    register: out
+
+  - name: Install Kerberos MSI
+    win_package:
+        path: 'C:\\Kerberos-TestSuite-ServerEP.msi'
+    retries: 3
+    register: out
+    ignore_errors: yes
+
+  - name: config the DNS client on Windows network adapters
+    win_dns_client:
+      adapter_names: "Ethernet"
+      ipv4_addresses: ["{{ master_priv_ip }}", 202.78.247.199]
+
+  - name: join windows client to samba domain
+    win_domain_membership:
+      dns_domain_name: "{{ samba_realm }}"
+      domain_admin_user: "Administrator@{{ samba_realm }}"
+      domain_admin_password: "{{ samba_password }}"
+      state: domain
+
+  # - name: Set Computer password
+    # win_shell: |
+        # ksetup /SetComputerPassword Password06!
+
+  - win_reboot:
+
+- name: run pexpect on windows
+  hosts: localhost
+
+  tasks:
+  - script: "./wpts.py {{ windows_floating_ip_info.floating_ip.floating_ip_address }} Administrator@{{ samba_realm }} {{ samba_password }}"
+
+# - name: Initial setup
+  # hosts: windows2
+
+  # tasks:
+  # - name: ping
+    # win_ping:
+
+  # # Fetch the trx file (placeholder file currently)
+  # - fetch:
+        # src: 'C:\\windows\\win.ini'
+        # dest: /tmp/
+        # flat: yes
+
+  # # Run local_command?
+  # - name: Convert trx file to subunit
+    # local_action: command echo hello
+    # register: out
+
+  # - debug: var=out.stdout_lines
+
+
+#  - name: Set DNS servers
+#    win_shell: |
+#	&"$ENV:VS110COMNTOOLS..\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe" "..\\Bin\\Kerberos_ServerTestSuite.dll" "/Settings:..\\Bin\\ServerLocalTestRun.testrunconfig" "/Logger:trx"
+#    args:
+#      chdir: 'C:\\MicrosoftProtocolTests\\Kerberos\\Server-Endpoint\\2.0.66.0\\Batch' 
+ # - win_reboot:
