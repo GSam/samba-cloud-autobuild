@@ -324,15 +324,23 @@ resources:
                     sleep 10
                   done
 
+                  if [[ _SUBNET_ID_ == 0 ]] ; then
+                      site=Default-First-Site-Name
+                  else
+                      site=site-_SUBNET_ID_
+                  fi
+
                   if [[ "$(hostname)" == '_NAME_-_SUBNET_ID_-2' && _RODC_ == 'True' ]]; then
                     /usr/local/samba/bin/samba-tool domain join _REALM_ RODC -UAdministrator \
                                           --machinepass='_PASSWORD_' \
                                           --password='_PASSWORD_' --realm=_REALM_ -d 3 \
+                                          --site="$site"\
                                           --option='ldapserverrequirestrongauth=no'
                   else
                     /usr/local/samba/bin/samba-tool domain join _REALM_ DC -UAdministrator \
                                           --machinepass='_PASSWORD_' \
                                           --password='_PASSWORD_' --realm=_REALM_ -d 3 \
+                                          --site="$site"\
                                           --option='ldapserverrequirestrongauth=no'
                   fi
 
