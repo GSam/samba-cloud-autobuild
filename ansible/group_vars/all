@@ -14,6 +14,7 @@ site_basename: s
 hosts_in_site: 2
 node_basename: dc
 
+windows_basename: win
 ## Default state is always 'present' but some parts still require
 ## this to be set explicitly
 set_state: present
@@ -87,12 +88,16 @@ sudo_users:
 
 ## Master host flavours (yes, I know, os_server property is flavor)
 master_flavour: c1.c4r4
-## Slace host flavours
+## Slave host flavours
 slave_flavour: c1.c1r1
+
+## Windows client flavour
+windows_flavour: c1.c2r4
 
 ## OS image to use
 master_image: ubuntu-16.04-x86_64
 slave_image: ubuntu-16.04-x86_64
+windows_image: windows-protocol-test-suites-packer-image
 
 ## Security group names used
 master_security_group: "{{ env_prefix }}-master"
