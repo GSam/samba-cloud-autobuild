@@ -112,7 +112,7 @@
       tags: unreg
 
     - name: gitlab-runner register
-      command: "docker exec {{ RUNNER_NAME }} gitlab-runner register"
+      command: docker exec {{ RUNNER_NAME }} gitlab-runner register --machine-machine-options "engine-storage-driver=devicemapper"
 
     - name: gitlab-runner list
       command: "docker exec {{ RUNNER_NAME }} gitlab-runner list"
