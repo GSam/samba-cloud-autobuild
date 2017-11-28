@@ -1,6 +1,6 @@
 ---
 
-- include: pre-run-checks.yml
+- import_playbook: pre-run-checks.yml
 
 - name: Deploy and configure samba on the master node
   hosts: "{{ env_prefix }}_master"

@@ -15,15 +15,15 @@
   tags:
     - always
 
-- include: tasks/clone.yml
+- import_tasks: tasks/clone.yml
   tags:
     - clone
 
-- include: tasks/build.yml
+- import_tasks: tasks/build.yml
   tags:
     - build
 
-- include: tasks/dns-switch.yml
+- import_tasks: tasks/dns-switch.yml
   tags:
     - dns
 

@@ -10,30 +10,30 @@
 # OpenStack won't allow to delete networks if there are ports attached to them
 # so deleting the router first if set_state=absent, later we the same task is
 # is included again when set_state == 'present'
-- include: tasks/routers.yml
+- import_tasks: tasks/routers.yml
   when: set_state == 'absent'
   tags:
     - routers
 
-- include: tasks/networks.yml
+- import_tasks: tasks/networks.yml
   tags:
     - networks
 
-- include: tasks/subnets.yml
+- import_tasks: tasks/subnets.yml
   when: set_state == 'present'
   tags:
     - subnets
 
-- include: tasks/routers.yml
+- import_tasks: tasks/routers.yml
   when: set_state == 'present'
   tags:
     - routers
 
-- include: tasks/security-groups.yml
+- import_tasks: tasks/security-groups.yml
   tags:
     - security-groups
 
-- include: tasks/security-group-rules.yml
+- import_tasks: tasks/security-group-rules.yml
   when: set_state == 'present'
   tags:
     - security-group-rules
