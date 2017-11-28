@@ -14,13 +14,13 @@ if [[ "$ip" ]]; then
 else
     for x in 1 2; do
         echo looking for a free IP
-        ip=$(nova  floating-ip-list | cut -d'|' -f 3,4 -s | grep -e '| -' | head -1 | cut -d'|' -f1)
+        ip=$(openstack  floating ip list | cut -d'|' -f 3,4 -s | grep -e '| None' | head -1 | cut -d'|' -f1)
         if [[ "$ip" ]]; then
             echo using $ip
             break
         else
             echo no free floating IPs; creating a new one...
-            nova floating-ip-create
+            openstack floating ip create
         fi
     done
 
