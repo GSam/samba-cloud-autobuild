@@ -32,7 +32,7 @@
       - net-name: "{{ env_prefix }}-network1"
     auto_ip: false
     image: "{{ master_image }}"
-    security_groups: "{{ master_security_group }}"
+    security_groups: "ad-domain-and-clients,{{ master_security_group }}"
     meta: "group=master_group,{{ env_prefix }}=env_master,groups={{ env_prefix }}_master"
     user_data: |
       #cloud-config

@@ -27,7 +27,7 @@
       - net-name: "{{ env_prefix }}-network1"
     auto_ip: false
     image: "{{ windows_image }}"
-    security_groups: "winrm-ok,windows-rdp"
+    security_groups: "winrm-ok,windows-rdp,ad-domain-and-clients"
     meta: "group=windows_group,{{ env_prefix }}=env_windows,groups={{ env_prefix }}_windows"
   tags:
     - windows
