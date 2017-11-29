@@ -21,9 +21,6 @@ If you run packer from Catalyst LAN, the `Remote IP Prefix` will be `202.78.240.
 
 Make sure `~/sambatest.catalyst.net.nz-openrc.sh` exists.
 
-## Windows packages to install
-Run `scripts/download-windows-packeges`
-
 ## Command to rebuild image
 
-python build-windows-testclient --ms-downloads ~/Desktop/ms-downloads --use-default-pass -v
+python build-windows-testclient

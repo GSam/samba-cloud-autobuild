@@ -59,7 +59,7 @@ def main():
     parser.add_argument('--verbose-logs', action='store_true',
                         help=("run packer --verbose"))
 
-    parser.add_argument('--use-default-pass', action='store_true',
+    parser.add_argument('--use-default-pass', action='store_true', default=True,
                         help=("use a default (insecure) password for machines and samba"))
 
     parser.add_argument('-n', '--dry-run', action='store_true',
@@ -70,8 +70,6 @@ def main():
                               "(default: 2 CPUs, 4GB)"))
     parser.add_argument('-v', '--verbose', action='store_true',
                         help="say a litle more about what is happening")
-    parser.add_argument('--ms-downloads',
-                        help="directory of files for Windows (firefox, winpcap from nmap, wireshark)")
 
     args = parser.parse_args()
 
@@ -85,7 +83,6 @@ def main():
     os.environ['PACKER_IMAGE'] = args.image
     os.environ['PACKER_FLAVOR'] = args.flavor
     os.environ['PACKER_NET_ID'] = args.net_id
-    os.environ['PACKER_MS_DOWNLOADS'] = args.ms_downloads
 
     run_packer(PACKER_TEMPLATE, args.region, args.dry_run)
 

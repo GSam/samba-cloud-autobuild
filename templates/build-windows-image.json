@@ -4,8 +4,7 @@
         "flavor": "{{env `PACKER_FLAVOR`}}",
         "net_id": "{{env `PACKER_NET_ID`}}",
         "password": "{{env `PACKER_PASSWORD`}}",
-        "user_data_file": "{{env `PACKER_USER_DATA_FILE`}}",
-        "ms_downloads": "{{env `PACKER_MS_DOWNLOADS`}}"
+        "user_data_file": "{{env `PACKER_USER_DATA_FILE`}}"
     },
     "builders": [{
         "type": "openstack",
@@ -22,58 +21,8 @@
     }],
     "provisioners": [
         {
-            "type": "file",
-            "source": "{{user `ms_downloads`}}/firefox.exe",
-            "destination": "c:\\firefox.exe"
-        },
-        {
-            "type": "file",
-            "source": "{{user `ms_downloads`}}/npcap.exe",
-            "destination": "c:\\npcap.exe"
-        },
-        {
-            "type": "file",
-            "source": "{{user `ms_downloads`}}/wireshark.exe",
-            "destination": "c:\\wireshark.exe"
-        },
-        {
-            "type": "file",
-            "source": "{{user `ms_downloads`}}/setupssh.exe",
-            "destination": "c:\\setupssh.exe"
-        },
-        {
-            "type": "file",
-            "source": "{{user `ms_downloads`}}/ProtocolTestManager.msi",
-            "destination": "c:\\ProtocolTestManager.msi"
-        },
-        {
-            "type": "file",
-            "source": "{{user `ms_downloads`}}/ADFamily-TestSuite-ServerEP.msi",
-            "destination": "c:\\ADFamily-TestSuite-ServerEP.msi"
-        },
-        {
-            "type": "file",
-            "source": "{{user `ms_downloads`}}/Kerberos-TestSuite-ServerEP.msi",
-            "destination": "c:\\Kerberos-TestSuite-ServerEP.msi"
-        },
-        {
-            "type": "file",
-            "source": "{{user `ms_downloads`}}/MS-AZOD-TestSuite-ODEP.msi",
-            "destination": "c:\\MS-AZOD-TestSuite-ODEP.msi"
-        },
-        {
             "type": "powershell",
-            "inline": [
-                "c:\\firefox.exe -ms",
-                "c:\\npcap.exe /S",
-                "c:\\wireshark.exe /S",
-                "c:\\setupssh.exe /password={{user `password`}} /privsep=1 /S",
-                "c:\\ProtocolTestManager.msi /q",
-                "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/GSam/WindowsProtocolTestSuites/staging/InstallPrerequisites/InstallPrerequisites.ps1'  -OutFile 'C:\\InstallPrerequisites.ps1'",
-                "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/GSam/WindowsProtocolTestSuites/staging/InstallPrerequisites/PrerequisitesConfig.xml'  -OutFile 'C:\\PrerequisitesConfig.xml'",
-                "Invoke-WebRequest -Uri 'https://github.com/Microsoft/WindowsProtocolTestSuites/archive/master.zip' -OutFile 'C:\\WindowsProtocolTestSuites.zip'",
-                "c:\\InstallPrerequisites.ps1 -Category 'Kerberos' -ConfigPath c:\\PrerequisitesConfig.xml"
-            ]
+            "script": "scripts/packer-provision-windows.ps1"
         },
         {
             "type": "windows-restart"
