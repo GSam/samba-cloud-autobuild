@@ -24,11 +24,10 @@
     register: out
 
   - name: Install Kerberos MSI
-    win_package:
-        path: 'C:\\Kerberos-TestSuite-ServerEP.msi'
+    win_msi:
+      path: 'C:\\Kerberos-TestSuite-ServerEP.msi'
     retries: 3
     register: out
-    ignore_errors: yes
 
   - name: config the DNS client on Windows network adapters
     win_dns_client:
