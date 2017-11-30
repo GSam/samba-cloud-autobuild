@@ -23,11 +23,15 @@
     win_shell: C:\\InstallPrerequisites.ps1 -Category Kerberos -ConfigPath 'C:\\PrerequisitesConfig.xml'
     register: out
 
+  - debug: var=out
+
   - name: Install Kerberos MSI
     win_msi:
       path: 'C:\\Kerberos-TestSuite-ServerEP.msi'
     retries: 3
     register: out
+
+  - debug: var=out
 
   - name: config the DNS client on Windows network adapters
     win_dns_client:
