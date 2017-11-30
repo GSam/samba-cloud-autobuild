@@ -21,6 +21,11 @@
     }],
     "provisioners": [
         {
+            "type": "file",
+            "source": "scripts/wpts-run.bat",
+            "destination": "C:\\wpts-run.bat"
+        },
+        {
             "type": "powershell",
             "script": "scripts/packer-provision-windows.ps1"
         },
