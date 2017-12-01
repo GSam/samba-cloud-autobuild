@@ -17,11 +17,14 @@ choco feature enable -n allowGlobalConfirmation
 choco install openssh -params "'/SSHServerFeature'" -y
 choco install firefox wireshark winpcap everything notepadplusplus gow -y
 
+Install-WindowsFeature Net-Framework-Core
 
 # download windows protocol test suites files
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/GSam/WindowsProtocolTestSuites/master/InstallPrerequisites/InstallPrerequisites.ps1'  -OutFile 'C:\\InstallPrerequisites.ps1'
 
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/GSam/WindowsProtocolTestSuites/master/InstallPrerequisites/PrerequisitesConfig.xml'  -OutFile 'C:\\PrerequisitesConfig.xml'
+
+C:\\InstallPrerequisites.ps1 -Category Core -ConfigPath 'C:\\PrerequisitesConfig.xml'
 
 Invoke-WebRequest -Uri 'https://github.com/Microsoft/WindowsProtocolTestSuites/archive/master.zip' -OutFile 'C:\\WindowsProtocolTestSuites.zip'
 
