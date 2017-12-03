@@ -71,6 +71,9 @@ def main():
     parser.add_argument('-v', '--verbose', action='store_true',
                         help="say a litle more about what is happening")
 
+    parser.add_argument('--ms-downloads',
+                        help="directory of dependency files(vstf_testagent.exe)")
+
     args = parser.parse_args()
 
     if args.use_default_pass:
@@ -83,6 +86,7 @@ def main():
     os.environ['PACKER_IMAGE'] = args.image
     os.environ['PACKER_FLAVOR'] = args.flavor
     os.environ['PACKER_NET_ID'] = args.net_id
+    os.environ['PACKER_MS_DOWNLOADS'] = args.ms_downloads
 
     run_packer(PACKER_TEMPLATE, args.region, args.dry_run)
 

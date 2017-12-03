@@ -4,6 +4,7 @@
         "flavor": "{{env `PACKER_FLAVOR`}}",
         "net_id": "{{env `PACKER_NET_ID`}}",
         "password": "{{env `PACKER_PASSWORD`}}",
+        "ms_downloads": "{{env `PACKER_MS_DOWNLOADS`}}",
         "user_data_file": "{{env `PACKER_USER_DATA_FILE`}}"
     },
     "builders": [{
@@ -24,6 +25,17 @@
             "type": "file",
             "source": "scripts/wpts-run.bat",
             "destination": "C:\\wpts-run.bat"
+        },
+        {
+            "type": "file",
+            "source": "{{ ms_downloads }}/vstf_testagent.exe",
+            "destination": "C:\\vstf_testagent.exe"
+        },
+        {
+            "type": "powershell",
+            "inline": [
+                "Start-Process -FILEPATH C:\\vstf_testagent.exe /q -Wait -PassThru"
+             ]
         },
         {
             "type": "powershell",
