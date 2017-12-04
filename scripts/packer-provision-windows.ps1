@@ -15,7 +15,7 @@ choco feature enable -n allowGlobalConfirmation
 
 # install openssh and install service
 choco install openssh -params "'/SSHServerFeature'" -y
-choco install firefox wireshark winpcap everything notepadplusplus gow -y
+choco install firefox wireshark winpcap everything notepadplusplus gow cmder -y
 
 Install-WindowsFeature Net-Framework-Core
 
