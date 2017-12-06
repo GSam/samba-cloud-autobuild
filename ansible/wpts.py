@@ -10,11 +10,14 @@ parser.add_argument("password", help="Password to ssh to windows")
 
 args = parser.parse_args()
 
-cmd = 'ssh {}@{}'.format(args.username, args.host)
+cmd = 'ssh -o "StrictHostKeyChecking no" {}@{}'.format(args.username, args.host)
+print(cmd)
 child = pexpect.spawn(cmd)
 child.expect('password: ')
 child.sendline(args.password)
 child.expect('> ')
-child.sendline('echo hello')
+child.sendline('echo on')
 child.expect('> ')
-print child.before
+child.send('C:\wpts-run-kerberos.bat')
+child.expect('> ', timeout=120)
+print(child.before)

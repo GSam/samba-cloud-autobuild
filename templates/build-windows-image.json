@@ -23,11 +23,6 @@
     "provisioners": [
         {
             "type": "file",
-            "source": "scripts/wpts-run-kerberos.bat",
-            "destination": "C:\\wpts-run-kerberos.bat"
-        },
-        {
-            "type": "file",
             "source": "{{user `ms_downloads`}}/vstf_testagent.exe",
             "destination": "C:\\vstf_testagent.exe"
         },

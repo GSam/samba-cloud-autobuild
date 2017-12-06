@@ -3,6 +3,8 @@
 ########################
 # Environment settings #
 ########################
+# Official Ubuntu image has no Python2
+ansible_python_interpreter: /usr/bin/python3
 
 ## Remote user
 remote_user: ubuntu
@@ -30,7 +32,7 @@ set_state: present
 network_base: 172.16
 
 ## Domain - just the hosts FQDN - not Samba domain (although related)
-domain: "test.net"
+domain: "samba.site"
 
 
 #################################
@@ -44,9 +46,10 @@ samba_remote_url: 'git://git.catalyst.net.nz/samba.git'
 samba_version: 'master'
 
 ## Samba DC provisioning variables
-samba_realm: 'SAMDOM.TEST.NET'
-samba_domain: 'SAMDOM'
-samba_password: 'thaed7utahZe'
+samba_realm: 'KRB.SAMBA.SITE'
+samba_domain: 'KRB'
+# samba_password: 'thaed7utahZe'
+samba_password: 'Password01@'
 has_rodc: 'false'
 use_samba_kcc: 'true'
 kcc_interval: '0'
