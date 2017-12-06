@@ -65,7 +65,7 @@
       </Description>
     </Property>
     <Group name="LocalRealm" description="Settings for local realm">
-      <Property name="RealmName" value="KRB.SAMBATEST.SITE" />
+      <Property name="RealmName" value="{{ samba_realm }}" />
       <Property name="DomainControllerFunctionality" value="4">
         <Description>
             The KDC domainControllerFunctionality,[MS-ADTS] section 3.1.1.3.2.25.
@@ -80,14 +80,14 @@
       </Property>
       <Group name="KDC01" description="Settings for the local realm KDC">
         <Property name="IsWindows" value="True" />
-        <Property name="FQDN" value="dc01.krb.sambatest.site" />
+        <Property name="FQDN" value="{{ master_fqdn }}" />
         <Property name="NetBiosName" value="DC01$" />
         <Property name="Password" value="Password01!">
           <Description>
             This password is used for test cases serverSignature and kdcSignature.
           </Description>
         </Property>
-        <Property name="IPv4Address" value="10.59.0.104" />
+        <Property name="IPv4Address" value="{{ master_priv_ip }}" />
         <Property name="IPv6Address" value="2012::1">
           <Description>
             Leave the IPv6Address blank when IPv6 is not applied to test.
@@ -96,10 +96,10 @@
         <Property name="Port" value="88" />
       </Group>
       <Group name="ClientComputer" description="Settings for client computer">
-        <Property name="FQDN" value="testing-1.krb.sambatest.site" />
+        <Property name="FQDN" value="{{ windows_fqdn }}" />
         <Property name="NetBiosName" value="TESTING-1$" />
         <Property name="Password" value="Password05!" />
-        <Property name="IPv4Address" value="10.59.0.104" />
+        <Property name="IPv4Address" value="{{ windows_priv_ip }}" />
         <Property name="IPv6Address" value="2012::101">
           <Description>
             Leave the IPv6Address blank when IPv6 is not applied to test.
@@ -110,17 +110,17 @@
         <Property name="ServiceSalt" value="KRB.SAMBATEST.SITEhosttesting-1.krb.sambatest.site" />
       </Group>
       <Group name="FileServer01" description="Settings for the local realm File Server">
-        <Property name="FQDN" value="DC01.KRB.SAMBATEST.SITE" />
+        <Property name="FQDN" value="{{ master_fqdn }}" />
         <Property name="NetBiosName" value="" />
         <Property name="Password" value="Password02!" />
-        <Property name="IPv4Address" value="10.59.0.104" />
+        <Property name="IPv4Address" value="{{ master_priv_ip }}" />
         <Property name="IPv6Address" value="2012::10">
           <Description>
             Leave the IPv6Address blank when IPv6 is not applied to test.
           </Description>
         </Property>
         <Property name="DefaultServiceName" value="" />
-        <Property name="ServiceSalt" value="KRB.SAMBATEST.SITEhostdc01.krb.sambatest.site" />
+        <Property name="ServiceSalt" value="{{ master_service_salt }}" />
         <Property name="Smb2ServiceName" value="" />
         <Property name="Smb2Dialect" value="" />
         <!--The following are parameters only used for AZOD test cases -->
@@ -136,34 +136,34 @@
         </Property>
       </Group>
       <Group name="LdapServer01" description="Settings for the local realm LDAP Server">
-        <Property name="FQDN" value="dc01.krb.sambatest.site" />
+        <Property name="FQDN" value="{{ master_fqdn }}" />
         <Property name="NetBiosName" value="DC01$" />
         <Property name="Password" value="Password01!" />
-        <Property name="IPv4Address" value="10.59.0.104" />
+        <Property name="IPv4Address" value="{{ master_priv_ip }}" />
         <Property name="IPv6Address" value="2012::1">
           <Description>
             Leave the IPv6Address blank when IPv6 is not applied to test.
           </Description>
         </Property>
         <Property name="DefaultServiceName" value="krbtgt/KRB.SAMBATEST.SITE" />
-        <Property name="ServiceSalt" value="KRB.SAMBATEST.SITEhostdc01.krb.sambatest.site" />
+        <Property name="ServiceSalt" value="{{ master_service_salt }}" />
         <Property name="LdapServiceName" value="ldap/dc01.krb.sambatest.site" />
         <Property name="LdapPort" value="389" />
         <Property name="GssToken" value="GSSAPI" />
       </Group>
       <Group name="WebServer01" description="Settings for the local realm Web Server">
         <!--The Web Server Information.-->
-        <Property name="FQDN" value="DC01.KRB.SAMBATEST.SITE" />
+        <Property name="FQDN" value="{{ master_fqdn }}" />
         <Property name="NetBiosName" value="" />
         <Property name="Password" value="Password02!" />
-        <Property name="IPv4Address" value="10.59.0.104" />
+        <Property name="IPv4Address" value="{{ master_priv_ip }}" />
         <Property name="IPv6Address" value="2012::10">
           <Description>
             Leave the IPv6Address blank when IPv6 is not applied to test.
           </Description>
         </Property>
         <Property name="DefaultServiceName" value="" />
-        <Property name="ServiceSalt" value="KRB.SAMBATEST.SITEhostdc01.krb.sambatest.site" />
+        <Property name="ServiceSalt" value="{{ master_service_salt }}" />
         <Property name="HttpServiceName" value="http/ap01.contoso.com" />
         <Property name="HttpUri" value="http://ap01.contoso.com" />
       </Group>
@@ -172,21 +172,21 @@
         <Property name="NetBiosName" value="AuthNotRequired$" />
         <Property name="Password" value="Password01!" />
         <Property name="DefaultServiceName" value="host/AuthNotRequired.contoso.com" />
-        <Property name="ServiceSalt" value="KRB.SAMBATEST.SITEhostdc01.krb.sambatest.site" />
+        <Property name="ServiceSalt" value="{{ master_service_salt }}" />
       </Group>
       <Group name="localResource01">
         <Property name="FQDN" value="localResource01.contoso.com" />
         <Property name="NetBiosName" value="localResource01$" />
         <Property name="Password" value="Password01!" />
         <Property name="DefaultServiceName" value="host/localResource01.contoso.com" />
-        <Property name="ServiceSalt" value="KRB.SAMBATEST.SITEhostdc01.krb.sambatest.site" />
+        <Property name="ServiceSalt" value="{{ master_service_salt }}" />
       </Group>
       <Group name="localResource02">
         <Property name="FQDN" value="localResource02.contoso.com" />
         <Property name="NetBiosName" value="localResource02$" />
         <Property name="Password" value="Password01!" />
         <Property name="DefaultServiceName" value="host/localResource02.contoso.com" />
-        <Property name="ServiceSalt" value="KRB.SAMBATEST.SITEhostdc01.krb.sambatest.site" />
+        <Property name="ServiceSalt" value="{{ master_service_salt }}" />
       </Group>
       <Group name="resourceGroups">
         <Property name="resourceGroupCount" value="2" />
