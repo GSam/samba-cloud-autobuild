@@ -4,18 +4,22 @@
 
 
 - name: Prepare dc
+  remote_user: "{{ remote_user }}"
+  become: yes
   hosts: "{{ env_prefix }}_master"
   tasks:
 
     - name: render script to create samba users
       template:
         src: templates/prepare_msft_kerberos_testsuite_dc01.sh
-        dest: /home/ubuntu/prepare_msft_kerberos_testsuite_dc01.sh
+        dest: "/home/{{ remote_user }}/prepare_msft_kerberos_testsuite_dc01.sh"
+        owner: "{{ remote_user }}"
+        mode: 0755
 
     - name: run script to create samba users
-      shell: /home/ubuntu/prepare_msft_kerberos_testsuite_dc01.sh
+      shell: "/home/{{ remote_user }}/prepare_msft_kerberos_testsuite_dc01.sh"
 
-# Initial setup of Windows box
+
 - name: Windows initial setup
   hosts: "{{ env_prefix }}_windows"
   vars:
@@ -35,93 +39,49 @@
     windows_fqdn: "{{ windows_hostname }}.{{ samba_realm }}"
 
   tasks:
-  - name: ping
-    win_ping:
+    - name: ping
+      win_ping:
 
-  - name: Install testsuite
-    win_shell: C:\\InstallPrerequisites.ps1 -Category Kerberos -ConfigPath 'C:\\PrerequisitesConfig.xml'
-    register: out
+    - name: Install testsuite
+      win_shell: C:\InstallPrerequisites.ps1 -Category Kerberos -ConfigPath C:\PrerequisitesConfig.xml
+      register: out
 
-  - debug: var=out
+    - debug: var=out
 
-  - name: Install Kerberos MSI
-    win_msi:
-      path: 'C:\\Kerberos-TestSuite-ServerEP.msi'
-    register: out
+    - name: Install Kerberos MSI
+      win_msi:
+        path: C:\Kerberos-TestSuite-ServerEP.msi
+      register: out
 
-  - debug: var=out
+    - debug: var=out
 
-  - name: render Kerberos ptfconfig
-    win_template:
-      src: templates/Kerberos_ServerTestSuite.deployment.ptfconfig
-      dest: C:\\MicrosoftProtocolTests\\Kerberos\\Server-Endpoint\\2.0.66.0\\Bin\\Kerberos_ServerTestSuite.deployment.ptfconfig
+    - name: render Kerberos ptfconfig
+      win_template:
+        src: templates/Kerberos_ServerTestSuite.deployment.ptfconfig
+        dest: C:\MicrosoftProtocolTests\Kerberos\Server-Endpoint\2.0.66.0\Bin\Kerberos_ServerTestSuite.deployment.ptfconfig
 
-  - name: render wpts-run-kerberos.bat
-    win_template:
-      src: templates/wpts-run-kerberos.bat
-      dest: C:\\wpts-run-kerberos.bat
+    - name: render wpts-run-kerberos.bat
+      win_copy:
+        src: templates/wpts-run-kerberos.bat
+        dest: C:\wpts-run-kerberos.bat
 
-  - name: config the DNS client on Windows network adapters
-    win_dns_client:
-      adapter_names: "Ethernet"
-      ipv4_addresses: ["{{ master_priv_ip }}", 202.78.247.199]
+    - name: config the DNS client on Windows network adapters
+      win_dns_client:
+        adapter_names: "Ethernet"
+        ipv4_addresses: ["{{ master_priv_ip }}", 202.78.247.199]
 
-  - name: join windows client to samba domain
-    win_domain_membership:
-      dns_domain_name: "{{ samba_realm }}"
-      domain_admin_user: "Administrator@{{ samba_realm }}"
-      domain_admin_password: "{{ samba_password }}"
-      state: domain
+    - name: join windows client to samba domain
+      win_domain_membership:
+        dns_domain_name: "{{ samba_realm }}"
+        domain_admin_user: "Administrator@{{ samba_realm }}"
+        domain_admin_password: "{{ samba_password }}"
+        state: domain
 
-  - win_reboot:
+    - win_reboot:
 
-- name: run windows test
-  hosts: "{{ env_prefix }}_windows"
-  vars:
-    ansible_user: "Administrator@{{ samba_realm }}"
-    ansible_password: "{{ samba_password }}"
-    ansible_port: 5986
-    ansible_connection: winrm
-    ansible_winrm_server_cert_validation: ignore
+- name: run pexpect on windows
+  hosts: localhost
+
   tasks:
-    - name: run test
-      win_shell: C:\wpts-run-kerberos.bat
-      args:
-        chdir: C:\
-        executable: cmd
-      tags: wip
-
-# - name: run pexpect on windows
-  # hosts: localhost
-
-  # tasks:
-    # - name: run pexpect script to trigger test
-      # script: "./wpts.py {{ windows_floating_ip_info.floating_ip.floating_ip_address }} Administrator@{{ samba_realm }} {{ samba_password }}"
-
-# - name: Initial setup
-  # hosts: windows2
-
-  # tasks:
-  # - name: ping
-    # win_ping:
-
-  # # Fetch the trx file (placeholder file currently)
-  # - fetch:
-        # src: 'C:\\windows\\win.ini'
-        # dest: /tmp/
-        # flat: yes
-
-  # # Run local_command?
-  # - name: Convert trx file to subunit
-    # local_action: command echo hello
-    # register: out
-
-  # - debug: var=out.stdout_lines
-
-
-#  - name: Set DNS servers
-#    win_shell: |
-#	&"$ENV:VS110COMNTOOLS..\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe" "..\\Bin\\Kerberos_ServerTestSuite.dll" "/Settings:..\\Bin\\ServerLocalTestRun.testrunconfig" "/Logger:trx"
-#    args:
-#      chdir: 'C:\\MicrosoftProtocolTests\\Kerberos\\Server-Endpoint\\2.0.66.0\\Batch' 
- # - win_reboot:
+    - name: run pexpect script to trigger test
+      command: "python wpts.py {{ windows_floating_ip_info.floating_ip.floating_ip_address }} Administrator@{{ samba_realm }} {{ samba_password }}"
