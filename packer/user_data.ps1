@@ -1,4 +1,6 @@
 #ps1_sysnative
+# powershell template for user_data_file/cloud_init_file
+
 wmic UserAccount set PasswordExpires=False
 net user Administrator $password
 cmd /C netsh advfirewall set allprofiles state off

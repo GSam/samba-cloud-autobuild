@@ -34,7 +34,7 @@
         },
         {
             "type": "powershell",
-            "script": "scripts/packer-provision-windows.ps1"
+            "script": "provision.ps1"
         },
         {
             "type": "windows-restart"
