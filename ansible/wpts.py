@@ -1,25 +1,37 @@
 #!/usr/bin/env python
 import sys
 import argparse
-import pexpect
+
+from pexpect import pxssh
+
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("host", help="Windows host")
-parser.add_argument("username", help="Username to ssh to windows")
-parser.add_argument("password", help="Password to ssh to windows")
+parser.add_argument("hostname", help="Windows hostname")
+parser.add_argument("username", help="Windows Domain User username")
+parser.add_argument("password", help="Windows Domain User Password")
 
 args = parser.parse_args()
 
-cmd = 'ssh -o "StrictHostKeyChecking no" {}@{}'.format(args.username, args.host)
-print(cmd)
-child = pexpect.spawn(cmd)
-child.expect('password: ')
-child.sendline(args.password)
-child.expect('> ')
-child.sendline('echo on')
-child.expect('> ')
-child.sendline('C:\wpts-run-kerberos.bat')
-child.expect('Results file:')
+s = pxssh.pxssh(
+    echo=True,
+    options={
+        "StrictHostKeyChecking": "no",
+    }
+)
+s.PROMPT = '[>]'
+
+s.login(
+    args.hostname,
+    args.username,
+    password=args.password,
+    original_prompt='[>]',
+    auto_prompt_reset=False,
+)
+
+s.sendline('C:\wpts-run-kerberos.bat')
+s.expect('Results file:')
+# print(s.before)
+# s.logout()  # will timeout
 
 sys.exit(0)
