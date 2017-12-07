@@ -77,9 +77,9 @@ def main():
     args = parser.parse_args()
 
     if args.use_default_pass:
-        password="penguin12#"
+        password = "Password01@"
     else:
-        password=subprocess.check_output("pwgen -s 20", shell=True)[:20]
+        password = subprocess.check_output("pwgen -s 20", shell=True)[:20]
 
     os.environ['PACKER_PASSWORD'] = password
     os.environ['PACKER_USER_DATA_FILE'] = write_cloud_init(password=password)
