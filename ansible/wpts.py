@@ -1,7 +1,8 @@
 #!/usr/bin/env python
+import sys
+import argparse
 import pexpect
 
-import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument("host", help="Windows host")
@@ -18,6 +19,7 @@ child.sendline(args.password)
 child.expect('> ')
 child.sendline('echo on')
 child.expect('> ')
-child.send('C:\wpts-run-kerberos.bat')
-child.expect('> ', timeout=120)
-print(child.before)
+child.sendline('C:\wpts-run-kerberos.bat')
+child.expect('Results file:')
+
+sys.exit(0)
