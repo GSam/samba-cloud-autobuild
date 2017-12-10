@@ -1,0 +1,43 @@
+{
+    "variables": {
+        "image": "{{env `PACKER_IMAGE`}}",
+        "flavor": "{{env `PACKER_FLAVOR`}}",
+        "net_id": "{{env `PACKER_NET_ID`}}",
+        "password": "{{env `PACKER_PASSWORD`}}",
+        "ms_downloads": "{{env `PACKER_MS_DOWNLOADS`}}",
+        "user_data_file": "{{env `PACKER_USER_DATA_FILE`}}"
+    },
+    "builders": [{
+        "type": "openstack",
+        "image_name": "windows-protocol-test-suites-packer-image",
+        "source_image_name": "{{user `image`}}",
+        "flavor": "{{user `flavor`}}",
+        "security_groups": ["winrm-ok"],
+        "floating_ip_pool": "public-net",
+        "networks": ["{{user `net_id`}}"],
+        "communicator": "winrm",
+        "winrm_username": "Administrator",
+        "winrm_password": "{{user `password`}}",
+        "user_data_file": "{{user `user_data_file`}}"
+    }],
+    "provisioners": [
+        {
+            "type": "file",
+            "source": "{{user `ms_downloads`}}/vstf_testagent.exe",
+            "destination": "C:\\vstf_testagent.exe"
+        },
+        {
+            "type": "powershell",
+            "inline": [
+                "Start-Process -FILEPATH C:\\vstf_testagent.exe /q -Wait -PassThru"
+             ]
+        },
+        {
+            "type": "powershell",
+            "script": "provision.ps1"
+        },
+        {
+            "type": "windows-restart"
+        }
+    ]
+}

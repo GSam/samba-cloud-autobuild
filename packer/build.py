@@ -16,8 +16,8 @@ except ImportError:
 
 HERE = os.path.dirname(__file__)
 
-PACKER_TEMPLATE = os.path.join(HERE, 'templates/build-windows-image.json')
-CLOUD_INIT_TEMPLATE = os.path.join(HERE, 'templates/build-windows-image-user_data.ps1')
+PACKER_TEMPLATE = os.path.join(HERE, 'config.json')
+CLOUD_INIT_TEMPLATE = os.path.join(HERE, 'user_data.ps1')
 
 
 def write_cloud_init(password=None):
@@ -71,18 +71,22 @@ def main():
     parser.add_argument('-v', '--verbose', action='store_true',
                         help="say a litle more about what is happening")
 
+    parser.add_argument('--ms-downloads',
+                        help="directory of dependency files(vstf_testagent.exe)")
+
     args = parser.parse_args()
 
     if args.use_default_pass:
-        password="penguin12#"
+        password = "Password01@"
     else:
-        password=subprocess.check_output("pwgen -s 20", shell=True)[:20]
+        password = subprocess.check_output("pwgen -s 20", shell=True)[:20]
 
     os.environ['PACKER_PASSWORD'] = password
     os.environ['PACKER_USER_DATA_FILE'] = write_cloud_init(password=password)
     os.environ['PACKER_IMAGE'] = args.image
     os.environ['PACKER_FLAVOR'] = args.flavor
     os.environ['PACKER_NET_ID'] = args.net_id
+    os.environ['PACKER_MS_DOWNLOADS'] = args.ms_downloads.rstrip('/')
 
     run_packer(PACKER_TEMPLATE, args.region, args.dry_run)
 

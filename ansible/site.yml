@@ -2,14 +2,14 @@
 
 # Depending on set_state this will either provision the entire stack
 # or will tear it down, cleaning up all managed resources
-- include: cloudinfprovision.yml
+- import_playbook: cloudinfprovision.yml
   when: set_state == 'present'
   tags: [ cloudinf ]
 
-- include: cloudinfdestroy.yml
+- import_playbook: cloudinfdestroy.yml
   when: set_state == 'absent'
   tags: [ cloudinf ]
 
-- include: samba.yml
+- import_playbook: samba.yml
   when: set_state == 'present'
   tags: [ samba ]

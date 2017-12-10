@@ -1,6 +1,6 @@
 ---
 
-- include: pre-run-checks.yml
+- import_playbook: pre-run-checks.yml
 
 - name: Deploy required network elements and instances in the Catalyst Cloud
   hosts: localhost
@@ -9,3 +9,4 @@
     - master-manager
     - slave-manager
     - inventory-manager
+    - windows-manager

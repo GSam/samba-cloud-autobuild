@@ -3,6 +3,8 @@
 ########################
 # Environment settings #
 ########################
+# Official Ubuntu image has no Python2
+ansible_python_interpreter: /usr/bin/python3
 
 ## Remote user
 remote_user: ubuntu
@@ -14,6 +16,7 @@ site_basename: s
 hosts_in_site: 2
 node_basename: dc
 
+windows_basename: win
 ## Default state is always 'present' but some parts still require
 ## this to be set explicitly
 set_state: present
@@ -29,7 +32,7 @@ set_state: present
 network_base: 172.16
 
 ## Domain - just the hosts FQDN - not Samba domain (although related)
-domain: "test.net"
+domain: "samba.site"
 
 
 #################################
@@ -43,9 +46,10 @@ samba_remote_url: 'git://git.catalyst.net.nz/samba.git'
 samba_version: 'master'
 
 ## Samba DC provisioning variables
-samba_realm: 'SAMDOM.TEST.NET'
-samba_domain: 'SAMDOM'
-samba_password: 'thaed7utahZe'
+samba_realm: 'KRB.SAMBA.SITE'
+samba_domain: 'KRB'
+# samba_password: 'thaed7utahZe'
+samba_password: 'Password01@'
 has_rodc: 'false'
 use_samba_kcc: 'true'
 kcc_interval: '0'
@@ -72,6 +76,7 @@ userpackages:
   - 'catalyst-garmingsam'
   - 'catalyst-garylockyer'
   - 'catalyst-timbeale'
+  - 'catalyst-joeg'
 
 ## Users to be added to sudo group
 sudo_users:
@@ -82,15 +87,20 @@ sudo_users:
   - 'timbeale'
   - 'gary'
   - 'bobcampbell'
+  - 'joeg'
 
 ## Master host flavours (yes, I know, os_server property is flavor)
 master_flavour: c1.c4r4
-## Slace host flavours
+## Slave host flavours
 slave_flavour: c1.c1r1
+
+## Windows client flavour
+windows_flavour: c1.c2r4
 
 ## OS image to use
 master_image: ubuntu-16.04-x86_64
 slave_image: ubuntu-16.04-x86_64
+windows_image: windows-protocol-test-suites-packer-image
 
 ## Security group names used
 master_security_group: "{{ env_prefix }}-master"

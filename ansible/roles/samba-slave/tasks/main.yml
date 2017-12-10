@@ -16,13 +16,13 @@
     - always
 
 
-- include: tasks/rsync.yml
+- import_tasks: tasks/rsync.yml
   tags:
     - slave-deploy
     - deploy
     - compile
 
-- include: tasks/dns-switch.yml
+- import_tasks: tasks/dns-switch.yml
   tags:
     - slave-deploy
     - deploy

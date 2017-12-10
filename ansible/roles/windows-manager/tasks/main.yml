@@ -1,0 +1,52 @@
+---
+- name: Connect to the Catalyst Cloud
+  os_auth:
+  tags:
+    - windows
+
+- name: Disassociate a floating IP from windows
+  os_floating_ip:
+    state: 'absent'
+    purge: true
+    server: "{{ env_prefix }}-{{ site_basename }}1-{{ windows_basename }}1"
+    wait: true
+  ignore_errors: true
+  when: set_state == 'absent'
+  tags:
+    - windows
+    - floating_ip
+
+  # Create  Instance
+- name: Manage windows compute instance
+  os_server:
+    state: "{{ set_state | default('present') }}"
+    name: "{{ env_prefix }}-{{ site_basename }}1-{{ windows_basename }}1"
+    key_name: "{{ keypair_name }}"
+    flavor: "{{ windows_flavour }}"
+    nics:
+      - net-name: "{{ env_prefix }}-network1"
+    auto_ip: false
+    image: "{{ windows_image }}"
+    security_groups: "winrm-ok,windows-rdp,ad-domain-and-clients"
+    meta: "group=windows_group,{{ env_prefix }}=env_windows,groups={{ env_prefix }}_windows"
+  tags:
+    - windows
+
+- name: Assign a floating IP to windows
+  os_floating_ip:
+    state: 'present'
+    server: "{{ env_prefix }}-{{ site_basename }}1-{{ windows_basename }}1"
+    wait: true
+  when: set_state == 'present'
+  register: windows_floating_ip_info
+  tags:
+    - windows
+    - floating_ip
+
+- name: Output floating IP
+  debug:
+    var: windows_floating_ip_info.floating_ip.floating_ip_address
+  when: set_state == 'present' and windows_floating_ip_info.floating_ip.floating_ip_address is defined
+  tags:
+    - windows
+    - floating_ip

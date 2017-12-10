@@ -1,4 +1,6 @@
 #ps1_sysnative
+# powershell template for user_data_file/cloud_init_file
+
 wmic UserAccount set PasswordExpires=False
 net user Administrator $password
 cmd /C netsh advfirewall set allprofiles state off
@@ -13,6 +15,4 @@ net start winrm
 
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force
 Install-WindowsFeature RSAT-AD-Tools
-
-dism /online /enable-feature /all /featurename:NetFx3 /norestart
-
+Install-WindowsFeature Net-Framework-Core

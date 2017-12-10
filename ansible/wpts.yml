@@ -1,0 +1,91 @@
+---
+
+- import_playbook: site.yml
+
+
+- name: Prepare dc
+  remote_user: "{{ remote_user }}"
+  become: yes
+  hosts: "{{ env_prefix }}_master"
+  tasks:
+
+    - name: render script to create samba users
+      template:
+        src: templates/prepare_msft_kerberos_testsuite_dc01.sh
+        dest: "/home/{{ remote_user }}/prepare_msft_kerberos_testsuite_dc01.sh"
+        owner: "{{ remote_user }}"
+        mode: 0755
+
+    - name: run script to create samba users
+      shell: "/home/{{ remote_user }}/prepare_msft_kerberos_testsuite_dc01.sh"
+
+
+- name: Windows initial setup
+  hosts: "{{ env_prefix }}_windows"
+  vars:
+    ansible_user: Administrator
+    ansible_password: "{{ samba_password }}"
+    ansible_port: 5986
+    ansible_connection: winrm
+    ansible_winrm_server_cert_validation: ignore
+
+    master_hostname: "{{ env_prefix }}-{{ site_basename }}1-{{ node_basename }}1"
+    master_priv_ip: "{{ hostvars[master_hostname].openstack.private_v4 }}"
+    master_fqdn: "{{ master_hostname }}.{{ samba_realm }}"
+    master_service_salt: "{{ samba_realm }}host{{ master_hostname }}"
+
+    windows_hostname: "{{ env_prefix }}-{{ site_basename }}1-{{ windows_basename }}1"
+    windows_priv_ip: "{{ hostvars[windows_hostname].openstack.private_v4 }}"
+    windows_fqdn: "{{ windows_hostname }}.{{ samba_realm }}"
+
+  tasks:
+    - name: ping
+      win_ping:
+
+    - name: Install testsuite
+      win_shell: C:\InstallPrerequisites.ps1 -Category Kerberos -ConfigPath C:\PrerequisitesConfig.xml
+      register: out
+
+    - debug: var=out
+
+    - name: Install ProtocolTestManager MSI
+      win_msi:
+        path: C:\ProtocolTestManager.msi
+
+    - name: Install Kerberos MSI
+      win_msi:
+        path: C:\Kerberos-TestSuite-ServerEP.msi
+      register: out
+
+    - debug: var=out
+
+    - name: render Kerberos ptfconfig
+      win_template:
+        src: templates/Kerberos_ServerTestSuite.deployment.ptfconfig
+        dest: C:\MicrosoftProtocolTests\Kerberos\Server-Endpoint\2.0.66.0\Bin\Kerberos_ServerTestSuite.deployment.ptfconfig
+
+    - name: render wpts-run-kerberos.bat
+      win_copy:
+        src: templates/wpts-run-kerberos.bat
+        dest: C:\wpts-run-kerberos.bat
+
+    - name: config the DNS client on Windows network adapters
+      win_dns_client:
+        adapter_names: "Ethernet"
+        ipv4_addresses: ["{{ master_priv_ip }}", 202.78.247.199]
+
+    - name: join windows client to samba domain
+      win_domain_membership:
+        dns_domain_name: "{{ samba_realm }}"
+        domain_admin_user: "Administrator@{{ samba_realm }}"
+        domain_admin_password: "{{ samba_password }}"
+        state: domain
+
+    - win_reboot:
+
+- name: run pexpect on windows
+  hosts: localhost
+
+  tasks:
+    - name: run pexpect script to trigger test
+      command: "python wpts.py {{ windows_floating_ip_info.floating_ip.floating_ip_address }} Administrator@{{ samba_realm }} {{ samba_password }}"
