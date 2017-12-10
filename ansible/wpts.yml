@@ -81,6 +81,10 @@
         domain_admin_password: "{{ samba_password }}"
         state: domain
 
+    - name: Set machine account password
+      win_shell: |
+        ksetup /SetComputerPassword Password05!
+
     - win_reboot:
 
 - name: run pexpect on windows
