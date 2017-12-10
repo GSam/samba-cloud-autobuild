@@ -12,9 +12,11 @@ import time
 
 import config
 from email_utils import filter_by_date, count_lines, draw_histogram
+from email_utils import recurring_errors
 
 SAMBA_STDOUT_CACHE = os.path.join(os.path.dirname(__file__), 'cache/autobuild')
 FLAKEY_LOG_CACHE = os.path.join(os.path.dirname(__file__), 'cache/flakey_log')
+
 
 def get_cvs_email():
     mbox = mailbox.mbox(config.MAILBOX)
@@ -91,6 +93,9 @@ def main():
     parser.add_argument('--histogram', action='store_true',
                         help=("draw a graph of monthly counts"))
 
+    parser.add_argument('--recurring-errors', action='store_true',
+                        help=("show errors that occur in many months"))
+
     parser.add_argument('--flakey-log', action='store_true',
                         help=("print statistics from flakey.log"))
 
@@ -118,6 +123,15 @@ def main():
                        cache=SAMBA_STDOUT_CACHE,
                        since=args.since,
                        filter_re=args.filter_line)
+        sys.exit()
+
+    if args.recurring_errors:
+        recurring_errors(fn_re=args.file_regex,
+                         line_re=args.line_regex,
+                         cache=SAMBA_STDOUT_CACHE,
+                         since=args.since,
+                         filter_re=args.filter_line,
+                         limit=3)
         sys.exit()
 
     count_lines(fn_re=args.file_regex,

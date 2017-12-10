@@ -9,7 +9,7 @@ import collections
 import time
 
 import config
-
+from collections import Counter
 
 def filter_by_date(files, date):
     date_search = re.compile(r'(20\d\d-\d\d-\d\d)-').search
@@ -66,7 +66,7 @@ def group_by_month(files):
     return out
 
 
-def draw_histogram(fn_re, line_re, cache, since=None, filter_re=None):
+def get_errors_by_month(fn_re, line_re, cache, since=None, filter_re=None):
     fn_match = re.compile(fn_re).search
     line_match = re.compile(line_re).search
     files = sorted(x for x in os.listdir(cache) if fn_match(x))
@@ -91,6 +91,18 @@ def draw_histogram(fn_re, line_re, cache, since=None, filter_re=None):
                      if filter_match(x)]
 
         month_lines.append((month, lines))
+
+    return month_lines
+
+
+def draw_histogram(fn_re, line_re, cache, since=None, filter_re=None):
+    month_lines = get_errors_by_month(fn_re,
+                                      line_re,
+                                      cache,
+                                      since=since,
+                                      filter_re=filter_re)
+    longest = 1
+    for month, lines in month_lines:
         if len(lines) > longest:
             longest = len(lines)
 
@@ -101,3 +113,21 @@ def draw_histogram(fn_re, line_re, cache, since=None, filter_re=None):
             x = x * 72 // longest
 
         print '%s %3d %s' % (month, len(lines), '#' * x)
+
+
+def recurring_errors(fn_re, line_re, cache, since=None, filter_re=None,
+                     limit=2):
+    month_lines = get_errors_by_month(fn_re,
+                                      line_re,
+                                      cache,
+                                      since=since,
+                                      filter_re=filter_re)
+    c = Counter()
+
+    for month, lines in month_lines:
+        c.update(set(lines))
+
+    for err, count in c.most_common():
+        if count < limit:
+            break
+        print "%-3d %s" % (count, err)
