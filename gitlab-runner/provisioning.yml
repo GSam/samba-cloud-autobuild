@@ -68,7 +68,7 @@
     - name: render gitlab-runner config.toml
       template:
         src: templates/config.toml
-        dest: /etc/config.toml
+        dest: /etc/gitlab-runner/config.toml
         force: yes
 
     - name: start gitlab-runner-bastion docker container
