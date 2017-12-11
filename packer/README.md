@@ -31,3 +31,6 @@ Make sure `~/sambatest.catalyst.net.nz-openrc.sh` exists.
 cd packer
 python build.py --ms-download /path/to/downloads/
 ```
+
+So far, the only file we need  is vstf_testagent.exe.
+For all other windows pcakges, we will download them, or install via chocolatey.
