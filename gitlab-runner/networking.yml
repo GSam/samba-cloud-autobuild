@@ -1,0 +1,78 @@
+---
+- name: Create networking in the Catalyst Cloud
+  hosts: localhost
+  vars_files:
+    - vars.yml
+  vars:
+    ssh_public_key: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa.pub"
+    keypair_name: "{{ lookup('env', 'USER') }}"
+    restricted_cidr_range: "{{ lookup('dig', 'myip.opendns.com', '@resolver1.opendns.com') + '/32' | default('0.0.0.0/0', true) }}"
+
+  tasks:
+    - name: Connect to the Catalyst Cloud
+      os_auth:
+
+    - name: Import an SSH keypair
+      os_keypair:
+        state: present
+        name: "{{ keypair_name }}"
+        public_key_file: "{{ ssh_public_key }}"
+
+    - name: Create a network
+      os_network:
+        state: present
+        name: "{{ OS_NETWORK_NAME }}"
+
+    - name: Create a subnet
+      os_subnet:
+        state: present
+        name: "{{ OS_SUBNET_NAME }}"
+        network_name: "{{ OS_NETWORK_NAME }}"
+        cidr: "{{ OS_NETWORK_BASE }}.0/24"
+        allocation_pool_start: "{{ OS_NETWORK_BASE }}.10"
+        allocation_pool_end:  "{{ OS_NETWORK_BASE }}.100"
+        dns_nameservers: [202.78.247.197, 202.78.247.198, 202.78.247.199]
+
+    - name: Create a router
+      os_router:
+        state: present
+        name: "{{ OS_ROUTER_NAME }}"
+        network: public-net
+        interfaces:
+          - "{{ OS_SUBNET_NAME }}"
+
+    - name: Create a security group
+      os_security_group:
+        state: present
+        name: "{{ OS_SECURITY_GROUP_NAME }}"
+        description: Network access for gitlab-runner
+
+    - name: Create a security group rule for SSH access
+      os_security_group_rule:
+        state: present
+        security_group: "{{ OS_SECURITY_GROUP_NAME }}"
+        protocol: tcp
+        port_range_min: 22
+        port_range_max: 22
+        remote_ip_prefix: "{{ restricted_cidr_range }}"
+
+    - name: Create gitlab-runner instance
+      os_server:
+        state: present
+        name: "{{ RUNNER_NAME }}"
+        flavor: c1.c1r1
+        image: "{{ OS_IMAGE_NAME }}"
+        key_name: "{{ keypair_name }}"
+        meta: "groups={{ RUNNER_NAME }}"
+        security_groups: "{{ OS_SECURITY_GROUP_NAME }}"
+        nics:
+          - net-name: "{{ OS_NETWORK_NAME }}"
+
+    - name: Assign a floating IP to gitlab-runner-private instance
+      os_floating_ip:
+        server: "{{ RUNNER_NAME }}"
+      register: floating_ip_info
+
+    - name: Output floating IP
+      debug:
+        var: floating_ip_info.floating_ip.floating_ip_address
