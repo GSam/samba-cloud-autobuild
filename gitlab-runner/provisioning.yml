@@ -1,7 +1,13 @@
 ---
-- hosts: gitlab-runner
+- hosts: "{{ RUNNER_NAME }}"
+  remote_user: "{{ OS_SSH_USER }}"
   become: true
   gather_facts: false
+  vars_files:
+    - vars.yml
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
   tasks:
 
     - name: apt update
@@ -37,7 +43,7 @@
 
     - name: add user to docker group
       user:
-        name: "{{ remote_user }}"
+        name: "{{ OS_SSH_USER }}"
         groups: docker
 
     - name: get docker-machine binary and install
@@ -61,8 +67,8 @@
 
     - name: render gitlab-runner config.toml
       template:
-        src: templates/gitlab-runner/config.toml
-        dest: /etc/gitlab-runner/config.toml
+        src: templates/config.toml
+        dest: /etc/config.toml
         force: yes
 
     - name: start gitlab-runner-bastion docker container
@@ -95,17 +101,17 @@
           # MACHINE_OFF_PEAK_PERIODS: ["* * 0-17,18-23 * * mon-fri *", "* * * * * sat,sun *"]
           MACHINE_OFF_PEAK_IDLE_COUNT: "{{ MACHINE_OFF_PEAK_IDLE_COUNT }}"
           MACHINE_OFF_PEAK_IDLE_TIME: "{{ MACHINE_OFF_PEAK_IDLE_TIME }}"
-          DOCKER_IMAGE: "{{ DOCKER_IMAGE }}"
-          OS_AUTH_URL: "{{ OS_AUTH_URL }}"
-          OS_TENANT_NAME: "{{ OS_TENANT_NAME }}"
-          OS_REGION_NAME: "{{ OS_REGION_NAME }}"
+          DOCKER_IMAGE: "{{ DOCKER_IMAGE }}:latest"
           OS_NETWORK_NAME: "{{ OS_NETWORK_NAME }}"
           OS_FLAVOR_NAME: "{{ OS_FLAVOR_NAME }}"
           OS_IMAGE_NAME: "{{ OS_IMAGE_NAME }}"
           OS_SSH_USER: "{{ OS_SSH_USER }}"
           OS_INSECURE: true
-          OS_USERNAME: "{{ OS_USERNAME}}"
-          OS_PASSWORD: "{{ OS_PASSWORD }}"
+          OS_AUTH_URL: "{{ lookup('env', 'OS_AUTH_URL') }}"
+          OS_TENANT_NAME: "{{ lookup('env', 'OS_TENANT_NAME') }}"
+          OS_REGION_NAME: "{{ lookup('env', 'OS_REGION_NAME') }}"
+          OS_USERNAME: "{{ lookup('env', 'OS_USERNAME') }}"
+          OS_PASSWORD: "{{ lookup('env', 'OS_PASSWORD') }}"
       tags: restart
 
     - name: gitlab-runner unregister all
