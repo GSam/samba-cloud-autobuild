@@ -1,0 +1,40 @@
+---
+# settings for all kinds of gitlab-runner
+
+# Official Ubuntu image has no Python2
+concurrent: 8
+check_interval: 5
+log_level: debug
+
+DOCKER_REGISTRY: registry.gitlab.com
+DOCKER_IMAGE: registry.gitlab.com/catalyst-samba/samba
+
+# Gitlab->Project->Settings->CI/CD
+CI_SERVER_URL: https://gitlab.com/
+REGISTRATION_TOKEN: 1u24xAXeTT728NSCWVTZ
+REGISTER_RUN_UNTAGGED: false
+
+RUNNER_NAME: gitlab-runner
+RUNNER_LIMIT: 8
+RUNNER_EXECUTOR: docker+machine
+RUNNER_TAG_LIST: docker,private
+# set all runner log output limit
+RUNNER_OUTPUT_LIMIT: 8192
+
+OS_NETWORK_BASE: 10.0.0
+OS_NETWORK_NAME: gitlab-runner-net
+OS_SUBNET_NAME: gitlab-runner-subnet
+OS_ROUTER_NAME: gitlab-runner-router
+OS_SECURITY_GROUP_NAME: gitlab-runner-security-group
+
+OS_IMAGE_NAME: ubuntu-16.04-x86_64
+OS_FLAVOR_NAME: c1.c2r8  # flavor for docker-machine servers
+OS_SSH_USER: ubuntu
+
+MACHINE_NAME: private-%s
+MACHINE_IDLE_COUNT: 0
+MACHINE_IDLE_TIME: 30
+MACHINE_MAX_BUILDS: 100
+MACHINE_OFF_PEAK_IDLE_COUNT: 0
+MACHINE_OFF_PEAK_IDLE_TIME: 0
+MACHINE_DRIVER: openstack
