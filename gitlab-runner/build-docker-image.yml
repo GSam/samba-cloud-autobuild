@@ -2,6 +2,9 @@
 - hosts: localhost
   become: false
   gather_facts: false
+  vars_files:
+    - vars.yml
+
   tasks:
 
     - name: load samba dependencies package list
@@ -15,7 +18,7 @@
 
     - name: render Dockerfile with package list
       template:
-        src: templates/gitlab-runner/Dockerfile
+        src: templates/Dockerfile
         dest: /tmp/samba-docker-image
         force: yes
 
@@ -26,17 +29,27 @@
       with_items:
         - docker-py  # required by docker_image
 
+    - name: remove docker image
+      docker_image:
+        name: "{{ DOCKER_IMAGE }}"
+        tag: latest
+        state: absent
+        force: yes
+
     - name: build docker image
       docker_image:
         path: /tmp/samba-docker-image
-        name: gitlab.catalyst.net.nz:4567/samba/samba
+        name:  "{{ DOCKER_IMAGE }}"
         tag: latest
+        state: build
+        nocache: yes
         push: no
+        rm: yes
 
     - name: print help msg to login to docker registry
       debug:
-        msg: run `docker login gitlab.catalyst.net.nz:4567`
+        msg: "docker login {{ DOCKER_REGISTRY }}"
 
     - name: print help msg to push to docker registry
       debug:
-        msg: run `docker push gitlab.catalyst.net.nz:4567/samba/samba`
+        msg: "docker push {{ DOCKER_IMAGE }}"
