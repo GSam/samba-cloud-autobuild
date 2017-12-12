@@ -4,10 +4,13 @@ This dir contains all ansible scripts to set up and provision gitlab-runner.
 
 # Prerequisites
 
-1. Download this script to create ansible-venv for openstack:
+1. Create ansible-venv for openstack:
 
-    wget https://github.com/catalyst/catalystcloud-ansible/blob/master/install-ansible.sh
-    ./install-ansible.sh
+    cd samba-cloud-autobuild
+    scripts/install-ansible.sh
+    source ansible-venv/bin/activate
+
+This will create the ansible-venv dir in repo root, and activate it.
 
 2. Source your openstack rc file
 
