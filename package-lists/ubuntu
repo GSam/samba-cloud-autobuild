@@ -51,6 +51,8 @@ packages:
  - python-gpgme
  - python3-gpgme
  - python-novaclient
+ - python-markdown
+ - python3-markdown
  - python-crypto
  - python-pexpect
  - python3-dev
