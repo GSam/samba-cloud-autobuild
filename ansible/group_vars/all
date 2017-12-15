@@ -128,3 +128,23 @@ ntp_servers:
   - "ntp1.catalyst.net.nz iburst"
   - "ntp2.catalyst.net.nz iburst"
   - "ntp3.catalyst.net.nz iburst"
+
+
+windows_protocol_test_suites:
+  Kerberos:
+    category: Kerberos
+    msi: Kerberos-TestSuite-ServerEP.msi
+    ptfconfig: Kerberos_ServerTestSuite.deployment.ptfconfig
+  ADFamily:
+    category: ADFamily
+    msi: ADFamily-TestSuite-ServerEP.msi
+    ptfconfig: AD_ServerTestSuite.deployment.ptfconfig
+  MS-AZOD:
+    category: AZOD
+    msi: MS-AZOD-TestSuite-ODEP.msi
+    ptfconfig: MS-AZOD_ODTestSuite.deployment.ptfconfig
+
+# the default test suite to run, use one of the above suite names.
+# to test other suite:
+# ansible-playbook wpts.yml -e env_prefix=wpts -e test_suite_name=MS-AZOD
+test_suite_name: Kerberos

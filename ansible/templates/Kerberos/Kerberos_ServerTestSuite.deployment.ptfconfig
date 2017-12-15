@@ -81,7 +81,7 @@
       <Group name="KDC01" description="Settings for the local realm KDC">
         <Property name="IsWindows" value="True" />
         <Property name="FQDN" value="{{ master_fqdn }}" />
-        <Property name="NetBiosName" value="DC01$" />
+        <Property name="NetBiosName" value="{{ master_hostname|upper }}$" />
         <Property name="Password" value="Password01!">
           <Description>
             This password is used for test cases serverSignature and kdcSignature.
@@ -97,7 +97,7 @@
       </Group>
       <Group name="ClientComputer" description="Settings for client computer">
         <Property name="FQDN" value="{{ windows_fqdn }}" />
-        <Property name="NetBiosName" value="TESTING-1$" />
+        <Property name="NetBiosName" value="{{ windows_hostname|upper }}$" />
         <Property name="Password" value="Password05!" />
         <Property name="IPv4Address" value="{{ windows_priv_ip }}" />
         <Property name="IPv6Address" value="2012::101">
@@ -111,7 +111,7 @@
       </Group>
       <Group name="FileServer01" description="Settings for the local realm File Server">
         <Property name="FQDN" value="{{ master_fqdn }}" />
-        <Property name="NetBiosName" value="" />
+        <Property name="NetBiosName" value="{{ master_hostname|upper }}$" />
         <Property name="Password" value="Password02!" />
         <Property name="IPv4Address" value="{{ master_priv_ip }}" />
         <Property name="IPv6Address" value="2012::10">
@@ -137,7 +137,7 @@
       </Group>
       <Group name="LdapServer01" description="Settings for the local realm LDAP Server">
         <Property name="FQDN" value="{{ master_fqdn }}" />
-        <Property name="NetBiosName" value="DC01$" />
+        <Property name="NetBiosName" value="{{ master_hostname|upper }}$" />
         <Property name="Password" value="Password01!" />
         <Property name="IPv4Address" value="{{ master_priv_ip }}" />
         <Property name="IPv6Address" value="2012::1">
@@ -154,7 +154,7 @@
       <Group name="WebServer01" description="Settings for the local realm Web Server">
         <!--The Web Server Information.-->
         <Property name="FQDN" value="{{ master_fqdn }}" />
-        <Property name="NetBiosName" value="" />
+        <Property name="NetBiosName" value="{{ master_hostname }}$" />
         <Property name="Password" value="Password02!" />
         <Property name="IPv4Address" value="{{ master_priv_ip }}" />
         <Property name="IPv6Address" value="2012::10">

@@ -3,7 +3,7 @@
 - import_playbook: site.yml
 
 
-- name: Prepare dc
+- name: Config dc to match ptfconfig
   remote_user: "{{ remote_user }}"
   become: yes
   hosts: "{{ env_prefix }}_master"
@@ -11,13 +11,13 @@
 
     - name: render script to create samba users
       template:
-        src: templates/prepare_msft_kerberos_testsuite_dc01.sh
-        dest: "/home/{{ remote_user }}/prepare_msft_kerberos_testsuite_dc01.sh"
+        src: "templates/{{ test_suite_name }}/config-dc.sh"
+        dest: "/home/{{ remote_user }}/config-dc.sh"
         owner: "{{ remote_user }}"
         mode: 0755
 
     - name: run script to create samba users
-      shell: "/home/{{ remote_user }}/prepare_msft_kerberos_testsuite_dc01.sh"
+      shell: "/home/{{ remote_user }}/config-dc.sh"
 
 
 - name: Windows initial setup
@@ -38,36 +38,39 @@
     windows_priv_ip: "{{ hostvars[windows_hostname].openstack.private_v4 }}"
     windows_fqdn: "{{ windows_hostname }}.{{ samba_realm }}"
 
+    test_suite_dict: "{{ windows_protocol_test_suites[test_suite_name] }}"
+    test_suite_category: "{{ test_suite_dict.category }}"
+    test_suite_msi: "{{ test_suite_dict.msi }}"
+    test_suite_ptfconfig: "{{ test_suite_dict.ptfconfig }}"
+    test_suite_root: "C:\\MicrosoftProtocolTests\\{{ test_suite_name }}\\Server-Endpoint\\2.0.66.0"
+    test_suite_bin: "{{ test_suite_root }}\\Bin"
+
   tasks:
     - name: ping
       win_ping:
 
-    - name: Install testsuite
-      win_shell: C:\InstallPrerequisites.ps1 -Category Kerberos -ConfigPath C:\PrerequisitesConfig.xml
-      register: out
-
-    - debug: var=out
-
     - name: Install ProtocolTestManager MSI
       win_msi:
-        path: C:\ProtocolTestManager.msi
+        path: "C:\\ProtocolTestManager.msi"
+        wait: yes
+        state: present
 
-    - name: Install Kerberos MSI
+    - name: Install Prerequisites
+      win_shell: "C:\\InstallPrerequisites.ps1 -Category {{ test_suite_category }} -ConfigPath C:\\PrerequisitesConfig.xml"
+
+    - name: Install MSI
       win_msi:
-        path: C:\Kerberos-TestSuite-ServerEP.msi
-      register: out
-
-    - debug: var=out
+        path: "C:\\{{ test_suite_msi }}"
 
     - name: render Kerberos ptfconfig
       win_template:
-        src: templates/Kerberos_ServerTestSuite.deployment.ptfconfig
-        dest: C:\MicrosoftProtocolTests\Kerberos\Server-Endpoint\2.0.66.0\Bin\Kerberos_ServerTestSuite.deployment.ptfconfig
+        src: "templates/{{ test_suite_name }}/{{ test_suite_ptfconfig }}"
+        dest: "{{ test_suite_bin }}\\{{ test_suite_ptfconfig }}"
 
-    - name: render wpts-run-kerberos.bat
+    - name: render run.cmd
       win_copy:
-        src: templates/wpts-run-kerberos.bat
-        dest: C:\wpts-run-kerberos.bat
+        src: "templates/{{ test_suite_name }}/run.cmd"
+        dest: "C:\\run.cmd"
 
     - name: config the DNS client on Windows network adapters
       win_dns_client:
@@ -85,11 +88,31 @@
       win_shell: |
         ksetup /SetComputerPassword Password05!
 
-    - win_reboot:
+    - name: restart windows
+      win_reboot:
 
-- name: run pexpect on windows
+- name: run pexpect to trigger test suite on windows
   hosts: localhost
 
   tasks:
     - name: run pexpect script to trigger test
-      command: "python wpts.py {{ windows_floating_ip_info.floating_ip.floating_ip_address }} Administrator@{{ samba_realm }} {{ samba_password }}"
+      command: "python scripts/wpts-run.py {{ windows_floating_ip_info.floating_ip.floating_ip_address }} Administrator@{{ samba_realm }} {{ samba_password }}"
+
+
+- name: fetch test result file and convert
+  hosts: "{{ env_prefix }}_windows"
+  vars:
+    ansible_user: Administrator
+    ansible_password: "{{ samba_password }}"
+    ansible_port: 5986
+    ansible_connection: winrm
+    ansible_winrm_server_cert_validation: ignore
+
+    tasks:
+      - name: fetch test result file from windows
+        fetch:
+          src: "C:\\testresult.trx"
+          dest: "/tmp/testresult.trx"
+
+      - name: parse trx file and convert format
+        command: '../scripts/parse-trx.py --trx /tmp/testresult.trx'
