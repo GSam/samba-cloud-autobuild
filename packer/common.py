@@ -66,6 +66,23 @@ def run_nova_cmd(args, region=DEFAULT_REGION, dry_run=False):
     return subprocess.check_output(str_args, shell=True)
 
 
+OPENSTACK_COMMANDS = {
+    'image_list': ['openstack', 'image', 'list']
+}
+
+
+def run_openstack_cmd(cmd, region=DEFAULT_REGION, dry_run=False):
+    if cmd not in OPENSTACK_COMMANDS:
+        raise SambaCloudError("Unknown openstack command option: %s" % cmd)
+
+    open_rc = OPENRC_TABLE[region]
+    args = ['.', open_rc, ';'] + OPENSTACK_COMMANDS[cmd]
+    str_args = ' '.join(args)
+    if dry_run:
+        return str_args
+    return subprocess.check_output(str_args, shell=True)
+
+
 def add_common_args(parser):
     parser.add_argument('--whole-name', action='store_true',
                         help="use the 'suffix' as the whole name")
@@ -135,11 +152,17 @@ def process_common_args(args):
     if args.dry_run:
         print " This is what we WOULD be doing without -n/--dry-run:\n"
 
-    for nova_cmd in ("image_list",
-                     "flavor_list"):
+    for nova_cmd in ("flavor_list", ):
         if vars(args)[nova_cmd]:
             print(run_nova_cmd([nova_cmd.replace('_', '-')],
                                region=args.region, dry_run=args.dry_run))
+            sys.exit()
+
+    for openstack_cmd in ("image_list",):
+        if vars(args)[openstack_cmd]:
+            print(run_openstack_cmd(openstack_cmd,
+                                    region=args.region,
+                                    dry_run=args.dry_run))
             sys.exit()
 
     if args.branch is None:
