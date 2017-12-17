@@ -26,7 +26,8 @@
 	    "git fetch catalyst",
 	    "git fetch origin",
 	    "git checkout origin/master",
-	    "CC='ccache gcc' ./script/autobuild.py --restrict-tests=samba.tests.source --testbase=$HOME/autobuild"
+	    "CC='ccache gcc' ./script/autobuild.py --restrict-tests=samba.tests.source --testbase=$HOME/autobuild",
+        "sudo apt-get install -y linux-image-4.4.0-98-generic"
 	]
     }]
 }
