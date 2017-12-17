@@ -4,21 +4,21 @@ import xml.etree.ElementTree as ET
 from dateutil import parser
 
 
-parser = argparse.ArgumentParser()
+p = argparse.ArgumentParser()
 
-parser.add_argument(
+p.add_argument(
     "--trx",
     default='/tmp/testresult.trx',
     help="path to trx file"
 )
 
-parser.add_argument(
+p.add_argument(
     "--test-suite",
     default='Kerberos',
     help="Test Suite name"
 )
 
-args = parser.parse_args()
+args = p.parse_args()
 
 xml = ET.fromstring(open(args.trx, 'r').read())
 
