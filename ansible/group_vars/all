@@ -41,8 +41,8 @@ domain: "samba.site"
 
 ## Samba build variables
 samba_scripts_dir: '/run/shm/samba-scripts'
-samba_remote_name: 'catalyst'
-samba_remote_url: 'git://git.catalyst.net.nz/samba.git'
+samba_remote_name: 'samba-github'
+samba_remote_url: 'https://github.com/samba-team/samba'
 samba_version: 'master'
 
 ## Samba DC provisioning variables
