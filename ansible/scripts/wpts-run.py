@@ -36,21 +36,19 @@ def main():
     s.prompt()
 
     s.sendline(r'start run.cmd')
-    retry = 20
-    while retry > 0:
+    timelapse = 0
+    timeout = 10 * 60
+    while timelapse <= timeout:
         s.sendline('dir *.trx')
         s.prompt()
-        print(s.before)
-        if 'testresult.trx' not in s.before:
-            print('retry: {}'.format(retry))
+        if 'File Not Found' in s.before:
+            print('waiting for testresult.trx, timelapse/timeout: {}/{}'.format(timelapse, timeout))
             time.sleep(30)
-            retry -= 1
+            timelapse += 30
         else:
             break
-    if retry < 1:
-        sys.exit(-1)
-    else:
-        sys.exit(0)
+    ret = 0 if timelapse <= timeout else -1
+    sys.exit(ret)
 
 
 if __name__ == '__main__':
