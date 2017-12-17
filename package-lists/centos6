@@ -38,3 +38,4 @@ packages:
  - autoconf
  - curl
  - ccache
+ - nettle-devel
