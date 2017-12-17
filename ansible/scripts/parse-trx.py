@@ -27,7 +27,7 @@ entries = dict((x.tag[len('{%s}' % ns):], x) for x in xml)
 
 print_xml = ['Times', 'ResultSummary']
 mapping = {'Failed': 'failure', 'Passed': 'success'}
-test_mapping = {'Failed': 'failure', 'Passed': 'successful'}
+test_mapping = {'Failed': 'failure', 'Passed': 'successful', 'Inconclusive': 'inconclusive'}
 
 FIXED = 'Microsoft.Protocol.TestSuites.Kerberos'
 
