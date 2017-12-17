@@ -88,7 +88,7 @@
       win_shell: |
         ksetup /SetComputerPassword Password05!
 
-    - name: restart windows
+    - name: reboot windows
       win_reboot:
 
 - name: run pexpect to trigger test suite on windows
@@ -108,11 +108,20 @@
     ansible_connection: winrm
     ansible_winrm_server_cert_validation: ignore
 
-    tasks:
-      - name: fetch test result file from windows
-        fetch:
-          src: "C:\\testresult.trx"
-          dest: "/tmp/testresult.trx"
+  tasks:
+    - name: fetch test result file from windows
+      fetch:
+        src: C:\testresult.trx
+        dest: "/tmp/testresult.trx"
+        flat: yes
 
-      - name: parse trx file and convert format
-        command: '../scripts/parse-trx.py --trx /tmp/testresult.trx'
+
+- name: run pexpect to trigger test suite on windows
+  hosts: localhost
+
+  tasks:
+    - name: parse trx file and convert format
+      command: 'scripts/parse-trx.py --trx /tmp/testresult.trx'
+      register: out
+
+    - debug: var=out
