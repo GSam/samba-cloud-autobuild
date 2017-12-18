@@ -18,9 +18,9 @@
 
 export PATH="/usr/local/samba/bin:$PATH"
 
-REALM="KRB.SAMBA.SITE"
-DNS_NAME="krb.samba.site"
-DN_DC_NAME="DC=krb,DC=sambatest,DC=site"
+REALM="{{ samba_realm }}"
+DNS_NAME="{{ samba_realm|lower }}"
+DN_DC_NAME="DC=krb,DC=samba,DC=site"
 
 ADMIN_ACCOUNT="Administrator"
 ADMIN_PASSWORD="Password01@"
@@ -47,12 +47,12 @@ RESOURCE_GROUP02_TYPE="Security"
 
 LOCAL_RESOURCE01_NAME="localResource01"
 LOCAL_RESOURCE01_ACCOUNTNAME="$LOCAL_RESOURCE01_NAME\$"
-LOCAL_RESOURCE01_FQDN="localresource01.krb.sambatest.site"
+LOCAL_RESOURCE01_FQDN="localresource01.{{ samba_realm|lower }}"
 LOCAL_RESOURCE01_PASSWORD="Password01!"
 
 LOCAL_RESOURCE02_NAME="localResource02"
 LOCAL_RESOURCE02_ACCOUNTNAME="$RESOURCE_GROUP02_NAME\$"
-LOCAL_RESOURCE02_FQDN="localresource02.krb.sambatest.site"
+LOCAL_RESOURCE02_FQDN="localresource02.{{ samba_realm|lower }}"
 LOCAL_RESOURCE02_PASSWORD="Password01!"
 
 

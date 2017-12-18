@@ -31,12 +31,13 @@
 
     master_hostname: "{{ env_prefix }}-{{ site_basename }}1-{{ node_basename }}1"
     master_priv_ip: "{{ hostvars[master_hostname].openstack.private_v4 }}"
-    master_fqdn: "{{ master_hostname }}.{{ samba_realm }}"
+    master_fqdn: "{{ master_hostname }}.{{ samba_realm|lower }}"
     master_service_salt: "{{ samba_realm }}host{{ master_hostname }}"
 
     windows_hostname: "{{ env_prefix }}-{{ site_basename }}1-{{ windows_basename }}1"
     windows_priv_ip: "{{ hostvars[windows_hostname].openstack.private_v4 }}"
-    windows_fqdn: "{{ windows_hostname }}.{{ samba_realm }}"
+    windows_fqdn: "{{ windows_hostname }}.{{ samba_realm|lower }}"
+    windows_service_salt: "{{ samba_realm }}host{{ windows_hostname }}"
 
     test_suite_dict: "{{ windows_protocol_test_suites[test_suite_name] }}"
     test_suite_category: "{{ test_suite_dict.category }}"

@@ -106,8 +106,8 @@
           </Description>
         </Property>
         <Property name="Port" value="88" />
-        <Property name="DefaultServiceName" value="host/testing-1.krb.sambatest.site" />
-        <Property name="ServiceSalt" value="KRB.SAMBATEST.SITEhosttesting-1.krb.sambatest.site" />
+        <Property name="DefaultServiceName" value="host/{{ windows_fqdn }}" />
+        <Property name="ServiceSalt" value="{{ windows_service_salt }}" />
       </Group>
       <Group name="FileServer01" description="Settings for the local realm File Server">
         <Property name="FQDN" value="{{ master_fqdn }}" />
@@ -145,9 +145,9 @@
             Leave the IPv6Address blank when IPv6 is not applied to test.
           </Description>
         </Property>
-        <Property name="DefaultServiceName" value="krbtgt/KRB.SAMBATEST.SITE" />
+        <Property name="DefaultServiceName" value="krbtgt/{{ samba_realm }}" />
         <Property name="ServiceSalt" value="{{ master_service_salt }}" />
-        <Property name="LdapServiceName" value="ldap/dc01.krb.sambatest.site" />
+        <Property name="LdapServiceName" value="ldap/{{ master_fqdn }}" />
         <Property name="LdapPort" value="389" />
         <Property name="GssToken" value="GSSAPI" />
       </Group>
@@ -212,7 +212,7 @@
         <Group name="User01" description="For Kerberos Basic Features. User properties: KerberosEncryptionType = DES,RC4,AES128,AES256, group = testGroup ">
           <Property name="Username" value="test01" />
           <Property name="Password" value="Password01^" />
-          <Property name="Salt" value="KRB.SAMBATEST.SITEtest01" />
+          <Property name="Salt" value="{{ samba_realm }}test01" />
           <Group name="DomainAccountInfo">
             <Property name="ScriptPath" value="c:\scripts\" />
             <Property name="ProfilePath" value="c:\profiles\" />
