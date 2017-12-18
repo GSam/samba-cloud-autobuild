@@ -130,7 +130,7 @@ def expand_directories(input_files, exts=['json', 'JSON']):
 def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
                   norm_index=0, sort_refs=False, tidy_names=True,
                   x_start=0, x_end=None, value_selector=min,
-                  ordering_git_tree=None):
+                  ordering_git_tree=None, min_count=1):
     data = {}
     commits = []
     concatenated = []
@@ -152,6 +152,9 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
     data_counts = Counter(x[0] for x in concatenated)
 
     for commit, v in concatenated:
+        if data_counts[commit] < min_count:
+            continue
+
         if tidy_names:
             k = tidy_revision_name(commit)
         c = (commit, k)
@@ -271,6 +274,9 @@ def main():
                         help="use median rather than minimum time")
     parser.add_argument('--maximum', action='store_true',
                         help="use maximum rather than minimum time")
+    parser.add_argument('--min-count', type=int, default=1,
+                        help=("only include points with at least "
+                              "this many samples"))
 
     args = parser.parse_args()
 
@@ -303,7 +309,8 @@ def main():
                                args.x_start,
                                args.x_end,
                                value_selector,
-                               args.order_commits_from_git_tree)
+                               args.order_commits_from_git_tree,
+                               args.min_count)
 
 
     import_matplotlib(we_have_x)
