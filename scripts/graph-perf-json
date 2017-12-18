@@ -137,9 +137,13 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
     input_files = expand_directories(input_files)
 
     for fn in input_files:
-        f = open(fn)
-        d = json.load(f)
-        f.close()
+        try:
+            f = open(fn)
+            d = json.load(f)
+            f.close()
+        except Exception, e:
+            print >> sys.stderr, "could not decode %s: %s" % (fn, e)
+            continue
         concatenated.extend(d)
 
     if ordering_git_tree is not None:
