@@ -59,8 +59,10 @@
       win_shell: "C:\\InstallPrerequisites.ps1 -Category {{ test_suite_category }} -ConfigPath C:\\PrerequisitesConfig.xml"
 
     - name: Install MSI
-      win_msi:
+      win_package:
         path: "C:\\{{ test_suite_msi }}"
+        state: present
+      ignore_errors: yes
 
     - name: render Kerberos ptfconfig
       win_template:
@@ -85,8 +87,7 @@
         state: domain
 
     - name: Set machine account password
-      win_shell: |
-        ksetup /SetComputerPassword Password05!
+      win_shell: ksetup /SetComputerPassword Password05!
 
     - name: reboot windows
       win_reboot:
@@ -118,10 +119,11 @@
 
 - name: run pexpect to trigger test suite on windows
   hosts: localhost
+  connection: local
 
   tasks:
     - name: parse trx file and convert format
-      command: 'scripts/parse-trx.py --trx /tmp/testresult.trx'
+      command: 'python scripts/parse-trx.py --trx /tmp/testresult.trx'
       register: out
 
     - debug: var=out
