@@ -38,6 +38,7 @@ packages:
  - libreadline-dev
  - linux-tools-generic
  - linux-cloud-tools-generic
+ - nettle-dev
  - perl
  - perl-modules
  - pkg-config
