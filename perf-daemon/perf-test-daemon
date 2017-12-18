@@ -329,7 +329,7 @@ def process_background():
     failures = {}
     s = """# Parse as if a submitted job.
     title: autobuild background task
-    --sample-last-n-weeks 1/52
+    --sample-last-n-weeks 1/26
     -c
     --best-of 1
     -t ad_dc_medley
