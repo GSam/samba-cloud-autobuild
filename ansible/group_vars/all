@@ -32,7 +32,7 @@ set_state: present
 network_base: 172.16
 
 ## Domain - just the hosts FQDN - not Samba domain (although related)
-domain: "samba.site"
+domain: "sambatest.site"
 
 
 #################################
@@ -46,7 +46,7 @@ samba_remote_url: 'https://github.com/samba-team/samba'
 samba_version: 'master'
 
 ## Samba DC provisioning variables
-samba_realm: 'KRB.SAMBA.SITE'
+samba_realm: 'KRB.SAMBATEST.SITE'
 samba_domain: 'KRB'
 # samba_password: 'thaed7utahZe'
 samba_password: 'Password01@'
