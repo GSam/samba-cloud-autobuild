@@ -35,19 +35,25 @@ def main():
     s.sendline('cd C:\\')
     s.prompt()
 
-    s.sendline(r'start run.cmd')
+    s.sendline('del testresult.trx')
+    s.prompt()
+
+    s.sendline('start run.cmd')
+    s.prompt()
+
     timelapse = 0
     timeout = 10 * 60
     while timelapse <= timeout:
         s.sendline('dir *.trx')
         s.prompt()
         if 'File Not Found' in s.before:
-            print('waiting for testresult.trx, timelapse/timeout: {}/{}'.format(timelapse, timeout))
+            print('waiting for testresult.trx, timelapse/timeout: {}/{} seconds'.format(timelapse, timeout))
             time.sleep(30)
             timelapse += 30
         else:
+            print('found testresult.trx, timelapse: {} seconds'.format(timelapse))
             break
-    ret = 0 if timelapse <= timeout else -1
+    ret = 0 if timelapse <= timeout else 1
     sys.exit(ret)
 
 
