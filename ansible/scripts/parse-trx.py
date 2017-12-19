@@ -28,7 +28,12 @@ entries = dict((x.tag[len('{%s}' % ns):], x) for x in xml)
 
 print_xml = ['Times', 'ResultSummary']
 mapping = {'Failed': 'failure', 'Passed': 'success'}
-test_mapping = {'Failed': 'failure', 'Passed': 'successful', 'Inconclusive': 'inconclusive'}
+test_mapping = {
+    'Failed': 'failure',
+    'Passed': 'successful',
+    'Inconclusive': 'Inconclusive',
+    'NotExecuted': 'NotExecuted',
+}
 
 FIXED = 'Microsoft.Protocol.TestSuites.Kerberos'
 
@@ -48,15 +53,20 @@ print parser.parse(entries['Times'].attrib['start']).strftime('time: %Y-%m-%d %H
 print 'progress: push'
 for result in entries['Results']:
     if result.tag.endswith('UnitTestResult'):
-        print parser.parse(result.attrib['startTime']).strftime('time: %Y-%m-%d %H:%m:%S.%fZ')
+        start_time = result.attrib.get('startTime')
+        if start_time:
+            print parser.parse(start_time).strftime('time: %Y-%m-%d %H:%m:%S.%fZ')
 
         test = '%s.%s' % (testsuites[result.attrib['testId']][1], result.attrib['testName'])
         print 'test: ', test
 
-        print ET.tostring(result.find('ns:Output/ns:StdOut', namespaces={'ns': ns}),
-                          method='text').strip() + '\n'
+        out = result.find('ns:Output/ns:StdOut', namespaces={'ns': ns})
+        if out:
+            print ET.tostring(out, method='text').strip() + '\n'
 
-        print parser.parse(result.attrib['endTime']).strftime('time: %Y-%m-%d %H:%m:%S.%fZ')
+        end_time = result.attrib.get('endTime')
+        if end_time:
+            print parser.parse(end_time).strftime('time: %Y-%m-%d %H:%m:%S.%fZ')
 
         error = result.find('ns:Output/ns:ErrorInfo', namespaces={'ns': ns})
         if error is not None:
@@ -69,4 +79,6 @@ for result in entries['Results']:
 
 print parser.parse(entries['Times'].attrib['finish']).strftime('time: %Y-%m-%d %H:%m:%S.%fZ')
 print 'progress: pop'
-print 'testsuite-%s:' % mapping[entries['ResultSummary'].attrib['outcome']], FIXED
+print entries
+outcome = entries['ResultSummary'].attrib.get('outcome', 'None')
+print 'testsuite-%s:' % mapping.get(outcome, ''), FIXED
