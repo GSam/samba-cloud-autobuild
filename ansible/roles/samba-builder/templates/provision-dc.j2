@@ -26,7 +26,7 @@ for i in $(seq 1 {{ sites }} ); do
 
 done
 
-/usr/local/samba/sbin/samba
+/usr/local/samba/sbin/samba -D
 
 for i in {1..100}; do
   /usr/local/samba/bin/smbclient -L localhost -U% && break
