@@ -95,10 +95,17 @@
 
 - name: run pexpect to trigger test suite on windows
   hosts: localhost
+  vars:
+    windows_ip: "{{ windows_floating_ip_info.floating_ip.floating_ip_address }}"
 
   tasks:
+
+    - name: remove known_hosts for windows ip
+      command: "ssh-keygen -R {{ windows_ip }}"
+      ignore_errors: yes
+
     - name: run pexpect script to trigger test
-      command: "python scripts/wpts-run.py {{ windows_floating_ip_info.floating_ip.floating_ip_address }} Administrator@{{ samba_realm }} {{ samba_password }}"
+      command: "python scripts/wpts-run.py {{ windows_ip }} Administrator@{{ samba_realm }} {{ samba_password }}"
 
 
 - name: fetch test result file and convert
