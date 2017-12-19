@@ -79,6 +79,5 @@ for result in entries['Results']:
 
 print parser.parse(entries['Times'].attrib['finish']).strftime('time: %Y-%m-%d %H:%m:%S.%fZ')
 print 'progress: pop'
-print entries
 outcome = entries['ResultSummary'].attrib.get('outcome', 'None')
 print 'testsuite-%s:' % mapping.get(outcome, ''), FIXED
