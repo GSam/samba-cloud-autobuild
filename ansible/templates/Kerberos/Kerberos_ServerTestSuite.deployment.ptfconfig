@@ -227,7 +227,7 @@
         </Group>
         <Group name="User02" description="For Compound Identity Features.User properties: Support Compound identity, Department = HR, PasswordNeverExpires = true, KerberosEncryptionType DES,RC4,AES128,AES256">
           <Property name="Username" value="test02" />
-          <Property name="Password" value="Password01&amp;" />
+          <Property name="Password" value="Password01!" />
           <!-- WARNING: ONLY support single value Claim, format is <claim ID#1>;<claim value#1>;<claim ID#2>;<claim value#2> -->
           <Property name="TransformedClaims" value="ad://ext/Department;HR" />
         </Group>

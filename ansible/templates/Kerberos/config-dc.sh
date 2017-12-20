@@ -23,10 +23,10 @@ DNS_NAME="{{ samba_realm|lower }}"
 DN_DC_NAME="DC=krb,DC=samba,DC=site"
 
 ADMIN_ACCOUNT="Administrator"
-ADMIN_PASSWORD="Password01@"
+ADMIN_PASSWORD="{{ samba_password }}"
 
 LOCAL_MACHINE_ACCOUNT="$(hostname -s)\$"
-LOCAL_MACHINE_PASSWORD="Password01!"
+LOCAL_MACHINE_PASSWORD="{{ samba_password }}"
 
 GROUP01_NAME="testGroup"
 GROUP01_SCOPE="Global"
@@ -61,7 +61,7 @@ USER01_NAME="test01"
 USER01_PASSWORD="Password01^"
 
 USER02_NAME="test02"
-USER02_PASSWORD="Password01&"
+USER02_PASSWORD="Password01!"
 USER02_TRANSFORMED_CLAIMS="ad://ext/DepartmentHR"
 
 USER03_NAME="UserDelegNotAllowed"
