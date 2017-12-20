@@ -93,6 +93,11 @@
     - name: reboot windows
       win_reboot:
 
+    - pause:
+        seconds: 60
+        prompt: "pause for windows to fully reboot"
+
+
 - name: run pexpect to trigger test suite on windows
   hosts: localhost
   vars:
