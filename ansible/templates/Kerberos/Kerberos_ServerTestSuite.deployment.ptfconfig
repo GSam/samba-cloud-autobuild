@@ -82,7 +82,7 @@
         <Property name="IsWindows" value="True" />
         <Property name="FQDN" value="{{ master_fqdn }}" />
         <Property name="NetBiosName" value="{{ master_hostname|upper }}$" />
-        <Property name="Password" value="Password01!">
+        <Property name="Password" value="{{ samba_password }}">
           <Description>
             This password is used for test cases serverSignature and kdcSignature.
           </Description>
