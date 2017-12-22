@@ -46,11 +46,12 @@ def main():
     while timelapse <= timeout:
         s.sendline('dir *.trx')
         s.prompt()
+        print(s.before)
         if 'File Not Found' in s.before:
             print('waiting for testresult.trx, timelapse/timeout: {}/{} seconds'.format(timelapse, timeout))
             time.sleep(30)
             timelapse += 30
-        else:
+        elif 'testresult.trx' in s.before:
             print('found testresult.trx, timelapse: {} seconds'.format(timelapse))
             break
     ret = 0 if timelapse <= timeout else 1
