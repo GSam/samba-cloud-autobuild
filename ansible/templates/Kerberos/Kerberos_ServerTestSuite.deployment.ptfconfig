@@ -79,7 +79,7 @@
         <Choice>0,2,3,4,5,6</Choice>
       </Property>
       <Group name="KDC01" description="Settings for the local realm KDC">
-        <Property name="IsWindows" value="True" />
+        <Property name="IsWindows" value="False" />
         <Property name="FQDN" value="{{ master_fqdn }}" />
         <Property name="NetBiosName" value="{{ master_hostname|upper }}$" />
         <Property name="Password" value="{{ samba_password }}">
@@ -98,7 +98,7 @@
       <Group name="ClientComputer" description="Settings for client computer">
         <Property name="FQDN" value="{{ windows_fqdn }}" />
         <Property name="NetBiosName" value="{{ windows_hostname|upper }}$" />
-        <Property name="Password" value="Password05!" />
+        <Property name="Password" value="{{ samba_password }}" />
         <Property name="IPv4Address" value="{{ windows_priv_ip }}" />
         <Property name="IPv6Address" value="2012::101">
           <Description>
@@ -112,7 +112,7 @@
       <Group name="FileServer01" description="Settings for the local realm File Server">
         <Property name="FQDN" value="{{ master_fqdn }}" />
         <Property name="NetBiosName" value="{{ master_hostname|upper }}$" />
-        <Property name="Password" value="Password02!" />
+        <Property name="Password" value="{{ samba_password }}" />
         <Property name="IPv4Address" value="{{ master_priv_ip }}" />
         <Property name="IPv6Address" value="2012::10">
           <Description>
@@ -138,7 +138,7 @@
       <Group name="LdapServer01" description="Settings for the local realm LDAP Server">
         <Property name="FQDN" value="{{ master_fqdn }}" />
         <Property name="NetBiosName" value="{{ master_hostname|upper }}$" />
-        <Property name="Password" value="Password01!" />
+        <Property name="Password" value="{{ samba_password }}" />
         <Property name="IPv4Address" value="{{ master_priv_ip }}" />
         <Property name="IPv6Address" value="2012::1">
           <Description>
@@ -155,7 +155,7 @@
         <!--The Web Server Information.-->
         <Property name="FQDN" value="{{ master_fqdn }}" />
         <Property name="NetBiosName" value="{{ master_hostname }}$" />
-        <Property name="Password" value="Password02!" />
+        <Property name="Password" value="{{ samba_password }}" />
         <Property name="IPv4Address" value="{{ master_priv_ip }}" />
         <Property name="IPv6Address" value="2012::10">
           <Description>
