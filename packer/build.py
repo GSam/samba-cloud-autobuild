@@ -7,14 +7,16 @@ import tempfile
 import random
 from string import Template
 
+# we want to get common.py from the directory below.
+HERE = os.path.dirname(__file__)
+sys.path.insert(0, os.path.dirname(HERE))
+
 from common import get_credentials, get_package_list, DEFAULT_REGION, OPENRC_TABLE, SambaCloudError
 
 try:
     from pipes import quote
 except ImportError:
     from shlex import quote
-
-HERE = os.path.dirname(__file__)
 
 PACKER_TEMPLATE = os.path.join(HERE, 'config.json')
 CLOUD_INIT_TEMPLATE = os.path.join(HERE, 'user_data.ps1')
