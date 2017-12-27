@@ -14,6 +14,7 @@ import config
 from email_utils import filter_by_date, count_lines, draw_histogram
 from email_utils import recurring_errors
 
+SAMBA_STDERR_CACHE = os.path.join(os.path.dirname(__file__), 'cache/autobuild-stderr')
 SAMBA_STDOUT_CACHE = os.path.join(os.path.dirname(__file__), 'cache/autobuild')
 FLAKEY_LOG_CACHE = os.path.join(os.path.dirname(__file__), 'cache/flakey_log')
 
@@ -77,7 +78,7 @@ def main():
     parser.add_argument('-c', '--count', type=int,
                         help="print this many errors (default all)")
 
-    parser.add_argument('--file-regex', default='samba.stdout$',
+    parser.add_argument('--file-regex', default='',
                         help="look at files matching this regex")
 
     parser.add_argument('--line-regex', default='^UNEXPECTED',
@@ -99,6 +100,9 @@ def main():
     parser.add_argument('--flakey-log', action='store_true',
                         help=("print statistics from flakey.log"))
 
+    parser.add_argument('--samba-stderr', action='store_true',
+                        help=("print statistics from */samba.stderr"))
+
     args = parser.parse_args()
 
     if args.print_links:
@@ -115,12 +119,18 @@ def main():
                     filter_re=args.filter_line)
         sys.exit()
 
-    update_cache(SAMBA_STDOUT_CACHE, 'samba.stdout')
+    if args.samba_stderr:
+        cache = SAMBA_STDERR_CACHE
+        update_cache(cache, 'samba.stderr')
+    else:
+        cache = SAMBA_STDOUT_CACHE
+        update_cache(SAMBA_STDOUT_CACHE, 'samba.stdout')
+
 
     if args.histogram:
         draw_histogram(fn_re=args.file_regex,
                        line_re=args.line_regex,
-                       cache=SAMBA_STDOUT_CACHE,
+                       cache=cache,
                        since=args.since,
                        filter_re=args.filter_line)
         sys.exit()
@@ -128,7 +138,7 @@ def main():
     if args.recurring_errors:
         recurring_errors(fn_re=args.file_regex,
                          line_re=args.line_regex,
-                         cache=SAMBA_STDOUT_CACHE,
+                         cache=cache,
                          since=args.since,
                          filter_re=args.filter_line,
                          limit=3)
@@ -136,7 +146,7 @@ def main():
 
     count_lines(fn_re=args.file_regex,
                 line_re=args.line_regex,
-                cache=SAMBA_STDOUT_CACHE,
+                cache=cache,
                 count=args.count,
                 since=args.since,
                 filter_re=args.filter_line)
