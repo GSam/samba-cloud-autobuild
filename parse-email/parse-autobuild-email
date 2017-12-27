@@ -12,7 +12,7 @@ import time
 
 import config
 from email_utils import filter_by_date, count_lines, draw_histogram
-from email_utils import recurring_errors
+from email_utils import recurring_errors, draw_runtime_histogram
 
 SAMBA_STDERR_CACHE = os.path.join(os.path.dirname(__file__), 'cache/autobuild-stderr')
 SAMBA_STDOUT_CACHE = os.path.join(os.path.dirname(__file__), 'cache/autobuild')
@@ -103,6 +103,9 @@ def main():
     parser.add_argument('--samba-stderr', action='store_true',
                         help=("print statistics from */samba.stderr"))
 
+    parser.add_argument('--run-times', action='store_true',
+                        help=("Try and work out the run times"))
+
     args = parser.parse_args()
 
     if args.print_links:
@@ -126,6 +129,12 @@ def main():
         cache = SAMBA_STDOUT_CACHE
         update_cache(SAMBA_STDOUT_CACHE, 'samba.stdout')
 
+
+    if args.run_times:
+        draw_runtime_histogram(fn_re=args.file_regex,
+                               cache=cache,
+                               since=args.since)
+        sys.exit()
 
     if args.histogram:
         draw_histogram(fn_re=args.file_regex,
