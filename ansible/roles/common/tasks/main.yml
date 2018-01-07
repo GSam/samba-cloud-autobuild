@@ -9,10 +9,11 @@
   ping:
 
 - name: Add own address to /etc/hosts
-  lineinfile: dest=/etc/hosts
-              regexp="^\s?{{ ansible_all_ipv4_addresses.0 }}\s+.*"
-              line="{{ ansible_all_ipv4_addresses.0 }} {{ ansible_hostname }}.{{ domain }} {{ ansible_hostname }}"
-              state=present
+  lineinfile:
+    path: /etc/hosts
+    regexp: '^\s?{{ ansible_all_ipv4_addresses.0 }}\s+.*'
+    line: "{{ ansible_all_ipv4_addresses.0 }} {{ ansible_hostname }}.{{ domain }} {{ ansible_hostname }}"
+    state: present
   become: yes
 
 - name: Add catalyst repository key
