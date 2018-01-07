@@ -81,7 +81,7 @@ def main():
     parser.add_argument('--file-regex', default='',
                         help="look at files matching this regex")
 
-    parser.add_argument('--line-regex', default='^UNEXPECTED',
+    parser.add_argument('--line-regex', default=None,
                         help="look for lines matching this regex")
 
     parser.add_argument('--filter-line',
@@ -114,13 +114,17 @@ def main():
 
     if args.flakey_log:
         update_cache(FLAKEY_LOG_CACHE, 'flakey.log')
+        line_re = args.line_regex or r"\w+: \[\w+\] failed '.+' with status"
         count_lines(fn_re='flakey.log$',
-                    line_re=r"\w+: \[\w+\] failed '.+' with status",
+                    line_re=line_re,
                     cache=FLAKEY_LOG_CACHE,
                     count=args.count,
                     since=args.since,
                     filter_re=args.filter_line)
         sys.exit()
+
+    if args.line_regex is None:
+        args.line_regex = '^UNEXPECTED'
 
     if args.samba_stderr:
         cache = SAMBA_STDERR_CACHE
