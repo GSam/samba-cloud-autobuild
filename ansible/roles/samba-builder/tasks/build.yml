@@ -1,6 +1,11 @@
 ---
 # tasks file for samba-builder
 
+- import_tasks: tasks/mit-krb5.yml
+  when: ( mit_krb5_enabled is defined and mit_krb5_enabled == 'true' )
+  tags:
+    - mit-krb5
+
 # Configure
 - name: Check if bin/config.log exists
   stat:
@@ -9,15 +14,25 @@
   tags:
     - configure
 
-- name: Run configure
-  command: ./configure.developer
+- name: Run configure with MIT krb5
+  command: ./configure.developer --with-system-mitkrb5 /usr/local/ --with-system-mitkdc /usr/local/sbin/krb5kdc
   args:
     chdir: "/home/{{ remote_user }}/samba"
-  when: ( recompile is defined and recompile == 'true' ) or ( config_log.stat is defined and not config_log.stat.exists )
+  when:
+    - ( recompile is defined and recompile == 'true' ) or ( config_log.stat is defined and not config_log.stat.exists )
+    - ( mit_krb5_enabled is defined and mit_krb5_enabled == 'true' )
   tags:
     - configure
 
-
+- name: Run configure with default Heimdal krb5
+  command: ./configure.developer
+  args:
+    chdir: "/home/{{ remote_user }}/samba"
+  when:
+    - ( recompile is defined and recompile == 'true' ) or ( config_log.stat is defined and not config_log.stat.exists )
+    - ( mit_krb5_enabled is not defined or mit_krb5_enabled != 'true' )
+  tags:
+    - configure
 
 # Compile
 - name: Check if bin/samba exists

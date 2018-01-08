@@ -45,6 +45,11 @@ samba_remote_name: 'samba-github'
 samba_remote_url: 'https://github.com/samba-team/samba'
 samba_version: 'master'
 
+## use mit Kerberos instead of default Heimdal
+mit_krb5_enabled: 'false'
+# choose a release at https://web.mit.edu/kerberos/dist/krb5/1.16/krb5-1.16.tar.gz
+mit_krb5_download_url: 'https://web.mit.edu/kerberos/dist/krb5/1.16/krb5-1.16.tar.gz'
+
 ## Samba DC provisioning variables
 samba_realm: 'KRB.SAMBA.SITE'
 samba_domain: 'KRB'
