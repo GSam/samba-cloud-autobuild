@@ -177,7 +177,7 @@ def main():
     args = parser.parse_args()
     process_common_args(args)
 
-    if ('r8' in args.flavor or 'r4' in args.flavor):
+    if ('r2' in args.flavor or 'r4' in args.flavor):
         print "Samba WILL NOT WORK with %s" % args.flavor
         print "Stopping now to save your time!"
         sys.exit(1)
