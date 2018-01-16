@@ -63,3 +63,5 @@ packages:
  - xsltproc
  - zlib1g-dev
  - python3-matplotlib
+ - nettle-dev
+ - liblmdb-dev/trusty-backports
