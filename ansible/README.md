@@ -94,3 +94,26 @@ ansible-playbook site.yml --tags "slave-rsync"
 ```
 
 Feel free to check what tags are associated with which plays and tasks and feel free to add your own.
+
+## Windows Protocol Test Suite
+Windows Protocol Test Suite(WPTS) can be triggered with Ansible. Since this test
+only requires 1 DC and 1 Windows server, you may need to adjust vars before start:
+
+    cd ansible
+    vim group_vars/all
+
+Make change:
+
+    ...
+    sites: 1
+    ...
+    hosts_in_site: 1
+    ...
+
+To set up and run Windows Protocol Test Suite with default Hermidal Kerberos:
+
+    ansible-playbook wpts.yml -e env_prefix=wpts -e test_suite_name=Kerberos
+
+To run it with MIT Kerberos support:
+
+    ansible-playbook wpts.yml -e env_prefix=wpts -e test_suite_name=Kerberos-e mit_krb5_enabled=true
