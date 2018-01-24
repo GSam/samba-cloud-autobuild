@@ -62,4 +62,3 @@ packages:
  - tshark
  - xsltproc
  - zlib1g-dev
- - nettle-dev
