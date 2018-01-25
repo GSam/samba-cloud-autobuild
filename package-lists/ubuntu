@@ -62,3 +62,4 @@ packages:
  - tshark
  - xsltproc
  - zlib1g-dev
+ - python3-matplotlib
