@@ -1,41 +1,41 @@
 # This version is for Centos 6.
-
+# please keep it sorted
 packages:
- - screen
- - git
- - jed
- - perl
- - gcc
  - attr
- - libacl-devel
- - libblkid-devel
- - gnutls-devel
- - readline-devel
- - python-devel
- - python3-devel
+ - autoconf
+ - bind-utils
+ - ccache
+ - cups-devel
+ - curl
+ - docbook-style-xsl
+ - gcc
  - gdb
- - pkgconfig
- - psmisc
+ - git
+ - gnutls-devel
+ - jed
+ - keyutils-libs-devel
  - krb5-workstation
- - zlib-devel
- - setroubleshoot-server
+ - libacl-devel
  - libaio-devel
- - setroubleshoot-plugins
- - policycoreutils-python
+ - libattr-devel
+ - libblkid-devel
  - libsemanage-python
+ - libxml2-devel
+ - libxslt
+ - nettle-devel
+ - openldap-devel
+ - perl
  - perl-ExtUtils-MakeMaker
  - perl-Parse-Yapp
  - perl-Test-Base
+ - pkgconfig
+ - policycoreutils-python
  - popt-devel
- - libxml2-devel
- - libattr-devel
- - keyutils-libs-devel
- - cups-devel
- - bind-utils
- - libxslt
- - docbook-style-xsl
- - openldap-devel
- - autoconf
- - curl
- - ccache
- - nettle-devel
+ - psmisc
+ - python3-devel
+ - python-devel
+ - readline-devel
+ - screen
+ - setroubleshoot-plugins
+ - setroubleshoot-server
+ - zlib-devel
