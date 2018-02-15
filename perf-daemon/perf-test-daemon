@@ -18,9 +18,11 @@ from email.mime.application import MIMEApplication
 from perf_config import HERE, QUEUE_DIR, SUCCESS_DIR, FAIL_DIR, RESULT_DIR
 from perf_config import MULTI_PERF_SCRIPT, GRAPH_SCRIPT, TEMP_DIR
 from perf_config import EMAIL_RECIPIENT, EMAIL_SERVER, CURRENT_STATE_FILE
+from perf_config import EMAIL_ATTEMPTS
 
 DEFAULT_OPTS = ['-r', 'git://git.catalyst.net.nz/samba.git', '--best-of', '5']
 
+mail_queue = []
 
 def slurp(fn):
     f = open(fn, 'rb')
@@ -143,10 +145,28 @@ def send_email(subject, body, results=(), recipient=EMAIL_RECIPIENT):
         a.add_header('Content-Disposition', 'attachment', filename=save_fn)
         msg.attach(a)
 
-    s = smtplib.SMTP(EMAIL_SERVER)
-    s.sendmail(recipient, [recipient], str(msg))
-    s.quit()
+    try:
+        s = smtplib.SMTP(EMAIL_SERVER)
+        s.sendmail(recipient, [recipient], str(msg))
+        s.quit()
+    except smtplib.SMTPException as e:
+        print >> sys.stderr, "Sending email failed: %s" % e
+        print >> sys.stderr, "queueing for %d retries" % (EMAIL_ATTEMPTS - 1)
+        mail_queue.append([0, recipient, str(msg)])
 
+
+def process_mail_queue():
+    new_queue = []
+    for attempts, recipient, msg in mail_queue:
+        try:
+            s = smtplib.SMTP(EMAIL_SERVER)
+            s.sendmail(recipient, [recipient], msg)
+            s.quit()
+        except smtplib.SMTPException as e:
+            attempts += 1
+            if attempts < EMAIL_ATTEMPTS:
+                new_queue.append([attempts, recipient, msg])
+    mail_queue[:] = new_queue
 
 def gzip_file(name):
     subprocess.check_call(['gzip', name])
@@ -395,7 +415,7 @@ def main():
         else:
             print "processing background"
             process_background()
-
+        process_mail_queue()
         sys.stderr.flush()
         sys.stdout.flush()
         time.sleep(5)
