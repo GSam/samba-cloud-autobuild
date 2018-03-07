@@ -160,12 +160,15 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
 
     for commit, v in concatenated:
         if data_counts[commit] < min_count:
+            vprint("skipping commit %s with %d results" % (commit, data_counts[commit]))
             continue
 
         if tidy_names:
             k = tidy_revision_name(commit)
         else:
             k = commit
+
+        vprint("commit %s has %d results" % (k, data_counts[commit]))
 
         c = (commit, k)
         if c not in commits:
