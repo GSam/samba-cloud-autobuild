@@ -186,13 +186,17 @@ def generate_results(output_dir, workdir, graphs=True):
         subprocess.check_call([GRAPH_SCRIPT, '-t',
                                '--label-commits-from-git-tree', workdir,
                                '-i', src,
-                               '-o', rel_png],
+                               '-o', rel_png,
+                               '--median',
+                               '-v'],
                               stdout=logf, stderr=subprocess.STDOUT)
         subprocess.check_call([GRAPH_SCRIPT, '-t',
                                '--label-commits-from-git-tree', workdir,
                                '-i', src,
                                '-a',
-                               '-o', abs_png],
+                               '-o', abs_png,
+                               '--median',
+                               '-v'],
                               stdout=logf, stderr=subprocess.STDOUT)
         logf.close()
     except (subprocess.CalledProcessError, OSError) as e:
