@@ -340,7 +340,6 @@ def main():
     colours = set(cm.brg(x * scale) for x in range(len(sequences)))
 
     x_size = [(x ** 0.5) * 2 for x in x_counts]
-    print x_counts
 
     for test, colour in zip(sequences, colours):
         seq = sequences[test]
