@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import print_function
 import argparse
 import os
 import sys
@@ -110,7 +111,7 @@ def boot(flavor, image, yaml_file, server_name, key_name, region,
         args += ['--nic', 'net-id=%s' % net_id]
     args += [server_name]
     if dry_run:
-        print ' '.join(args)
+        print(' '.join(args))
     else:
         subprocess.check_call(' '.join(args), shell=True)
 
@@ -126,7 +127,7 @@ def find_good_net_id(region):
         net = cells[2].strip()
         if net != 'public-net':
             uuid = cells[1].strip()
-            print "using net %s (%s)" % (net, uuid)
+            print("using net %s (%s)" % (net, uuid))
             return uuid
 
     raise SambaCloudError("There seems to be no good net ID")
@@ -190,8 +191,8 @@ def main():
     password = subprocess.check_output("pwgen -s 20", shell=True)[:20]
 
     if ('r2' in args.flavor or 'r4' in args.flavor):
-        print "Samba WILL NOT WORK with %s" % args.flavor
-        print "Stopping now to save your time!"
+        print("Samba WILL NOT WORK with %s" % args.flavor)
+        print("Stopping now to save your time!")
         sys.exit(1)
 
     if args.whole_name:
@@ -224,7 +225,7 @@ def main():
                                   server_name=server_name, **yaml_kwargs)
 
     if args.verbose:
-        print >> sys.stderr, "YAML file is %s" % yaml_file
+        print("YAML file is %s" % yaml_file, file=sys.stderr)
 
     if args.net_id == 'auto':
         net_id = find_good_net_id(args.region)
