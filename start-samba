@@ -188,7 +188,12 @@ def main():
     args = parser.parse_args()
     process_common_args(args)
 
-    password = subprocess.check_output("pwgen -s 20", shell=True)[:20]
+    try:
+        password = subprocess.check_output("pwgen -s 20", shell=True)[:20]
+    except subprocess.CalledProcessError as e:
+        print("You don't seem to have pwgen")
+        print(e)
+        sys.exit(1)
 
     if ('r2' in args.flavor or 'r4' in args.flavor):
         print("Samba WILL NOT WORK with %s" % args.flavor)
