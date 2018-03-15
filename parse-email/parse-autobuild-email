@@ -12,7 +12,7 @@ import time
 
 import config
 from email_utils import filter_by_date, count_lines, draw_histogram
-from email_utils import recurring_errors, draw_runtime_histogram
+from email_utils import recurring_errors, draw_runtime_histogram, errors_since
 
 SAMBA_STDERR_CACHE = os.path.join(os.path.dirname(__file__), 'cache/autobuild-stderr')
 SAMBA_STDOUT_CACHE = os.path.join(os.path.dirname(__file__), 'cache/autobuild')
@@ -97,6 +97,10 @@ def main():
     parser.add_argument('--recurring-errors', action='store_true',
                         help=("show errors that occur in many months"))
 
+    parser.add_argument('--has-occurred-since',
+                        help=("ignore errors that have not appeared since"
+                              "this date"))
+
     parser.add_argument('--flakey-log', action='store_true',
                         help=("print statistics from flakey.log"))
 
@@ -135,6 +139,14 @@ def main():
         cache = SAMBA_STDOUT_CACHE
         update_cache(SAMBA_STDOUT_CACHE, 'samba.stdout')
 
+    if args.has_occurred_since is not None:
+        rows = errors_since(fn_re=args.file_regex,
+                            line_re=args.line_regex,
+                            cache=cache,
+                            since=args.has_occurred_since,
+                            filter_re=args.filter_line)
+        recent = set(x for x, c in rows)
+        #print recent
 
     if args.run_times:
         draw_runtime_histogram(fn_re=args.file_regex,
@@ -156,7 +168,8 @@ def main():
                          cache=cache,
                          since=args.since,
                          filter_re=args.filter_line,
-                         limit=3)
+                         limit=3,
+                         included_set=recent)
         sys.exit()
 
     rows = count_lines(fn_re=args.file_regex,
@@ -164,7 +177,8 @@ def main():
                        cache=cache,
                        count=args.count,
                        since=args.since,
-                       filter_re=args.filter_line)
+                       filter_re=args.filter_line,
+                       included_set=recent)
     for k, v in rows:
         print '%4d %s' % (v, k)
 

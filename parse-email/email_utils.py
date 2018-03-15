@@ -24,7 +24,8 @@ def filter_by_date(files, date):
     return out
 
 
-def count_lines(fn_re, line_re, cache, count=None, since=None, filter_re=None):
+def count_lines(fn_re, line_re, cache, count=None, since=None, filter_re=None,
+                included_set=None):
     fn_match = re.compile(fn_re).search
     line_match = re.compile(line_re).search
     files = sorted(x for x in os.listdir(cache) if fn_match(x))
@@ -43,6 +44,9 @@ def count_lines(fn_re, line_re, cache, count=None, since=None, filter_re=None):
         filter_match = re.compile(filter_re).search
         lines = [' '.join(filter_match(x).groups()) for x in lines
                  if filter_match(x)]
+
+    if included_set is not None:
+        lines = [x for x in lines if x in included_set]
 
     print ("found %d lines matching %r in %d files matching %r" %
            (len(lines), line_re, len(files), fn_re))
@@ -76,6 +80,9 @@ def get_files_by_month(fn_re, cache, since):
 def get_errors_by_month(fn_re, line_re, cache, since=None, filter_re=None):
     line_match = re.compile(line_re).search
     months = get_files_by_month(fn_re, cache, since)
+    recent_lines = get_files_by_month(fn_re, cache, since)
+    recent_lines = set()
+
     month_lines = []
     longest = 0
     for month, filenames in months.iteritems():
@@ -185,9 +192,14 @@ def draw_runtime_histogram(fn_re, cache, since, line_re=TIME_MATCH):
     print "key: median #   interquartile range |-----|   extrema ."
 
 
+def errors_since(fn_re, line_re, cache, since=None, filter_re=None):
+    rows = count_lines(fn_re, line_re, cache, since=since, filter_re=None)
+    return set(rows)
+
 
 def recurring_errors(fn_re, line_re, cache, since=None, filter_re=None,
-                     limit=2):
+                     limit=2, included_set=None):
+
     month_lines = get_errors_by_month(fn_re,
                                       line_re,
                                       cache,
@@ -196,6 +208,9 @@ def recurring_errors(fn_re, line_re, cache, since=None, filter_re=None,
     c = Counter()
 
     for month, lines in month_lines:
+        if included_set is not None:
+            lines = [x for x in lines if x in included_set]
+
         c.update(set(lines))
 
     for err, count in c.most_common():
