@@ -136,7 +136,6 @@ def main():
     parser = argparse.ArgumentParser()
     add_common_args(parser)
     ident = random.randint(0, 9999)
-    password = subprocess.check_output("pwgen -s 20", shell=True)[:20]
 
     default_server_suffix = "%s-%04d" % (os.environ.get('USER'),
                                          ident)
@@ -187,6 +186,8 @@ def main():
     
     args = parser.parse_args()
     process_common_args(args)
+
+    password = subprocess.check_output("pwgen -s 20", shell=True)[:20]
 
     if ('r2' in args.flavor or 'r4' in args.flavor):
         print "Samba WILL NOT WORK with %s" % args.flavor
