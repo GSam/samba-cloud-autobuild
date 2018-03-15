@@ -92,12 +92,13 @@ def main():
 
     update_cache(args.file_name)
     file_regex = '^' + args.file_name
-    count_lines(fn_re=file_regex,
-                line_re=args.line_regex,
-                cache=CACHE,
-                count=args.count,
-                since=args.since,
-                filter_re=args.filter_line)
-
+    rows = count_lines(fn_re=file_regex,
+                       line_re=args.line_regex,
+                       cache=CACHE,
+                       count=args.count,
+                       since=args.since,
+                       filter_re=args.filter_line)
+    for k, v in rows:
+        print '%4d %s' % (v, k)
 
 main()

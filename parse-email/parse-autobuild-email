@@ -115,12 +115,14 @@ def main():
     if args.flakey_log:
         update_cache(FLAKEY_LOG_CACHE, 'flakey.log')
         line_re = args.line_regex or r"\w+: \[\w+\] failed '.+' with status"
-        count_lines(fn_re='flakey.log$',
-                    line_re=line_re,
-                    cache=FLAKEY_LOG_CACHE,
-                    count=args.count,
-                    since=args.since,
-                    filter_re=args.filter_line)
+        rows = count_lines(fn_re='flakey.log$',
+                           line_re=line_re,
+                           cache=FLAKEY_LOG_CACHE,
+                           count=args.count,
+                           since=args.since,
+                           filter_re=args.filter_line)
+        for k, v in rows:
+            print '%4d %s' % (v, k)
         sys.exit()
 
     if args.line_regex is None:
@@ -157,12 +159,14 @@ def main():
                          limit=3)
         sys.exit()
 
-    count_lines(fn_re=args.file_regex,
-                line_re=args.line_regex,
-                cache=cache,
-                count=args.count,
-                since=args.since,
-                filter_re=args.filter_line)
+    rows = count_lines(fn_re=args.file_regex,
+                       line_re=args.line_regex,
+                       cache=cache,
+                       count=args.count,
+                       since=args.since,
+                       filter_re=args.filter_line)
+    for k, v in rows:
+        print '%4d %s' % (v, k)
 
 
 main()

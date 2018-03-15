@@ -49,11 +49,9 @@ def count_lines(fn_re, line_re, cache, count=None, since=None, filter_re=None):
 
     c = collections.Counter(lines)
     if count:
-        rows = c.most_common(count)
-    else:
-        rows = c.most_common()
-    for k, v in rows:
-        print '%4d %s' % (v, k)
+        return c.most_common(count)
+
+    return c.most_common()
 
 
 def group_by_month(files):
