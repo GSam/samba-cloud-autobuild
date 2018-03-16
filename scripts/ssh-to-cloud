@@ -7,14 +7,16 @@ CLOUD_DOT_FILES=~/cloud-dot-files
 
 echo checking whether $machine has a floating IP...
 
-ip=$(nova list | grep "| $machine " | cut -d'|' -f7 | cut -d, -f2 -s | tr -d '[:space:]')
+#ip=$(openstack server list | grep "| $machine " | cut -d'|' -f5 | cut -d, -f2 -s | tr -d '[:space:]' )
+ip=$(openstack server show ${machine} -c addresses -f value | cut -d ' ' -f 2 -s | tr -d '[:space:]' )
 
 if [[ "$ip" ]]; then
     echo found IP $ip
 else
     for x in 1 2; do
         echo looking for a free IP
-        ip=$(openstack  floating ip list | cut -d'|' -f 3,4 -s | grep -e '| None' | head -1 | cut -d'|' -f1)
+        ip=$(openstack  floating ip list -c 'Floating IP Address' -c'Port' -f value | \
+                 grep -e None | cut -d' ' -f 1 |head -n 1 )
         if [[ "$ip" ]]; then
             echo using $ip
             break
@@ -24,9 +26,14 @@ else
         fi
     done
 
-    nova floating-ip-associate $machine $ip
+    #port=$(openstack port list --server "$machine" -c ID -f value)
+    #openstack floating ip set --port $port $ip
+    openstack server add floating ip $machine $ip
     rm -f $KNOW_HOSTS
 fi
+
+image=$(openstack server show $machine -c image -f value)
+
 
 # make sure $ip has no trailing space (or else rsync $ip: will fail)
 ip=${ip// }
