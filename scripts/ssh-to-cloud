@@ -35,6 +35,16 @@ fi
 image=$(openstack server show $machine -c image -f value)
 
 
+if [[ "$image" =~ centos ]]; then
+    user=centos
+elif [[ "$image" =~ debian ]]; then
+    user=debian
+else
+    user=ubuntu
+fi
+
+echo found image $image: using username $user
+
 # make sure $ip has no trailing space (or else rsync $ip: will fail)
 ip=${ip// }
 
@@ -43,10 +53,10 @@ ip=${ip// }
 if [[ -d $CLOUD_DOT_FILES && ! -f $KNOWN_HOSTS ]]; then
     mkdir -p $(dirname $KNOWN_HOSTS)
     echo "copying $CLOUD_DOT_FILES/ contents to remote $ip:"
-    rsync -v -e "ssh -o 'UserKnownHostsFile $KNOWN_HOSTS' -o 'User ubuntu'" -r "$CLOUD_DOT_FILES/" "$ip":
+    rsync -v -e "ssh -o 'UserKnownHostsFile $KNOWN_HOSTS' -o 'User $user'" -r "$CLOUD_DOT_FILES/" "$ip":
 fi
 
-ssh -o "UserKnownHostsFile $KNOWN_HOSTS" -o 'User ubuntu' $ip
+ssh -o "UserKnownHostsFile $KNOWN_HOSTS" -o "User $user" $ip
 
 
 
