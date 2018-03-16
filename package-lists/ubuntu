@@ -55,7 +55,6 @@ packages:
  - python3-six
  - python-all-dev
  - python-crypto
- - python-crypto
  - python-dbg
  - python-dev
  - python-dnspython
