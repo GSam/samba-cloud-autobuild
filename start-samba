@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 import random
 
-from common import add_common_args, process_common_args, sanitise_hostname, run_nova_cmd
+from common import add_common_args, process_common_args, sanitise_hostname
 from common import get_credentials, get_package_list, OPENRC_TABLE, SambaCloudError
 
 try:
@@ -94,7 +94,7 @@ def boot(flavor, image, yaml_file, server_name, key_name, region,
     open_rc = OPENRC_TABLE[region]
     if key_name is None:
         key_name = '$USER'  # maybe the environment here is better
-    args = ['.', open_rc, ';', 'nova', 'boot']
+    args = ['.', open_rc, ';', 'openstack', 'server', 'create']
     if flavor:
         args += ['--flavor', quote(flavor)]
 
@@ -106,7 +106,6 @@ def boot(flavor, image, yaml_file, server_name, key_name, region,
                  + ',shutdown=remove,bootindex=0']
     args += ['--user-data', yaml_file]
     args += ['--key-name', key_name]
-    args += ['--poll']
     if net_id is not None:
         args += ['--nic', 'net-id=%s' % net_id]
     args += [server_name]
@@ -117,8 +116,8 @@ def boot(flavor, image, yaml_file, server_name, key_name, region,
 
 
 def find_good_net_id(region):
-    s = run_nova_cmd(['tenant-network-list'],
-                     region=region)
+    s = run_openstack_cmd(['tenant-network-list'],
+                          region=region)
     # we're looking for one like this:
     # | 10f83a57-2c8c-40c9-a472-a2ae10e2a65f | 10.59.0.0/24     | -    |
     # Let's assume it is the first one that isn't called "public-net"

@@ -57,17 +57,10 @@ def get_package_list(name, form=str):
     return packages
 
 
-def run_nova_cmd(args, region=DEFAULT_REGION, dry_run=False):
-    open_rc = OPENRC_TABLE[region]
-    args = ['.', open_rc, ';', 'nova'] + [quote(x) for x in args]
-    str_args = ' '.join(args)
-    if dry_run:
-        return str_args
-    return subprocess.check_output(str_args, shell=True)
-
-
 OPENSTACK_COMMANDS = {
-    'image_list': ['openstack', 'image', 'list']
+    'flavor_list': ['openstack', 'flavor', 'list'],
+    'image_list': ['openstack', 'image', 'list'],
+    'network_list': ['openstack', 'network', 'list', '--internal']
 }
 
 
@@ -144,7 +137,7 @@ def add_common_args(parser):
                         help=("prepare the image for autobuild, then stop"))
 
     parser.add_argument('--no-secrets', action='store_true',
-                        help=("don't upload nova password; instance won't "
+                        help=("don't upload openstack password; instance won't "
                               "delete/suspend/shelve itself"))
 
 
@@ -152,13 +145,7 @@ def process_common_args(args):
     if args.dry_run:
         print " This is what we WOULD be doing without -n/--dry-run:\n"
 
-    for nova_cmd in ("flavor_list", ):
-        if vars(args)[nova_cmd]:
-            print(run_nova_cmd([nova_cmd.replace('_', '-')],
-                               region=args.region, dry_run=args.dry_run))
-            sys.exit()
-
-    for openstack_cmd in ("image_list",):
+    for openstack_cmd in ("image_list", "flavor_list"):
         if vars(args)[openstack_cmd]:
             print(run_openstack_cmd(openstack_cmd,
                                     region=args.region,
