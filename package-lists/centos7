@@ -27,6 +27,7 @@ packages:
  - libxslt
  - nettle-devel
  - openldap-devel
+ - pam-devel
  - perl
  - perl-ExtUtils-MakeMaker
  - perl-Parse-Yapp
@@ -35,10 +36,12 @@ packages:
  - policycoreutils-python
  - popt-devel
  - psmisc
+ - python-crypto
  - python-devel
  - readline-devel
  - screen
  - setroubleshoot-plugins
  - setroubleshoot-server
+ - systemd-devel
  - xsltproc
  - zlib-devel
