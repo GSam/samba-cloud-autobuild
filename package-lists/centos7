@@ -39,6 +39,7 @@ packages:
  - psmisc
  - python-crypto
  - python-devel
+ - python-markdown
  - readline-devel
  - screen
  - setroubleshoot-plugins
