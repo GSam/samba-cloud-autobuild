@@ -142,7 +142,7 @@ write_files:
     export OS_REGION_NAME="{OS_REGION_NAME}"
     if [ -z "$OS_REGION_NAME" ]; then unset OS_REGION_NAME; fi
     sync
-    nova shelve $(hostname)
+    {nova} shelve $(hostname)
    path: /usr/local/bin/shelve-host
    permissions: '0755'
 
@@ -156,7 +156,7 @@ write_files:
     export OS_REGION_NAME="{OS_REGION_NAME}"
     if [ -z "$OS_REGION_NAME" ]; then unset OS_REGION_NAME; fi
     sync
-    nova suspend $(hostname)
+    {nova} suspend $(hostname)
    path: /usr/local/bin/suspend-host
    permissions: '0755'
 
@@ -169,7 +169,7 @@ write_files:
     export OS_PASSWORD="{OS_PASSWORD}"
     export OS_REGION_NAME="{OS_REGION_NAME}"
     if [ -z "$OS_REGION_NAME" ]; then unset OS_REGION_NAME; fi
-    (sleep 300; nova delete $(hostname))&
+    (sleep 300; {nova} delete $(hostname))&
    path: /usr/local/bin/delete-host
    permissions: '0755'
 
