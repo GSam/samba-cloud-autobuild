@@ -1,20 +1,21 @@
-# This version is for Centos 6.5
+# This version is for Centos 7
 # please keep it sorted
 packages:
+ - acl
  - attr
  - autoconf
  - bind-utils
+ - bison
  - ccache
  - cups-devel
  - curl
  - docbook-style-xsl
+ - flex
  - gcc
  - gdb
  - git
- - htop
- - tree
  - gnutls-devel
- - jed
+ - jansson-devel
  - keyutils-libs-devel
  - krb5-workstation
  - libacl-devel
@@ -40,4 +41,5 @@ packages:
  - screen
  - setroubleshoot-plugins
  - setroubleshoot-server
+ - xsltproc
  - zlib-devel
