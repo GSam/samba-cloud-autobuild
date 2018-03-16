@@ -32,6 +32,7 @@ packages:
  - perl-ExtUtils-MakeMaker
  - perl-Parse-Yapp
  - perl-Test-Base
+ - perl-Test-Simple
  - pkgconfig
  - policycoreutils-python
  - popt-devel
