@@ -200,6 +200,10 @@ def main():
                         const='TDB_NO_FSYNC=1',
                         help="Don't wait for fsync")
 
+    parser.add_argument('--no-extra-python', action='store_const', default='',
+                        const='AUTOBUILD_NO_EXTRA_PYTHON=1',
+                        help="Don't try python 3")
+
     parser.add_argument('--use-ccache', action='store_const', default='',
                         const='CC="ccache gcc"',
                         help="Use ccache (faster build; uses ~2GB disk)")
@@ -232,6 +236,7 @@ def main():
     server_name = sanitise_hostname(server_name)
 
     autobuild_env = ' '.join((args.tdb_no_fsync,
+                              args.no_extra_python,
                               args.use_ccache))
 
     yaml_argnames = {'remote', 'branch', 'image',
