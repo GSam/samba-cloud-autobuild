@@ -27,7 +27,7 @@ packages:
  - libbsd-dev
  - libcap-dev
  - libcups2-dev
- - libgnutls-dev
+ - libgnutls28-dev
  - libgpgme11-dev
  - libjansson-dev
  - libjson-perl
