@@ -11,7 +11,7 @@ DOCKER_IMAGE: registry.gitlab.com/catalyst-samba/samba
 
 # Gitlab->Project->Settings->CI/CD
 CI_SERVER_URL: https://gitlab.com/
-REGISTRATION_TOKEN: 1u24xAXeTT728NSCWVTZ
+# REGISTRATION_TOKEN: secret, Ansible will ask
 REGISTER_RUN_UNTAGGED: false
 
 RUNNER_NAME: gitlab-runner

@@ -7,6 +7,9 @@
     - vars.yml
   vars:
     ansible_python_interpreter: /usr/bin/python3
+  vars_prompt:
+    - name: "REGISTRATION_TOKEN"
+      prompt: "What is your gitlab registration token? You can find it at GitLab repo -> Settings -> CI/CD -> Runner settings"
 
   tasks:
 
