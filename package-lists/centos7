@@ -5,6 +5,7 @@ packages:
  - attr
  - autoconf
  - bind-utils
+ - binutils
  - bison
  - ccache
  - cups-devel
