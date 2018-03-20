@@ -14,7 +14,7 @@ CI_SERVER_URL: https://gitlab.com/
 # REGISTRATION_TOKEN: secret, Ansible will ask
 REGISTER_RUN_UNTAGGED: false
 
-RUNNER_NAME: gitlab-runner
+RUNNER_NAME: samba-gitlab-runner
 RUNNER_LIMIT: 15
 RUNNER_EXECUTOR: docker+machine
 RUNNER_TAG_LIST: docker,private
