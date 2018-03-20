@@ -2,7 +2,7 @@
 # settings for all kinds of gitlab-runner
 
 # Official Ubuntu image has no Python2
-concurrent: 8
+concurrent: 15
 check_interval: 5
 log_level: debug
 
@@ -15,7 +15,7 @@ REGISTRATION_TOKEN: 1u24xAXeTT728NSCWVTZ
 REGISTER_RUN_UNTAGGED: false
 
 RUNNER_NAME: gitlab-runner
-RUNNER_LIMIT: 8
+RUNNER_LIMIT: 15
 RUNNER_EXECUTOR: docker+machine
 RUNNER_TAG_LIST: docker,private
 # set all runner log output limit
