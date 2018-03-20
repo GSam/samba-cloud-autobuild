@@ -1,4 +1,4 @@
-# This version is for Ubuntu versions greater than 14.04
+# This version is for Ubuntu 14.04.
 # Please keep it sorted.
 packages:
  - acl
@@ -32,7 +32,7 @@ packages:
  - libjansson-dev
  - libjson-perl
  - libldap2-dev
- - liblmdb-dev
+ - liblmdb-dev/trusty-backports
  - libncurses5-dev
  - libpam0g-dev
  - libparse-yapp-perl

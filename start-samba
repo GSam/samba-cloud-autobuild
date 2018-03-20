@@ -40,6 +40,10 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
         template = YAML_TEMPLATE_1204
         user = 'ubuntu'
         package_list = None
+    elif '14.04' in image:
+        template = YAML_TEMPLATE
+        user = 'ubuntu'
+        package_list = get_package_list('ubuntu-1404')
     else:
         template = YAML_TEMPLATE
         user = 'ubuntu'

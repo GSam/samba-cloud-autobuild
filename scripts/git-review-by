@@ -1,0 +1,9 @@
+#!/bin/sh
+
+tag="$1"
+
+cd "$(git rev-parse --show-toplevel)"
+
+git filter-branch  -f \
+    --msg-filter "$(dirname $0)/git_review.msg-filter.awk -v tag='${tag}'" \
+    origin/master..

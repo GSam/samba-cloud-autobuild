@@ -93,9 +93,9 @@ def add_common_args(parser):
     parser.add_argument('-i', '--image', default="samba-build-14.04-template",
                         help="specify the image to use")
 
-    parser.add_argument('-f', '--flavor', default='c1.c2r16',
+    parser.add_argument('-f', '--flavor', default='c1.c2r8',
                         help=("specify which flavour to use "
-                              "(default: 2 CPUs, 16GB)"))
+                              "(default: 2 CPUs, 8GB)"))
 
     parser.add_argument('--region', default=DEFAULT_REGION,
                         help="'wlg' or 'por' (default '%s')" % DEFAULT_REGION)

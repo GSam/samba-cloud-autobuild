@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """Plot the results of multi-perf-test"""
-
+form __future__ import print_function
 import json
 import argparse
 import re
@@ -8,6 +8,13 @@ import subprocess
 import sys
 import os
 from collections import Counter
+
+VERBOSE = False
+
+
+def vprint(*args, **kwargs):
+    if VERBOSE:
+        print(*args, **kwargs)
 
 
 def import_matplotlib(we_have_x):
@@ -42,7 +49,7 @@ def find_commit_message(git_tree, commit, maxlen=75, date_only=False):
     try:
         s = subprocess.check_output(cmd).strip()
     except subprocess.CalledProcessError, e:
-        print >> sys.stderr, "commit name %s not found?: %s" % (commit, e)
+        print("commit name %s not found?: %s" % (commit, e), file=sys.stderr)
         return commit
     s = s.strip()
     if len(s) > maxlen:
@@ -142,7 +149,7 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
             d = json.load(f)
             f.close()
         except Exception, e:
-            print >> sys.stderr, "could not decode %s: %s" % (fn, e)
+            print("could not decode %s: %s" % (fn, e), file=sys.stderr)
             continue
         concatenated.extend(d)
 
@@ -153,10 +160,16 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
 
     for commit, v in concatenated:
         if data_counts[commit] < min_count:
+            vprint("skipping commit %s with %d results" % (commit, data_counts[commit]))
             continue
 
         if tidy_names:
             k = tidy_revision_name(commit)
+        else:
+            k = commit
+
+        vprint("commit %s has %d results" % (k, data_counts[commit]))
+
         c = (commit, k)
         if c not in commits:
             commits.append(c)
@@ -211,7 +224,7 @@ def get_sequences(input_files, filter_re, exclude_re, absolute_times=False,
                 last_val = v
                 break
         else:
-            print >> sys.stderr, "no values for %s; removing it" % test
+            print("no values for %s; removing it" % test, file=sys.stderr)
             del sequences[test]
             continue
 
@@ -277,8 +290,14 @@ def main():
     parser.add_argument('--min-count', type=int, default=1,
                         help=("only include points with at least "
                               "this many samples"))
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help="print a little bit more")
 
     args = parser.parse_args()
+
+    if args.verbose:
+        global VERBOSE
+        VERBOSE = True
 
     we_have_x = 'DISPLAY' in os.environ
 
@@ -321,7 +340,6 @@ def main():
     colours = set(cm.brg(x * scale) for x in range(len(sequences)))
 
     x_size = [(x ** 0.5) * 2 for x in x_counts]
-    print x_counts
 
     for test, colour in zip(sequences, colours):
         seq = sequences[test]

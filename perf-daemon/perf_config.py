@@ -34,3 +34,4 @@ EMAIL_SERVER = 'smtp1.catalyst.net.nz'
 
 TEMPLATE_DIR = os.path.join(HERE, 'templates')
 
+EMAIL_ATTEMPTS = 4
