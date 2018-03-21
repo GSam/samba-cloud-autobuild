@@ -89,16 +89,20 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
 
 def boot(flavor, image, yaml_file, server_name, key_name, region,
          skip_samba_build=False, skip_samba_autobuild=False,
-         dry_run=False, net_id=None):
+         dry_run=False, net_id=None, volume_size=None):
     open_rc = OPENRC_TABLE[region]
     if key_name is None:
         key_name = '$USER'  # maybe the environment here is better
     args = ['.', open_rc, ';', 'nova', 'boot']
     if flavor:
         args += ['--flavor', quote(flavor)]
-    if image:
-        args += ['--image', quote(image)]
 
+    if image and volume_size == 10:
+        args += ['--image', quote(image)]
+    if image and volume_size != 10:
+        args += ['--block-device', 'source=image,id=' + quote(image)
+                 + ',dest=volume,size=' + str(volume_size)
+                 + ',shutdown=remove,bootindex=0']
     args += ['--user-data', yaml_file]
     args += ['--key-name', key_name]
     args += ['--poll']
@@ -178,6 +182,9 @@ def main():
                         const='CC="ccache gcc"',
                         help="Use ccache (faster build; uses ~2GB disk)")
 
+    parser.add_argument('--volume-size', help=("Size of root disk in GB"),
+                        default=10, type=int)
+    
     args = parser.parse_args()
     process_common_args(args)
 
@@ -224,7 +231,7 @@ def main():
         net_id = args.net_id
 
     boot_argnames = {'flavor', 'image',
-                     'key_name', 'region', 'dry_run'}
+                     'key_name', 'region', 'dry_run', 'volume_size'}
 
     boot_kwargs = {k: v for k, v in vars(args).items()
                    if k in boot_argnames}
