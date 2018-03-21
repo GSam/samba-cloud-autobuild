@@ -2,6 +2,11 @@
 
 machine=$1
 
+if [[ "$machine" == "" ]]; then
+   echo USAGE: ssh-to-cloud [machine]
+   exit 1
+fi
+
 KNOWN_HOSTS=~/.known-hosts-on-catalyst-cloud/$machine
 CLOUD_DOT_FILES=~/cloud-dot-files
 
