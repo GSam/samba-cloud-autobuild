@@ -1,0 +1,33 @@
+{
+    "builders": [{
+	"type": "openstack",
+	"ssh_username": "ubuntu",
+	"image_name": "samba-build-16.04-template",
+	"source_image": "096021b5-a973-4c0b-b786-c48c85f1f662",
+	"flavor": "c1.c1r1",
+	"security_groups": ["default"],
+	"floating_ip_pool": "public-net",
+	"networks": ["a4ed9e9e-1479-4f36-a4f3-09d9da7ab04a"]
+    }],
+    "provisioners": [{
+	"type": "shell",
+	"inline": [
+	    "set -x",
+	    "set -e",
+	    "sudo apt-get update",
+	    "sudo apt-get upgrade -y",
+	    "sudo apt-get install -y acl attr autoconf bind9utils bison build-essential ccache curl debhelper dnsutils docbook-xml docbook-xsl emacs24-nox flex gdb git jed krb5-user libacl1-dev libaio-dev libarchive-dev libattr1-dev libblkid-dev libbsd-dev libcap-dev libcups2-dev libgnutls28-dev libgpgme11-dev libjansson-dev libjson-perl libldap2-dev liblmdb-dev libncurses5-dev libpam0g-dev libparse-yapp-perl libpopt-dev libreadline-dev linux-cloud-tools-generic linux-tools-generic nettle-dev perl perl-modules pkg-config psmisc python3-dev python3-dnspython python3-gpgme python3-markdown python3-matplotlib python-all-dev python-crypto python-crypto python-dbg python-dev python-dnspython python-gpgme python-markdown python-novaclient python-pexpect rng-tools screen tshark xsltproc zlib1g-dev",
+	    "cd ~",
+	    "git clone git://git.catalyst.net.nz/samba.git",
+	    "cd samba",
+	    "git remote add catalyst git://git.catalyst.net.nz/samba.git",
+	    "git remote add abartlet git://git.samba.org/abartlet/samba.git",
+	    "git remote set-url origin git://git.samba.org/samba.git",
+	    "git fetch catalyst",
+	    "git fetch origin",
+	    "git checkout origin/master",
+	    "CC='ccache gcc' ./script/autobuild.py --restrict-tests=samba.tests.source --testbase=$HOME/autobuild",
+            "sudo apt-get install -y linux-image-4.13.0-37-generic"
+	]
+    }]
+}
