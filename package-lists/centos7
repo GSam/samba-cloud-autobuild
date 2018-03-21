@@ -29,6 +29,7 @@ packages:
  - nettle-devel
  - openldap-devel
  - pam-devel
+ - patch
  - perl
  - perl-ExtUtils-MakeMaker
  - perl-Parse-Yapp
@@ -45,6 +46,5 @@ packages:
  - screen
  - setroubleshoot-plugins
  - setroubleshoot-server
- - systemd-devel
  - xsltproc
  - zlib-devel

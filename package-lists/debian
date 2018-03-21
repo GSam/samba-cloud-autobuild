@@ -57,7 +57,7 @@ packages:
  - python-dnspython
  - python-gpgme
  - python-markdown
- - python-novaclient
+ - python-openstackclient
  - python-pexpect
  - rng-tools
  - screen
