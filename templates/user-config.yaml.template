@@ -323,6 +323,7 @@ runcmd:
  - mount / -o remount,rw,nobarrier
  - [ /usr/local/bin/add-swap ]
  - /etc/init.d/rng-tools start
+ - test -x /usr/bin/yum && yum -y install jansson-devel
  - test -x /usr/bin/ld.gold && ln -sf /usr/bin/ld.gold /usr/bin/ld
  - [ blockdev, --setra, {readahead}, /dev/vda]
  - [ /usr/local/bin/prepare-autobuild-dir]
