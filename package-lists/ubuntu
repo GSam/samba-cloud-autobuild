@@ -40,6 +40,7 @@ packages:
  - libreadline-dev
  - linux-cloud-tools-generic
  - linux-tools-generic
+ - lmdb-utils
  - nettle-dev
  - perl
  - perl-modules
