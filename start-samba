@@ -66,6 +66,11 @@ def write_yaml_config(remote, branch, image, region, onfail, readahead,
         user = 'debian'
         package_list = get_package_list('debian')
         nova = OPENSTACK_CLIENT
+    elif 'debian-7' in image:
+        template = YAML_TEMPLATE
+        user = 'debian'
+        package_list = get_package_list('debian-7')
+        nova = NOVA_CLIENT
     else:
         template = YAML_TEMPLATE
         user = 'ubuntu'
