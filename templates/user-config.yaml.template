@@ -304,6 +304,16 @@ write_files:
     HRNGDEVICE=/dev/urandom
    path: /etc/default/rng-tools
 
+ - content: |
+    #!/bin/bash
+    if [ $(df -m / --output=avail | tail -n1) -gt 10240 ]; then
+      sudo dd if=/dev/zero of=/samba-swap bs=1M count=6144;
+      sudo mkswap /samba-swap;
+      sudo swapon /samba-swap;
+    fi
+   path: /usr/local/bin/add-swap
+   permissions: '0755'
+
 # run-autobuild will call the on-fail or on-success handlers depending on
 # the build process return codes.
 runcmd:
@@ -311,6 +321,7 @@ runcmd:
  - echo 0 > /proc/sys/kernel/yama/ptrace_scope
  - echo 0 > /proc/sys/kernel/perf_event_paranoid
  - mount / -o remount,rw,nobarrier
+ - [ /usr/local/bin/add-swap ]
  - /etc/init.d/rng-tools start
  - ln -sf /usr/bin/ld.gold /usr/bin/ld
  - [ blockdev, --setra, {readahead}, /dev/vda]
