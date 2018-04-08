@@ -29,13 +29,6 @@
         dest: /tmp/samba-docker-image
         force: yes
 
-    - name: pip install common packages
-      become: true
-      pip:
-        name: "{{ item }}"
-      with_items:
-        - docker-py  # required by docker_image
-
     - name: remove docker image
       docker_image:
         name: "{{ DOCKER_IMAGE }}"

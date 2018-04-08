@@ -36,6 +36,11 @@ To provision gitlab-runner only:
     ansible-playbook provisioning.yml
 
 # Build docker image
+You need to install dependencies first:
+
+    sudo pip install docker-py
+
+Then:
 
     ansible-playbook build-docker-image.yml
 
