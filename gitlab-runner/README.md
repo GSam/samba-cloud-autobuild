@@ -39,5 +39,5 @@ To provision gitlab-runner only:
 
     ansible-playbook build-docker-image.yml
 
-This script just render a Dockerfile in /tmp/ and build the image locally.
-To push it to registry, follow the instructions at the end of playbook.
+This script will ask credentials for your docker registry, render a Dockerfile
+in /tmp/, build the image locally, and then push to the specified docker registry.

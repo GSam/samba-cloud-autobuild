@@ -4,6 +4,13 @@
   gather_facts: false
   vars_files:
     - vars.yml
+  vars_prompt:
+    - name: "docker_registry_username"
+      prompt: "What's the username for your docker registry account"
+      private: no
+    - name: "docker_registry_password"
+      prompt: "What's the password for your docker registry account"
+      private: yes
 
   tasks:
 
@@ -36,6 +43,12 @@
         state: absent
         force: yes
 
+    - name: login to docker registry to push image later
+      docker_login:
+        registry: "{{ DOCKER_REGISTRY }}"
+        username: "{{ docker_registry_username }}"
+        password: "{{ docker_registry_password }}"
+
     - name: build docker image
       docker_image:
         path: /tmp/samba-docker-image
@@ -43,13 +56,5 @@
         tag: latest
         state: build
         nocache: yes
-        push: no
+        push: yes
         rm: yes
-
-    - name: print help msg to login to docker registry
-      debug:
-        msg: "docker login {{ DOCKER_REGISTRY }}"
-
-    - name: print help msg to push to docker registry
-      debug:
-        msg: "docker push {{ DOCKER_IMAGE }}"
