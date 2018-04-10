@@ -7,7 +7,7 @@ check_interval: 5
 log_level: debug
 
 DOCKER_REGISTRY: registry.gitlab.com
-DOCKER_IMAGE: registry.gitlab.com/catalyst-samba/samba
+DOCKER_IMAGE: registry.gitlab.com/samba-team/samba
 
 # Gitlab->Project->Settings->CI/CD
 CI_SERVER_URL: https://gitlab.com/
