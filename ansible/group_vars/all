@@ -76,7 +76,6 @@ cat_repo: 'deb http://debian.catalyst.net.nz/catalyst stable catalyst'
 userpackages:
   - 'catalyst-alessandrodalsasso'
   - 'catalyst-andrewbartlett'
-  - 'catalyst-bobcampbell'
   - 'catalyst-douglasbagnall'
   - 'catalyst-garmingsam'
   - 'catalyst-garylockyer'
@@ -91,7 +90,6 @@ sudo_users:
   - 'douglasb'
   - 'timbeale'
   - 'gary'
-  - 'bobcampbell'
   - 'joeg'
 
 ## Master host flavours (yes, I know, os_server property is flavor)
