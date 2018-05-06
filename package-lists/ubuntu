@@ -52,6 +52,7 @@ packages:
  - python3-gpgme
  - python3-markdown
  - python3-matplotlib
+ - python3-six
  - python-all-dev
  - python-crypto
  - python-crypto
@@ -62,6 +63,7 @@ packages:
  - python-markdown
  - python-novaclient
  - python-pexpect
+ - python-six
  - rng-tools
  - screen
  - tshark
