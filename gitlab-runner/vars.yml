@@ -2,7 +2,7 @@
 # settings for all kinds of gitlab-runner
 
 # Official Ubuntu image has no Python2
-concurrent: 15
+concurrent: 30
 check_interval: 5
 log_level: debug
 
