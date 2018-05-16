@@ -288,6 +288,8 @@ resources:
                     sleep 10
                   done
 
+                  /usr/local/samba/bin/samba-tool dns add 10.9.0.10 _REALM_ $(hostname) A  10.9.0.10 -UAdministrator%_PASSWORD_
+
                 params:
                   _USER_: {get_param: user}
                   _REALM_:  {get_param: samba_realm}
