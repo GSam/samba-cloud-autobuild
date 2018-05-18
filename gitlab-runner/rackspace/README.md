@@ -1,6 +1,8 @@
-## set up rax credentials file
+# Set up gitlab-runner in Rackspace Cloud with Ansible
 
-create credentials file:
+## Set up rax credentials file
+
+Create credentials file:
 
     touch ~/.rackspace_cloud_credentials
 
@@ -12,15 +14,58 @@ with following content:
 
 NOTE: no quotes arround values, otherwise authentication will fail.
 
-add environment variables to your .bashrc or .zshrc:
+
+## set up environment variables
+
+Add environment variables to your .bashrc or .zshrc:
 
     export RAX_CREDS_FILE=~/.rackspace_cloud_credentials
-    export RAX_REGION=SYD  # SYD,IAD,DFW,ORD,HKG
+    export OS_USERNAME=YOUR-RACKSPACE-USERNAME
+    export OS_API_KEY=YOUR-RACKSPACE-API-KEY
 
-The rax.py inventory script will read this var.
+Source your .bashrc file or restart your terminal.
 
-add to your .bashrc or .zshrc:
+NOTE: We didn't put credentials to vault, so we can switch to another account easily.
 
-    ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt
 
-.vault_pass.txt is the file has your vault pass in it as a single line.
+## Set up python virtualenv for rackspace and ansible modules
+
+    sudo apt install python-virtualenv
+    mkdir ~/.virtualenvs
+    cd ~/.virtualenvs
+    virtualenv rax
+    source rax/bin/activate
+
+Or you can install `virtualenvwrapper` to make above things easier(optional):
+
+    http://virtualenvwrapper.readthedocs.io
+
+Then cd to here, install python deps:
+
+    pip install -r requirements.txt
+
+## Verify above set up
+
+Run this in current dir, with virtualenv activated:
+
+    ./invertory/rax.py --list
+
+If everything is ok, this should return you json data from rackspace.
+
+
+## Set up Ansible vault password file
+
+Find the gitlab-runner Ansible vault password here:
+
+    ssh cat-prod-secret
+    pview -d samba \?
+
+Save the vault to `~/.vault_pass`.  In `ansible.cfg`, we ask Ansible to read
+this file, so make sure name is correct.
+
+## Run Ansible
+
+Now you are ready to go:
+
+    ansible-playbook main.yml
+
