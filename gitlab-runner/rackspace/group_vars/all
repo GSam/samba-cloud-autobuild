@@ -37,6 +37,7 @@ OS_FLAVOR_ID: compute1-8
 # some how public key is authorized only to root, no ubuntu
 OS_SSH_USER: root
 OS_AUTH_URL: https://identity.api.rackspacecloud.com/v2.0/
+OS_REGION_NAME: DFW
 
 MACHINE_NAME: private-%s
 MACHINE_IDLE_COUNT: 0

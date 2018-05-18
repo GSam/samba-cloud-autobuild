@@ -102,9 +102,9 @@
       OS_SSH_USER: "{{ OS_SSH_USER }}"
       OS_INSECURE: true
       OS_AUTH_URL: "{{ OS_AUTH_URL }}"
+      OS_REGION_NAME: "{{ OS_REGION_NAME }}"
       OS_TENANT_NAME: "{{ lookup('env', 'OS_TENANT_NAME') }}"
       OS_TENANT_ID: "{{ lookup('env', 'OS_TENANT_ID') }}"
-      OS_REGION_NAME: "{{ lookup('env', 'OS_REGION_NAME') }}"
       OS_USERNAME: "{{ lookup('env', 'OS_USERNAME') }}"
       OS_PASSWORD: "{{ lookup('env', 'OS_PASSWORD') }}"
       OS_API_KEY: "{{ lookup('env', 'OS_API_KEY') }}"
