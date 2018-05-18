@@ -1,0 +1,47 @@
+---
+# settings for all kinds of gitlab-runner
+
+# Official Ubuntu image has no Python2
+PUBLIC_KEY: "../files/id_rsa_catalyst_samba.pub"
+PRIVATE_KEY: "~/.ssh/id_rsa_catalyst_samba"
+KEYPAIR_NAME: "catalyst_samba"
+
+DOCKER_REGISTRY: registry.gitlab.com
+DOCKER_IMAGE: registry.gitlab.com/samba-team/samba
+
+# Gitlab->Project->Settings->CI/CD
+CI_SERVER_URL: https://gitlab.com/
+# REGISTRATION_TOKEN: secret, Ansible will ask
+REGISTER_RUN_UNTAGGED: false
+
+RUNNER_GROUP: gitlab-runners
+RUNNER_NAME: gitlab-runner
+RUNNER_LIMIT: 15
+RUNNER_EXECUTOR: docker+machine
+RUNNER_TAG_LIST: docker,private
+# set all runner log output limit
+RUNNER_OUTPUT_LIMIT: 8192
+
+OS_NETWORK_BASE: 10.0.0
+OS_NETWORK_NAME: private
+OS_SUBNET_NAME: gitlab-runner-subnet
+OS_ROUTER_NAME: gitlab-runner-router
+OS_SECURITY_GROUP_NAME: gitlab-runner-security-group
+
+OS_IMAGE_NAME: "Ubuntu 16.04 LTS (Xenial Xerus) (PVHVM)"
+OS_IMAGE_ID: "8b7afdfb-5406-44fa-a7ca-3a652a77e220"
+
+# flavor for docker-machine servers, 8G RAM, 4 VCPUs, 320G Disk
+# https://developer.rackspace.com/docs/cloud-servers/v2/general-api-info/flavors/#supported-flavors-for-cloud-servers
+OS_FLAVOR_NAME: compute1-8
+# some how public key is authorized only to root, no ubuntu
+OS_SSH_USER: root
+OS_AUTH_URL: https://identity.api.rackspacecloud.com/v2.0/
+
+MACHINE_NAME: private-%s
+MACHINE_IDLE_COUNT: 0
+MACHINE_IDLE_TIME: 30
+MACHINE_MAX_BUILDS: 100
+MACHINE_OFF_PEAK_IDLE_COUNT: 0
+MACHINE_OFF_PEAK_IDLE_TIME: 0
+MACHINE_DRIVER: rackspace

@@ -1,0 +1,54 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Create server instance in the Rackspace Cloud
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - ../vault.yml
+
+  tasks:
+
+    - name: import ssh keypair
+      rax_keypair:
+        state: present
+        name: "{{ KEYPAIR_NAME }}"
+        public_key: "{{ PUBLIC_KEY }}"
+
+    - name: save private key to your home
+      copy:
+        content: "{{ vault_id_rsa_catalyst_samba }}"
+        dest: "{{ PRIVATE_KEY }}"
+        mode: 0400
+
+    - name: create gitlab runner bastion instance
+      rax:
+        state: present
+        name: "{{ RUNNER_NAME }}"
+        auto_increment: no
+        exact_count: 1  # only need 1 instance
+        flavor: "2"  # minimal instance
+        image: "{{ OS_IMAGE_NAME }}"
+        key_name: "{{ KEYPAIR_NAME }}"
+        networks: ['private', 'public']
+        group: "{{ RUNNER_GROUP }}"
+        meta: "groups={{ RUNNER_GROUP }}"
+        wait: yes
+
+    - name: add new host to hosts group
+      # dynamic inventory can not find this host in next play in same file
+      add_host:
+        name: "{{ RUNNER_NAME }}"
+        groups: "{{ RUNNER_GROUP }}"
+
+
+- name: Provision gitlab runner
+  hosts: "{{ RUNNER_GROUP }}"
+  gather_facts: no
+  remote_user: "{{ OS_SSH_USER }}"
+  vars_files:
+    - group_vars/all  # have to load explicitly, otherwise hosts is undefined
+    - ../vault.yml
+  vars:
+    REGISTRATION_TOKEN: "{{ vault_gitlab_ci_registration_token_for_devel_samba }}"
+  roles:
+    - provisioner
