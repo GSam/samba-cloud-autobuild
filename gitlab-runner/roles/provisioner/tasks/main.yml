@@ -1,0 +1,121 @@
+---
+- name: apt update
+  apt:
+    update_cache: yes
+
+- name: apt install common packages
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - python3-pip
+    - python-pip
+    - language-pack-en
+    - htop
+
+- name: pip install common packages
+  pip:
+    name: "{{ item }}"
+  with_items:
+    - docker-py  # required by docker_container
+
+- name: get get-docker.sh script to install docker
+  get_url:
+    url: https://get.docker.com
+    dest: /tmp/get-docker.sh
+    mode: 0755
+    force: true
+
+- name: run get-docker.sh script to install docker
+  shell: /tmp/get-docker.sh
+
+- name: start docker service
+  service:
+    name: docker
+    state: started
+
+- name: add user to docker group
+  user:
+    name: "{{ OS_SSH_USER }}"
+    groups: docker
+
+# - name: get docker-machine binary and install
+  # get_url:
+    # url: https://github.com/docker/machine/releases/download/v0.13.0/docker-machine-Linux-x86_64
+    # dest: /usr/local/bin/docker-machine
+    # mode: 0755
+    # force: true
+
+- name: pull gitlab-runner docker image
+  docker_image:
+    name: gitlab/gitlab-runner
+    tag: latest
+    state: present
+
+- name: create /etc/gitlab-runner dir
+  file:
+    path: /etc/gitlab-runner
+    state: directory
+    mode: 0755
+
+- name: render gitlab-runner config.toml
+  template:
+    src: templates/config.toml
+    dest: /etc/gitlab-runner/config.toml
+    force: yes
+
+- name: start gitlab-runner-bastion docker container
+  docker_container:
+    name: "{{ RUNNER_NAME }}"
+    image: gitlab/gitlab-runner
+    state: started
+    restart: yes
+    restart_policy: always
+    privileged: yes
+    cleanup: yes
+    volumes:
+      - /etc/gitlab-runner:/etc/gitlab-runner:rw
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+    env:
+      CONFIG_FILE: "/etc/gitlab-runner/config.toml"
+      CI_SERVER_URL: "{{ CI_SERVER_URL}}"
+      REGISTRATION_TOKEN: "{{ REGISTRATION_TOKEN }}"
+      REGISTER_NON_INTERACTIVE: true
+      RUNNER_NAME: "{{ RUNNER_NAME }}"
+      RUNNER_LIMIT: "{{ RUNNER_LIMIT }}"
+      RUNNER_OUTPUT_LIMIT: "{{ RUNNER_OUTPUT_LIMIT }}"
+      RUNNER_EXECUTOR: "{{ RUNNER_EXECUTOR }}"
+      RUNNER_TAG_LIST: "{{ RUNNER_TAG_LIST }}"
+      MACHINE_IDLE_COUNT: "{{ MACHINE_IDLE_COUNT }}"
+      MACHINE_IDLE_TIME: "{{ MACHINE_IDLE_TIME }}"
+      MACHINE_MAX_BUILDS: "{{ MACHINE_MAX_BUILDS }}"
+      MACHINE_DRIVER: "{{ MACHINE_DRIVER }}"
+      MACHINE_NAME: "{{ MACHINE_NAME }}"
+      # MACHINE_OFF_PEAK_PERIODS: ["* * 0-17,18-23 * * mon-fri *", "* * * * * sat,sun *"]
+      MACHINE_OFF_PEAK_IDLE_COUNT: "{{ MACHINE_OFF_PEAK_IDLE_COUNT }}"
+      MACHINE_OFF_PEAK_IDLE_TIME: "{{ MACHINE_OFF_PEAK_IDLE_TIME }}"
+      DOCKER_IMAGE: "{{ DOCKER_IMAGE }}:latest"
+      OS_NETWORK_NAME: "{{ OS_NETWORK_NAME }}"
+      OS_FLAVOR_NAME: "{{ OS_FLAVOR_NAME }}"
+      OS_IMAGE_NAME: "{{ OS_IMAGE_NAME }}"
+      OS_IMAGE_ID: "{{ OS_IMAGE_ID|default('') }}"
+      OS_SSH_USER: "{{ OS_SSH_USER }}"
+      OS_INSECURE: true
+      OS_AUTH_URL: "{{ OS_AUTH_URL }}"
+      OS_TENANT_NAME: "{{ lookup('env', 'OS_TENANT_NAME') }}"
+      OS_TENANT_ID: "{{ lookup('env', 'OS_TENANT_ID') }}"
+      OS_REGION_NAME: "{{ lookup('env', 'OS_REGION_NAME') }}"
+      OS_USERNAME: "{{ lookup('env', 'OS_USERNAME') }}"
+      OS_PASSWORD: "{{ lookup('env', 'OS_PASSWORD') }}"
+      OS_API_KEY: "{{ lookup('env', 'OS_API_KEY') }}"
+  tags: restart
+
+- name: gitlab-runner unregister all
+  command: "docker exec {{ RUNNER_NAME }} gitlab-runner unregister --all-runners"
+  tags: unreg
+
+- name: gitlab-runner register
+  command: docker exec {{ RUNNER_NAME }} gitlab-runner register --machine-machine-options "engine-storage-driver=devicemapper"
+
+- name: gitlab-runner list
+  command: "docker exec {{ RUNNER_NAME }} gitlab-runner list"
+  tags: list
