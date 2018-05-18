@@ -33,7 +33,7 @@ OS_IMAGE_ID: "8b7afdfb-5406-44fa-a7ca-3a652a77e220"
 
 # flavor for docker-machine servers, 8G RAM, 4 VCPUs, 320G Disk
 # https://developer.rackspace.com/docs/cloud-servers/v2/general-api-info/flavors/#supported-flavors-for-cloud-servers
-OS_FLAVOR_NAME: compute1-8
+OS_FLAVOR_ID: compute1-8
 # some how public key is authorized only to root, no ubuntu
 OS_SSH_USER: root
 OS_AUTH_URL: https://identity.api.rackspacecloud.com/v2.0/
