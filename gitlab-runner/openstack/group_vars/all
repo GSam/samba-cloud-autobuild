@@ -2,9 +2,8 @@
 # settings for all kinds of gitlab-runner
 
 # Official Ubuntu image has no Python2
-concurrent: 30
-check_interval: 5
-log_level: debug
+PUBLIC_KEY: "../files/id_rsa_catalyst_samba.pub"
+KEYPAIR_NAME: "catalyst_samba"
 
 DOCKER_REGISTRY: registry.gitlab.com
 DOCKER_IMAGE: registry.gitlab.com/samba-team/samba
@@ -14,7 +13,8 @@ CI_SERVER_URL: https://gitlab.com/
 # REGISTRATION_TOKEN: secret, Ansible will ask
 REGISTER_RUN_UNTAGGED: false
 
-RUNNER_NAME: samba-gitlab-runner
+RUNNER_GROUP: gitlab-runners
+RUNNER_NAME: gitlab-runner
 RUNNER_LIMIT: 15
 RUNNER_EXECUTOR: docker+machine
 RUNNER_TAG_LIST: docker,private
@@ -28,8 +28,11 @@ OS_ROUTER_NAME: gitlab-runner-router
 OS_SECURITY_GROUP_NAME: gitlab-runner-security-group
 
 OS_IMAGE_NAME: ubuntu-16.04-x86_64
+OS_IMAGE_ID: 096021b5-a973-4c0b-b786-c48c85f1f662
+
 OS_FLAVOR_NAME: c1.c2r8  # flavor for docker-machine servers
 OS_SSH_USER: ubuntu
+OS_AUTH_URL: https://api.cloud.catalyst.net.nz:5000/v2.0
 
 MACHINE_NAME: private-%s
 MACHINE_IDLE_COUNT: 0
