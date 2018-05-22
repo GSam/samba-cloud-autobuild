@@ -20,6 +20,7 @@ NOTE: no quotes arround values, otherwise authentication will fail.
 Add environment variables to your .bashrc or .zshrc:
 
     export RAX_CREDS_FILE=~/.rackspace_cloud_credentials
+    export RAX_REGION=DFW
     export OS_USERNAME=YOUR-RACKSPACE-USERNAME
     export OS_API_KEY=YOUR-RACKSPACE-API-KEY
 
