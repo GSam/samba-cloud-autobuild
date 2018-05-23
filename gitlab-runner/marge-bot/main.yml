@@ -1,0 +1,80 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Set up Marge-Bot on a Ubuntu Server
+  hosts: "marge-bots"
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - ../vault.yml
+  tasks:
+
+    - name: apt update
+      apt:
+        update_cache: yes
+
+    - name: apt install common packages
+      apt:
+        name: "{{ item }}"
+      with_items:
+        - python-pip
+        - language-pack-en
+        - htop
+
+    - name: pip install common packages
+      pip:
+        name: "{{ item }}"
+      with_items:
+        - docker-py  # required by docker_container
+
+    - name: generate ssh private key file
+      become: no
+      copy:
+        dest: "/home/{{ ansible_user }}/.ssh/id_rsa"
+        content: "{{ vault_id_rsa_catalyst_samba }}"
+        mode: 0400
+
+    - name: get get-docker.sh script to install docker
+      get_url:
+        url: https://get.docker.com
+        dest: /tmp/get-docker.sh
+        mode: 0755
+        force: true
+
+    - name: run get-docker.sh script to install docker
+      shell: /tmp/get-docker.sh
+
+    - name: start docker service
+      service:
+        name: docker
+        state: started
+
+    - name: add user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+
+    - name: pull marge-bot docker image
+      docker_image:
+        name: smarkets/marge-bot
+        tag: latest
+        state: present
+
+    - name: start gitlab-runner-bastion docker container
+      docker_container:
+        name: marge-bot
+        image: smarkets/marge-bot
+        state: started
+        restart: yes
+        restart_policy: always
+        privileged: yes
+        cleanup: yes
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock:rw
+          - /home/{{ ansible_user }}/.ssh/id_rsa:/opt/id_rsa:ro
+        env:
+          MARGE_GITLAB_URL: "https://gitlab.com"
+          MARGE_AUTH_TOKEN: "{{ vault_marge_bot_access_token }}"
+          MARGE_SSH_KEY_FILE: "/opt/id_rsa"
+          MARGE_CI_TIMEOUT: "300min"
+          MARGE_GIT_TIMEOUT: "3600s"
+          MARGE_DEBUG: true
