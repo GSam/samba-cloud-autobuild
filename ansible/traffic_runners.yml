@@ -1,0 +1,50 @@
+---
+# A playbook to set up a Samba traffic runner
+# Prepare the instance, and put it in inventory
+- name: prepare samba server for performance test
+  remote_user: "{{ remote_user }}"
+  become: yes
+  hosts: "traffic_runners"
+  tasks:
+    - name: apt update
+      apt:
+        update_cache: yes
+
+    - name: apt upgrade
+      apt:
+        upgrade: dist
+
+    - name: load samba dependencies package list
+      include_vars: "../package-lists/ubuntu"
+
+    - name: apt install samba deps
+      apt:
+        name: "{{ item }}"
+        state: latest
+      with_items: "{{ packages }}"
+
+    - name: git clone samba repo
+      become: no
+      git:
+        repo: "https://github.com/catalyst-joe-guo/samba.git"
+        dest: "/home/ubuntu/samba"
+        version: traffic_replay_against_windows
+
+    - name: link ld to ld.gold
+      file:
+        src: /usr/bin/ld.gold
+        dest: /usr/bin/ld
+        state: link
+        force: yes
+
+    - name: config samba code
+      become: no
+      command: "./configure.developer"
+      args:
+        chdir: "/home/ubuntu/samba"
+
+    - name: compile samba code
+      become: no
+      command: "make -j"
+      args:
+        chdir: "/home/ubuntu/samba"
