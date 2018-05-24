@@ -1,0 +1,5 @@
+ansible
+dnspython
+shade
+python-openstackclient
+openstacksdk
