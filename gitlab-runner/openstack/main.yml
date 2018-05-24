@@ -1,11 +1,7 @@
 ---
 - name: Create networking in the Catalyst Cloud
   hosts: localhost
-  vars_files:
-    - vars.yml
   vars:
-    ssh_public_key: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa.pub"
-    keypair_name: "{{ lookup('env', 'USER') }}"
     restricted_cidr_range: "{{ lookup('dig', 'myip.opendns.com', '@resolver1.opendns.com') + '/32' | default('0.0.0.0/0', true) }}"
 
   tasks:
@@ -73,6 +69,17 @@
         server: "{{ RUNNER_NAME }}"
       register: floating_ip_info
 
-    - name: Output floating IP
-      debug:
-        var: floating_ip_info.floating_ip.floating_ip_address
+
+- name: Provision gitlab runner
+  hosts: "{{ RUNNER_GROUP }}"
+  remote_user: "{{ OS_SSH_USER }}"
+  become: yes
+  gather_facts: no
+  vars_files:
+    - group_vars/all  # have to load explicitly, otherwise hosts is undefined
+    - ../vault.yml
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
+    REGISTRATION_TOKEN: "{{ vault_gitlab_ci_registration_token_for_catalyst_samba }}"
+  roles:
+    - provisioner
