@@ -26,24 +26,20 @@
     force: true
 
 - name: run get-docker.sh script to install docker
+  become: yes
   shell: /tmp/get-docker.sh
 
 - name: start docker service
+  become: yes
   service:
     name: docker
     state: started
 
 - name: add user to docker group
+  become: yes
   user:
     name: "{{ OS_SSH_USER }}"
     groups: docker
-
-# - name: get docker-machine binary and install
-  # get_url:
-    # url: https://github.com/docker/machine/releases/download/v0.13.0/docker-machine-Linux-x86_64
-    # dest: /usr/local/bin/docker-machine
-    # mode: 0755
-    # force: true
 
 - name: pull gitlab-runner docker image
   docker_image:
