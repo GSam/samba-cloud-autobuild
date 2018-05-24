@@ -14,10 +14,32 @@ import config
 from email_utils import filter_by_date, count_lines, draw_histogram
 from email_utils import recurring_errors, draw_runtime_histogram, errors_since
 
-SAMBA_STDERR_CACHE = os.path.join(os.path.dirname(__file__), 'cache/autobuild-stderr')
-SAMBA_STDOUT_CACHE = os.path.join(os.path.dirname(__file__), 'cache/autobuild')
-FLAKEY_LOG_CACHE = os.path.join(os.path.dirname(__file__), 'cache/flakey_log')
+BASE_CACHE = os.path.join(os.path.dirname(__file__), 'cache/sn-devel/')
+STDERR_CACHE = os.path.join(BASE_CACHE, 'stderr')
+STDOUT_CACHE = os.path.join(BASE_CACHE, 'stdout')
+FLAKEY_LOG_CACHE = os.path.join(BASE_CACHE, 'cache/sn-devel/flakey_log')
+UNKNOWN_CACHE = os.path.join(BASE_CACHE, 'UNKNOWN')
 
+KNOWN_CACHE_SUBDIRS = [ "ctdb",
+                        "samba",
+                        "samba-nt4",
+                        "samba-fileserver",
+                        "samba-xc",
+                        "samba-o3",
+                        "samba-ctdb",
+                        "samba-libs",
+                        "samba-static",
+                        "samba-none-env",
+                        "samba-ad-dc",
+                        "samba-ad-dc-2",
+                        "samba-systemkrb5",
+                        "samba-nopython",
+                        "ldb",
+                        "tdb",
+                        "talloc",
+                        "replace",
+                        "tevent",
+                        "pidl" ]
 
 def get_cvs_email():
     mbox = mailbox.mbox(config.MAILBOX)
@@ -41,7 +63,7 @@ def get_cvs_links():
     return links
 
 
-def update_cache(cache, link_end, force=False):
+def update_cache(cache, link_end, force=False, use_subdir=False):
     try:
         os.makedirs(cache)
     except OSError, e:
@@ -51,6 +73,17 @@ def update_cache(cache, link_end, force=False):
     for url in get_cvs_links():
         if not url.endswith(link_end):
             continue
+        if use_subdir:
+            m = re.search(r'/(.+)%s' % link_end, url)
+            if m:
+                d = m.group(1)
+            else:
+                d = None
+            if d in KNOWN_DIRS:
+                cache = os.path.join(cache, d)
+            else:
+                cache = UNKNOWN_CACHE
+
         fn = re.sub(r'[^\w.-]+', '+', url[7:])
         ffn = os.path.join(cache, fn)
         if force or not os.path.exists(ffn):
@@ -63,8 +96,9 @@ def update_cache(cache, link_end, force=False):
             f = open(ffn, 'w')
             f.write(r.text.encode('utf-8'))
             f.close()
-
-
+            
+        break # don't keep looking
+            
 def print_all_links():
     for x in get_cvs_links():
         print x
@@ -104,8 +138,8 @@ def main():
     parser.add_argument('--flakey-log', action='store_true',
                         help=("print statistics from flakey.log"))
 
-    parser.add_argument('--samba-stderr', action='store_true',
-                        help=("print statistics from */samba.stderr"))
+    parser.add_argument('--stderr', action='store_true',
+                        help=("print statistics from stderr logs"))
 
     parser.add_argument('--run-times', action='store_true',
                         help=("Try and work out the run times"))
@@ -133,11 +167,11 @@ def main():
         args.line_regex = '^UNEXPECTED'
 
     if args.samba_stderr:
-        cache = SAMBA_STDERR_CACHE
-        update_cache(cache, 'samba.stderr')
+        cache = STDERR_CACHE
+        update_cache(cache, '.stderr', use_subdir=True)
     else:
-        cache = SAMBA_STDOUT_CACHE
-        update_cache(SAMBA_STDOUT_CACHE, 'samba.stdout')
+        cache = STDOUT_CACHE        
+        update_cache(STDOUT_CACHE, '.stdout', use_subdir=True)
 
     if args.has_occurred_since is not None:
         rows = errors_since(fn_re=args.file_regex,

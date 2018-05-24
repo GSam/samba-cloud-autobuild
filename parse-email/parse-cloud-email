@@ -15,7 +15,7 @@ import cStringIO
 import config
 from email_utils import filter_by_date, count_lines
 
-CACHE = os.path.join(os.path.dirname(__file__), 'cache/cloud')
+CACHE = os.path.join(os.path.dirname(__file__), 'cache/catalyst-cloud/samba-stdout')
 
 
 def fix_time(s):
