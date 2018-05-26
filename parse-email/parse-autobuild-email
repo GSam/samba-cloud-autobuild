@@ -65,7 +65,6 @@ def update_cache(cache, link_end, force=False):
             f.write(r.text.encode('utf-8'))
             f.close()
 
-        break # don't keep looking
 
 def print_all_links():
     for x in get_cvs_links():
@@ -139,7 +138,7 @@ def main():
     if args.line_regex is None:
         args.line_regex = '^UNEXPECTED'
 
-    if args.samba_stderr:
+    if args.stderr:
         cache = STDERR_CACHE
         update_cache(cache, '.stderr')
     else:
