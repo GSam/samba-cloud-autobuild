@@ -17,7 +17,7 @@ from email_utils import recurring_errors, draw_runtime_histogram, errors_since
 BASE_CACHE = os.path.join(os.path.dirname(__file__), 'cache/sn-devel/')
 STDERR_CACHE = os.path.join(BASE_CACHE, 'stderr')
 STDOUT_CACHE = os.path.join(BASE_CACHE, 'stdout')
-FLAKEY_LOG_CACHE = os.path.join(BASE_CACHE, 'cache/sn-devel/flakey_log')
+FLAKEY_LOG_CACHE = os.path.join(BASE_CACHE, 'flakey_log')
 
 
 def get_cvs_email():
