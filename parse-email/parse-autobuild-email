@@ -32,8 +32,8 @@ def get_cvs_email():
 
 def get_cvs_links():
     messages = get_cvs_email()
-    urlre = re.compile(r'http://git.samba.org/autobuild.flakey[\w.-]*/'
-                       '\d\d\d\d-\d\d-\d\d-\d+/[\w.]+').findall
+    urlre = re.compile(r'http[s]?://git.samba.org/autobuild.flakey[\w.-]*/'
+                       '\d\d\d\d-\d\d-\d\d-\d+/[\w.-]+').findall
     links = []
     for m in messages:
         s = m.get_payload()
