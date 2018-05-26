@@ -18,28 +18,7 @@ BASE_CACHE = os.path.join(os.path.dirname(__file__), 'cache/sn-devel/')
 STDERR_CACHE = os.path.join(BASE_CACHE, 'stderr')
 STDOUT_CACHE = os.path.join(BASE_CACHE, 'stdout')
 FLAKEY_LOG_CACHE = os.path.join(BASE_CACHE, 'cache/sn-devel/flakey_log')
-UNKNOWN_CACHE = os.path.join(BASE_CACHE, 'UNKNOWN')
 
-KNOWN_CACHE_SUBDIRS = [ "ctdb",
-                        "samba",
-                        "samba-nt4",
-                        "samba-fileserver",
-                        "samba-xc",
-                        "samba-o3",
-                        "samba-ctdb",
-                        "samba-libs",
-                        "samba-static",
-                        "samba-none-env",
-                        "samba-ad-dc",
-                        "samba-ad-dc-2",
-                        "samba-systemkrb5",
-                        "samba-nopython",
-                        "ldb",
-                        "tdb",
-                        "talloc",
-                        "replace",
-                        "tevent",
-                        "pidl" ]
 
 def get_cvs_email():
     mbox = mailbox.mbox(config.MAILBOX)
@@ -63,7 +42,7 @@ def get_cvs_links():
     return links
 
 
-def update_cache(cache, link_end, force=False, use_subdir=False):
+def update_cache(cache, link_end, force=False):
     try:
         os.makedirs(cache)
     except OSError, e:
@@ -73,17 +52,6 @@ def update_cache(cache, link_end, force=False, use_subdir=False):
     for url in get_cvs_links():
         if not url.endswith(link_end):
             continue
-        if use_subdir:
-            m = re.search(r'/(.+)%s' % link_end, url)
-            if m:
-                d = m.group(1)
-            else:
-                d = None
-            if d in KNOWN_DIRS:
-                cache = os.path.join(cache, d)
-            else:
-                cache = UNKNOWN_CACHE
-
         fn = re.sub(r'[^\w.-]+', '+', url[7:])
         ffn = os.path.join(cache, fn)
         if force or not os.path.exists(ffn):
@@ -96,9 +64,9 @@ def update_cache(cache, link_end, force=False, use_subdir=False):
             f = open(ffn, 'w')
             f.write(r.text.encode('utf-8'))
             f.close()
-            
+
         break # don't keep looking
-            
+
 def print_all_links():
     for x in get_cvs_links():
         print x
@@ -124,6 +92,10 @@ def main():
     parser.add_argument('--since',
                         help=("restrict to filenames containing dates "
                               "> this (YYYY-MM-DD)"))
+
+    parser.add_argument('--until',
+                        help=("restrict to filenames containing dates "
+                              "< this (YYYY-MM-DD)"))
 
     parser.add_argument('--histogram', action='store_true',
                         help=("draw a graph of monthly counts"))
@@ -158,6 +130,7 @@ def main():
                            cache=FLAKEY_LOG_CACHE,
                            count=args.count,
                            since=args.since,
+                           until=args.until,
                            filter_re=args.filter_line)
         for k, v in rows:
             print '%4d %s' % (v, k)
@@ -168,10 +141,10 @@ def main():
 
     if args.samba_stderr:
         cache = STDERR_CACHE
-        update_cache(cache, '.stderr', use_subdir=True)
+        update_cache(cache, '.stderr')
     else:
-        cache = STDOUT_CACHE        
-        update_cache(STDOUT_CACHE, '.stdout', use_subdir=True)
+        cache = STDOUT_CACHE
+        update_cache(STDOUT_CACHE, '.stdout')
 
     if args.has_occurred_since is not None:
         rows = errors_since(fn_re=args.file_regex,
@@ -180,12 +153,14 @@ def main():
                             since=args.has_occurred_since,
                             filter_re=args.filter_line)
         recent = set(x for x, c in rows)
-        #print recent
+    else:
+        recent = None
 
     if args.run_times:
         draw_runtime_histogram(fn_re=args.file_regex,
                                cache=cache,
-                               since=args.since)
+                               since=args.since,
+                               until=args.until)
         sys.exit()
 
     if args.histogram:
@@ -193,6 +168,7 @@ def main():
                        line_re=args.line_regex,
                        cache=cache,
                        since=args.since,
+                       until=args.until,
                        filter_re=args.filter_line)
         sys.exit()
 
@@ -201,6 +177,7 @@ def main():
                          line_re=args.line_regex,
                          cache=cache,
                          since=args.since,
+                         until=args.until,
                          filter_re=args.filter_line,
                          limit=3,
                          included_set=recent)
@@ -211,6 +188,7 @@ def main():
                        cache=cache,
                        count=args.count,
                        since=args.since,
+                       until=args.until,
                        filter_re=args.filter_line,
                        included_set=recent)
     for k, v in rows:

@@ -11,26 +11,37 @@ import time
 import config
 from collections import Counter
 
-def filter_by_date(files, date):
+def date_as_secs(d):
+    if d is None:
+        return 0
+    return time.mktime(time.strptime(d, '%Y-%m-%d'))
+
+
+def filter_by_date(files, since, until):
     date_search = re.compile(r'(20\d\d-\d\d-\d\d)-').search
     out = []
-    threshold = time.mktime(time.strptime(date, '%Y-%m-%d'))
+    start = date_as_secs(since)
+    end = date_as_secs(until) or 1e99
+
     for fn in files:
         m = date_search(fn)
         if m:
             t = time.mktime(time.strptime(m.group(1), '%Y-%m-%d'))
-            if t > threshold:
+            if t > start and t < end:
                 out.append(fn)
     return out
 
 
-def count_lines(fn_re, line_re, cache, count=None, since=None, filter_re=None,
+def count_lines(fn_re, line_re, cache, count=None,
+                since=None,
+                until=None,
+                filter_re=None,
                 included_set=None):
     fn_match = re.compile(fn_re).search
     line_match = re.compile(line_re).search
     files = sorted(x for x in os.listdir(cache) if fn_match(x))
-    if since:
-        files = filter_by_date(files, since)
+    if since or until:
+        files = filter_by_date(files, since, until)
 
     lines = []
     for fn in files:
@@ -68,19 +79,21 @@ def group_by_month(files):
     return out
 
 
-def get_files_by_month(fn_re, cache, since):
+def get_files_by_month(fn_re, cache, since, until):
     fn_match = re.compile(fn_re).search
     files = sorted(x for x in os.listdir(cache) if fn_match(x))
-    if since:
-        files = filter_by_date(files, since)
+    if since or until:
+        files = filter_by_date(files, since, until)
     months = group_by_month(files)
     return months
 
 
-def get_errors_by_month(fn_re, line_re, cache, since=None, filter_re=None):
+def get_errors_by_month(fn_re, line_re, cache,
+                        since=None, until=None,
+                        filter_re=None):
     line_match = re.compile(line_re).search
-    months = get_files_by_month(fn_re, cache, since)
-    recent_lines = get_files_by_month(fn_re, cache, since)
+    months = get_files_by_month(fn_re, cache, since, until)
+    recent_lines = get_files_by_month(fn_re, cache, since, until)
     recent_lines = set()
 
     month_lines = []
@@ -104,11 +117,14 @@ def get_errors_by_month(fn_re, line_re, cache, since=None, filter_re=None):
     return month_lines
 
 
-def draw_histogram(fn_re, line_re, cache, since=None, filter_re=None):
+def draw_histogram(fn_re, line_re, cache,
+                   since=None, until=None,
+                   filter_re=None):
     month_lines = get_errors_by_month(fn_re,
                                       line_re,
                                       cache,
                                       since=since,
+                                      until=until,
                                       filter_re=filter_re)
     longest = 1
     for month, lines in month_lines:
@@ -127,8 +143,9 @@ def draw_histogram(fn_re, line_re, cache, since=None, filter_re=None):
 TIME_MATCH = r'/\d+ at (\d+h)?(\d+m)?(\d+s)\] '
 
 
-def draw_runtime_histogram(fn_re, cache, since, line_re=TIME_MATCH):
-    months = get_files_by_month(fn_re, cache, since)
+def draw_runtime_histogram(fn_re, cache, since, until,
+                           line_re=TIME_MATCH):
+    months = get_files_by_month(fn_re, cache, since, until)
     line_match = re.compile(line_re).search
     month_times = []
     longest = 0
@@ -192,18 +209,21 @@ def draw_runtime_histogram(fn_re, cache, since, line_re=TIME_MATCH):
     print "key: median #   interquartile range |-----|   extrema ."
 
 
-def errors_since(fn_re, line_re, cache, since=None, filter_re=None):
-    rows = count_lines(fn_re, line_re, cache, since=since, filter_re=None)
+def errors_since(fn_re, line_re, cache, since=None, until=None, filter_re=None):
+    rows = count_lines(fn_re, line_re, cache,
+                       since=since, until=until, filter_re=None)
     return set(rows)
 
 
-def recurring_errors(fn_re, line_re, cache, since=None, filter_re=None,
+def recurring_errors(fn_re, line_re, cache, since=None, until=None,
+                     filter_re=None,
                      limit=2, included_set=None):
 
     month_lines = get_errors_by_month(fn_re,
                                       line_re,
                                       cache,
                                       since=since,
+                                      until=until,
                                       filter_re=filter_re)
     c = Counter()
 
