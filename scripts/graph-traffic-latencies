@@ -1,0 +1,330 @@
+#!/usr/bin/python
+from __future__ import print_function
+import matplotlib.pyplot as plt
+import itertools
+from hashlib import sha1
+import numpy as np
+import os
+import sys
+import argparse
+from collections import defaultdict, Counter
+import re
+from matplotlib import ticker
+import hashlib
+
+def shorten_description(s):
+    s = s.lower()
+    for x in ['unbind',
+              'search',
+              'bind',
+              ]:
+        if x in s:
+            return x
+    s = re.sub(r'^lsa_|netrlogon', '', s)
+    return s
+
+PLOTTABLE_ROWS = {'Mean': ('mean', '-.'),
+                  'Median': ('median', '--'),
+                  '95%': ('95th centile', ':'),
+                  'Range': ('range', '-'),
+                  'Max': ('maximum', '-')}
+DEFAULT_ROWS = ['Median', '95%']
+
+def parse_string(s):
+    rows = {}
+    lines = s.split('\n')
+    columns = None
+    for line in lines:
+        if columns is None:
+            if line.startswith('Protocol'):
+                line = line.replace('Op Code', 'Opcode')
+                columns = line.split()
+            continue
+        if '-->' in line:
+            break
+
+        values = line.split()
+        row = {}
+        for k, v in zip(columns, values):
+            if k in ('Count', 'Failed'):
+                v = int(v)
+            elif k in PLOTTABLE_ROWS:
+                v = float(v)
+            row[k] = v
+
+        #id = '%s:%s' % (row['Protocol'], row['Opcode'])
+        #id = '%s %s' % (row['Protocol'], row['Description'])
+        id = '%s %s' % (row['Protocol'], shorten_description(row['Description']))
+        rows[id] = row
+    return rows
+
+PATTERNS = itertools.cycle(('#%s%%02x%%02x', '#%%02x%%02x%s', '#%%02x%s%%02x'))
+LINESTYLES = itertools.cycle((':', '--'))
+
+def get_colourer(k):
+    if 'win1' in k:
+        k = 'win1'
+    elif 'dc1' in k:
+        k = 'dc1'
+
+    h = sha1(k).hexdigest()
+    pattern = next(PATTERNS) % h[:2]
+    linestyle = next(LINESTYLES)
+    def f(i):
+        c = (i * 11) % 256
+        return pattern % (c, 255 - c)
+    return linestyle, f
+
+
+SAVE_NAME = None
+
+def show_or_write(tag):
+    if SAVE_NAME is None:
+        plt.show()
+    else:
+        name = SAVE_NAME.replace('##', tag)
+        plt.savefig(name, dpi=300)
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-o', '--output', default=None,
+                        help=("write graphs here, replacing ## with type "
+                              "of graph (default: show in X window)"))
+    parser.add_argument('files', nargs="+",
+                        help="find the data in these files")
+    parser.add_argument('-y', '--y-label', default=None,
+                        help='label the y axis thusly')
+    parser.add_argument('--variable-colour', action='store_true',
+                        help="each pair of lines has a slightly different colour")
+    parser.add_argument('-i', '--include-regex',
+                        help="include protocols matching his regex")
+    parser.add_argument('--min-mean-count', default=1, type=int,
+                        help=("include protocols averaging at least "
+                              "this many examples"))
+    parser.add_argument('--by-r', action='store_true',
+                        help="graph by -r not -S")
+    parser.add_argument('--ratio', action='store_true',
+                        help="show the samba/windows ratio")
+    parser.add_argument('--statistic',
+                        help="plot this (re matching %s)" %
+                        ', '.join(x.replace('%', '%%') for x in PLOTTABLE_ROWS))
+    parser.add_argument('-t', '--truncate-x', type=int,
+                        help='stop the x (-S) axis at this point')
+    parser.add_argument('--log-scale', action='store_true',
+                        help='Use a log scale for the Y axis (suits ratio)')
+
+    args = parser.parse_args()
+
+    global SAVE_NAME
+    SAVE_NAME = args.output
+
+    if args.by_r:
+        find_x = re.compile(r'r(\d\d+)').search
+    else:
+        find_x = re.compile(r'S(\d\d+)').search
+
+    if args.statistic:
+        include_stat = re.compile(args.statistic).search
+    else:
+        include_stat = DEFAULT_ROWS.__contains__
+
+    data = {}
+    for fn in args.files:
+        f = open(fn)
+        bn = os.path.basename(fn)
+        system, params = bn.split('_', 1)
+        params = params.rsplit('.', 1)[0]
+        data.setdefault(system, {})[params] = parse_string(f.read())
+        f.close()
+
+    # At this point we have:
+    #
+    # data = {
+    #   'win1' : {
+    #      'r01_S07' : {
+    #         'drsuapi:0' : {
+    #             'Count': 39,
+    #             'Failed': 0,
+    #             'Mean': 0.14,
+    #             ...
+    #         },
+    #         'drsuapi:1' : {
+    #             ...
+    #         },...
+    #     },
+    #      'r01_S10' : {...},
+    #   },
+    #   'dc1' : {...}
+    # }
+    #
+    # We are swizzling it until we get
+    #
+    # x_seq = [3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 19...]
+    # lines = {
+    #  'drsuapi:0' : {
+    #      ('Windows', 'mean') : [ ...values ...],
+    #      ('Windows', ' median') : [ ...values ...],
+    #      ('Samba', '95%') : [ ...values ...],
+    #     },
+
+
+    p_totals = Counter()
+    lines = {}
+
+    all_protos = set()
+    for runs in data.values():
+        for run in runs.values():
+            all_protos.update(run.keys())
+
+    zero_line = defaultdict(int)
+
+    for system, runs in data.items():
+        if system == 'win1':
+            label = 'Windows'
+        else:
+            label = 'Samba'
+
+        x_map = {}
+        for run_name, run in runs.items():
+            x = int(find_x(run_name).group(1))
+            if not args.truncate_x or args.truncate_x >= x:
+                x_map[x] = run
+
+        x_seq = sorted(x_map)
+        for x in x_seq:
+            run = x_map[x]
+
+            for proto in all_protos:
+                # we have to make sure we include zeros where the packet is not
+                values = run.get(proto, zero_line)
+                p_totals[proto] += values['Count']
+                p_lines = lines.setdefault(proto, {})
+                for pr in PLOTTABLE_ROWS:
+                    p_lines.setdefault((label, pr), []).append(values[pr] or None)
+
+    # filtering out unwanted lines
+    n_proto = len(x_seq) * 2
+    for proto in list(lines.keys()):
+        total = p_totals[proto]
+        if total / n_proto < args.min_mean_count:
+            print("skipping %s with only %d counted over %d points" %
+                  (proto, total, n_proto))
+            del lines[proto]
+        elif args.include_regex:
+            if not re.search(args.include_regex, proto):
+                print("skipping %s that doesn't match /%s/" %
+                      (proto, args.include_regex))
+                del lines[proto]
+
+    # find out how many lines there will be (for colouring)
+    n = 0
+    for p_lines in lines.values():
+        for sys, pr in p_lines.keys():
+            if include_stat(pr):
+                n += 1
+    if args.ratio:
+        n //= 2
+
+    # plotting the surviving lines, possibly as ratios
+    fig, ax = plt.subplots()
+
+    plotted_rows = [v[0] for k, v in PLOTTABLE_ROWS.items() if include_stat(k)]
+    ax.set_title('Latency (%s)' % ', '.join(plotted_rows))
+
+    i = 0
+    for proto, p_lines in lines.items():
+        ratios = {}
+        for k, row in p_lines.items():
+            system, pr = k
+            if not include_stat(pr):
+                continue
+
+            if args.ratio:
+                pair = ratios.setdefault(pr, [None, None])
+                if system == 'Windows':
+                    pair[0] = row
+                else:
+                    pair[1] = row
+                if None in pair:
+                    # this is the first pass of two
+                    continue
+
+                legend = 'ratio %s' % proto
+                row = []
+                i += 2
+                colour = '#' + hashlib.md5(proto).hexdigest()[:6]
+                linestyle = PLOTTABLE_ROWS[pr][1]
+                for a, b in zip(*ratios[pr]):
+                    try:
+                        row.append(b / a)
+                    except (ZeroDivisionError, TypeError):
+                        row.append(None)
+            else:
+                if system == 'Windows':
+                    r, g, b = 0x22, 0x66, 0xff
+                    dr, dg, db = 66 // n, 99 // n , 0 // n
+                    linestyle = '--'
+                    ratios.setdefault(pr, [None, None])[0] = row
+                else:
+                    r, g, b = 0xcc, 0, 0
+                    dr, dg, db = 30 // n, 135 // n, 90 // n
+                    linestyle = ':'
+                    ratios.setdefault(pr, [None, None])[1] = row
+
+                if args.variable_colour:
+                    r += i * dr
+                    g += i * dg
+                    b += i * db
+
+                colour = "#%02x%02x%02x" % (r & 255, g & 255, b & 255)
+                legend = '%s %s' % (system, proto)
+
+            line_label = proto
+            # if we have more than one stat type, legned needs to include it
+            if len(plotted_rows) > 1:
+                legend = '%s %s' % (legend, pr.lower())
+                line_label = '%s %s' % (line_label, pr.lower())
+
+            if set(row) == {None}:
+                print("skipping empty line %s" % legend)
+                continue
+
+            if args.log_scale:
+                ax.semilogy(x_seq, row, linestyle, color=colour, label=legend)
+            else:
+                ax.plot(x_seq, row, linestyle, color=colour, label=legend)
+
+            text_pos = -1
+            while row[text_pos] is None:
+                text_pos -= 1
+            ax.text(x_seq[text_pos] + 0.2, row[text_pos], line_label, color=colour,
+                    fontsize=9)
+            i += 1
+
+    ax.legend(fontsize=9)
+    ax.set_xlabel('attempted relative traffic load')
+    if args.y_label is not None:
+        ax.set_ylabel(args.y_label)
+    elif args.ratio:
+        ax.set_ylabel("ratio (Samba time / Windows time)")
+    else:
+        ax.set_ylabel("seconds (lower is better)")
+
+    y_formatter = ticker.FormatStrFormatter('%g')
+    ax.yaxis.set_major_formatter(y_formatter)
+    ax.set_xticks(x_seq)
+    l, r = ax.get_xlim()
+    l2, r2 = ax.set_xlim(right=((r + 3) * 1.15))
+
+    proto_strings = [re.sub(r'\W+', '_', _) for _ in sorted(set(lines))]
+
+    tag = 'latency-%s-%s' % ('+'.join(plotted_rows), '+'.join(proto_strings))
+    for arg in ['log_scale', 'by_r', 'variable_colour', 'ratio', 'truncate_x']:
+        if vars(args).get(arg):
+            tag += '-' + arg
+
+    show_or_write(tag)
+
+
+
+main()
