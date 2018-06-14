@@ -91,10 +91,13 @@
       MACHINE_OFF_PEAK_IDLE_TIME: "{{ MACHINE_OFF_PEAK_IDLE_TIME }}"
       DOCKER_IMAGE: "{{ DOCKER_IMAGE }}:latest"
       OS_NETWORK_NAME: "{{ OS_NETWORK_NAME }}"
-      OS_FLAVOR_NAME: "{{ OS_FLAVOR_NAME }}"
-      OS_FLAVOR_ID: "{{ OS_FLAVOR_ID }}"
-      OS_IMAGE_NAME: "{{ OS_IMAGE_NAME }}"
-      OS_IMAGE_ID: "{{ OS_IMAGE_ID|default('') }}"
+
+      OS_FLAVOR_NAME: "{{ OS_FLAVOR_NAME | default('') }}"
+      OS_FLAVOR_ID: "{{ OS_FLAVOR_ID | default('') }}"
+
+      OS_IMAGE_NAME: "{{ OS_IMAGE_NAME | default('') }}"
+      OS_IMAGE_ID: "{{ OS_IMAGE_ID | default('') }}"
+
       OS_SSH_USER: "{{ OS_SSH_USER }}"
       OS_INSECURE: true
       OS_AUTH_URL: "{{ OS_AUTH_URL }}"
