@@ -109,10 +109,6 @@
       OS_API_KEY: "{{ lookup('env', 'OS_API_KEY') }}"
   tags: restart
 
-- name: gitlab-runner unregister all
-  command: "docker exec {{ RUNNER_NAME }} gitlab-runner unregister --all-runners"
-  tags: unreg
-
 - name: gitlab-runner register
   command: docker exec {{ RUNNER_NAME }} gitlab-runner register --machine-machine-options "engine-storage-driver=devicemapper"
 
