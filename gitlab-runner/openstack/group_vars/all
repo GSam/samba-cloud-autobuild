@@ -1,5 +1,6 @@
 ---
 # settings for all kinds of gitlab-runner
+ansible_python_interpreter: "/usr/bin/python3"
 
 # Official Ubuntu image has no Python2
 PUBLIC_KEY: "../files/id_rsa_catalyst_samba.pub"

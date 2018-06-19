@@ -79,7 +79,6 @@
     - group_vars/all  # have to load explicitly, otherwise hosts is undefined
     - ../vault.yml
   vars:
-    ansible_python_interpreter: "/usr/bin/python3"
     REGISTRATION_TOKEN: "{{ vault_gitlab_ci_registration_token_for_catalyst_samba }}"
   roles:
     - provisioner
