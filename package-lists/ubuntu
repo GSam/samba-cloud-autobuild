@@ -17,6 +17,7 @@ packages:
  - flex
  - gdb
  - git
+ - htop
  - jed
  - krb5-user
  - libacl1-dev
