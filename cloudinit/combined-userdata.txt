@@ -1,0 +1,40 @@
+Content-Type: multipart/mixed; boundary="===============0068534163934739802=="
+MIME-Version: 1.0
+
+--===============0068534163934739802==
+Content-Type: text/cloud-config; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="cloud-config.txt"
+
+#cloud-config
+
+apt_mirror: http://ubuntu.catalyst.net.nz/ubuntu
+
+apt_mirror_search:
+  - http://ubuntu.catalyst.net.nz/ubuntu
+
+locale: en_NZ.UTF-8
+
+package_upgrade: true
+
+packages:
+ - rng-tools
+
+--===============0068534163934739802==
+Content-Type: text/x-shellscript; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="shell-script.txt"
+
+#!/bin/bash
+# User-Data Shell Script for CloudInit
+
+set -x
+echo 0 > /proc/sys/kernel/yama/ptrace_scope
+echo 0 > /proc/sys/kernel/perf_event_paranoid
+mount / -o remount,rw,nobarrier
+/etc/init.d/rng-tools start
+
+
+--===============0068534163934739802==--
