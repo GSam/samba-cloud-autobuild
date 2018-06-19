@@ -18,16 +18,26 @@
   with_items:
     - docker-py  # required by docker_container
 
+- name: check docker bin path
+  command: which docker
+  register: which_docker_output
+  ignore_errors: yes
+
+- name: print docker bin path
+  debug: var=which_docker_output
+
 - name: get get-docker.sh script to install docker
   get_url:
     url: https://get.docker.com
     dest: /tmp/get-docker.sh
     mode: 0755
     force: true
+  when: not which_docker_output.stdout
 
 - name: run get-docker.sh script to install docker
   become: yes
   shell: /tmp/get-docker.sh
+  when: not which_docker_output.stdout
 
 - name: start docker service
   become: yes
@@ -59,6 +69,11 @@
     dest: /etc/gitlab-runner/config.toml
     force: yes
 
+- name: copy user data file from local to remote runner
+  copy:
+    src: "{{ playbook_dir }}/../../cloudinit/combined-userdata.txt"
+    dest: "{{ OS_USER_DATA_FILE }}"
+
 - name: start gitlab-runner-bastion docker container
   docker_container:
     name: "{{ RUNNER_NAME }}"
@@ -67,10 +82,11 @@
     restart: yes
     restart_policy: always
     privileged: yes
-    cleanup: yes
+    cleanup: no
     volumes:
       - /etc/gitlab-runner:/etc/gitlab-runner:rw
       - /var/run/docker.sock:/var/run/docker.sock:rw
+      - "{{ OS_USER_DATA_FILE }}:{{ OS_USER_DATA_FILE }}:rw"
     env:
       CONFIG_FILE: "/etc/gitlab-runner/config.toml"
       CI_SERVER_URL: "{{ CI_SERVER_URL}}"
@@ -107,11 +123,10 @@
       OS_USERNAME: "{{ lookup('env', 'OS_USERNAME') }}"
       OS_PASSWORD: "{{ lookup('env', 'OS_PASSWORD') }}"
       OS_API_KEY: "{{ lookup('env', 'OS_API_KEY') }}"
+      OS_USER_DATA_FILE: "{{ OS_USER_DATA_FILE }}"
   tags: restart
 
 - name: gitlab-runner register
   command: docker exec {{ RUNNER_NAME }} gitlab-runner register --machine-machine-options "engine-storage-driver=devicemapper"
+  tags: restart
 
-- name: gitlab-runner list
-  command: "docker exec {{ RUNNER_NAME }} gitlab-runner list"
-  tags: list

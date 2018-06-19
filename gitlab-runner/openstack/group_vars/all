@@ -11,7 +11,6 @@ DOCKER_IMAGE: registry.gitlab.com/samba-team/samba
 
 # Gitlab->Project->Settings->CI/CD
 CI_SERVER_URL: https://gitlab.com/
-# REGISTRATION_TOKEN: secret, Ansible will ask
 REGISTER_RUN_UNTAGGED: false
 
 RUNNER_GROUP: gitlab-runners
@@ -30,14 +29,17 @@ OS_SECURITY_GROUP_NAME: gitlab-runner-security-group
 
 # TODO: docker-machine rackspace driver only accept _ID, and not allow _NAME
 OS_IMAGE_NAME: ubuntu-16.04-x86_64
-OS_IMAGE_ID: 096021b5-a973-4c0b-b786-c48c85f1f662
+# OS_IMAGE_ID: 096021b5-a973-4c0b-b786-c48c85f1f662
 
 OS_FLAVOR_NAME: c1.c2r8  # flavor for docker-machine servers
-OS_FLAVOR_ID: 0c7dc485-e7cc-420d-b118-021bbafa76d7
+# OS_FLAVOR_ID: 0c7dc485-e7cc-420d-b118-021bbafa76d7
 
 OS_SSH_USER: ubuntu
 OS_AUTH_URL: https://api.cloud.catalyst.net.nz:5000/v2.0
 OS_REGION_NAME: nz-por-1
+
+# user data file cloutinit, currently openstack only
+OS_USER_DATA_FILE: '/tmp/combined-userdata.txt'
 
 MACHINE_NAME: private-%s
 MACHINE_IDLE_COUNT: 0
