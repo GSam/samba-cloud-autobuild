@@ -1,9 +1,11 @@
+#!/usr/bin/env ansible-playbook
 ---
 - hosts: localhost
   become: false
   gather_facts: false
-  vars_files:
-    - vars.yml
+  vars:
+    DOCKER_REGISTRY: registry.gitlab.com
+    DOCKER_IMAGE: registry.gitlab.com/samba-team/samba
   vars_prompt:
     - name: "docker_registry_username"
       prompt: "What's the username for your docker registry account"
