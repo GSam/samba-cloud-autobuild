@@ -41,7 +41,6 @@ packages:
  - libreadline-dev
  - linux-tools-generic
  - lmdb-utils
- - nettle-dev
  - perl
  - perl-modules
  - pkg-config
