@@ -1,0 +1,15 @@
+#!/bin/sh
+
+name=$(git config user.name)
+email=$(git config user.email)
+
+tag="${name} <${email}>"
+
+cd "$(git rev-parse --show-toplevel)"
+
+git rebase origin/master || exit 1
+make -j || exit 1
+
+git filter-branch  -f \
+    --msg-filter "$(dirname $0)/git_review.msg-filter.awk -v tag='${tag}'" \
+    origin/master..
