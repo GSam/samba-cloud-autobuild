@@ -1,0 +1,7 @@
+---
+# common vars for all
+KEYPAIR_NAME: "catalyst_samba"
+PUBLIC_KEY_FILE: "{{playbook_dir}}/files/id_rsa_catalyst_samba.pub"
+
+ENV_FILE_TEMP: /tmp/env_file
+USER_DATA_FILE : /etc/gitlab-runner/userdata.txt
