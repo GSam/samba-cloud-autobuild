@@ -1,0 +1,69 @@
+---
+- name: Connect to the Catalyst Cloud
+  os_auth:
+
+- name: Import an SSH keypair
+  os_keypair:
+    state: present
+    name: "{{ KEYPAIR_NAME }}"
+    public_key_file: "{{ PUBLIC_KEY_FILE }}"
+
+- name: Create a network
+  os_network:
+    state: present
+    name: "{{ OS_NETWORK_NAME }}"
+
+- name: Create a subnet
+  os_subnet:
+    state: present
+    name: "{{ OS_SUBNET_NAME }}"
+    network_name: "{{ OS_NETWORK_NAME }}"
+    cidr: "{{ OS_SUBNET_CIDR }}"
+
+- name: Create a router
+  os_router:
+    state: present
+    name: "{{ OS_ROUTER_NAME }}"
+    network: public-net
+    interfaces:
+      - "{{ OS_SUBNET_NAME }}"
+
+- name: Create a security group
+  os_security_group:
+    state: present
+    name: "{{ OS_SECURITY_GROUP_NAME }}"
+    description: Network access for gitlab-runner
+
+- name: Create a security group rule for SSH access
+  os_security_group_rule:
+    state: present
+    security_group: "{{ OS_SECURITY_GROUP_NAME }}"
+    protocol: tcp
+    port_range_min: 22
+    port_range_max: 22
+
+- name: Create gitlab-runner instance
+  os_server:
+    state: present
+    name: "{{ RUNNER_NAME }}"
+    flavor: c1.c1r1
+    image: "{{ OS_IMAGE_NAME }}"
+    key_name: "{{ KEYPAIR_NAME }}"
+    auto_ip: yes
+    network: "{{ OS_NETWORK_NAME }}"
+    security_groups: "default,{{ OS_SECURITY_GROUP_NAME }}"
+    meta:
+      # all gen of gitlab-runner will be in this group
+      # make it possible to kill all of them
+      group: gitlab-runner
+
+- name: render env_file
+  template:
+    src: templates/env_file
+    dest: "{{ENV_FILE_TEMP}}"
+
+- name: refresh in-memory openstack dynamic inventory
+  meta: refresh_inventory
+
+- name: refresh cached openstack dynamic inventory
+  command: "{{lookup('env', 'ANSIBLE_INVENTORY')}} --list --refresh"

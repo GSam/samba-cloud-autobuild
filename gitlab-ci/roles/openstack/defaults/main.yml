@@ -1,0 +1,17 @@
+---
+# increase the number for each new build
+ENV_FILE_TEMP: /tmp/env_file
+USER_DATA_FILE: /etc/gitlab-runner/userdata.txt
+MACHINE_DRIVER: openstack
+
+RUNNER_NAME: gitlab-runner-0
+
+# hardcode these names, so differnt gen of gitlab-runner can share them
+OS_NETWORK_NAME: gitlab-runner-network
+OS_ROUTER_NAME: gitlab-runner-router
+OS_SECURITY_GROUP_NAME: gitlab-runner-security-group
+OS_SUBNET_NAME: gitlab-runner-subnet
+OS_SUBNET_CIDR: 10.0.0.0/24
+
+# bastion and executors use this same image
+OS_IMAGE_NAME: ubuntu-16.04-x86_64
