@@ -1,0 +1,35 @@
+Content-Type: multipart/mixed; boundary="===============6635432384349723620=="
+MIME-Version: 1.0
+
+--===============6635432384349723620==
+Content-Type: text/cloud-config; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="cloud-config.txt"
+
+#cloud-config
+
+locale: en_NZ.UTF-8
+
+package_update: true
+
+package_upgrade: false
+
+packages:
+ - rng-tools
+
+--===============6635432384349723620==
+Content-Type: text/x-shellscript; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="shell-script.txt"
+
+#!/bin/bash -x
+# User-Data Shell Script for CloudInit
+
+echo 0 > /proc/sys/kernel/yama/ptrace_scope
+echo 0 > /proc/sys/kernel/perf_event_paranoid
+mount / -o remount,rw,nobarrier
+/etc/init.d/rng-tools start
+
+--===============6635432384349723620==--

@@ -1,0 +1,123 @@
+---
+- name: apt update
+  become: yes
+  apt:
+    update_cache: yes
+
+- name: apt install common packages
+  become: yes
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - python3-pip
+    - python-pip
+    - language-pack-en
+    - htop
+
+- name: pip install common packages
+  become: yes
+  pip:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - docker  # required by docker_container
+    - pip
+
+- name: install docker
+  include_tasks: install-docker.yml
+
+- name: pull gitlab-runner docker image
+  become: yes
+  docker_image:
+    name: gitlab/gitlab-runner
+    tag: latest
+    state: present
+
+- name: create config root
+  become: yes
+  file:
+    path: "{{CONFIG_ROOT}}"
+    state: directory
+    mode: 0755
+  register: create_config_root
+
+- name: gitlab-runner unregister exsiting runners
+  become: yes
+  command: >
+    docker exec gitlab-runner
+    gitlab-runner unregister --all-runners
+  when: not create_config_root.changed
+
+- name: render config.toml to server
+  become: yes
+  template:
+    src: templates/config.toml
+    dest: "{{CONFIG_FILE}}"
+    force: yes
+
+- name: render userdata to server
+  become: yes
+  template:
+    src: templates/userdata.txt
+    dest: "{{USER_DATA_FILE}}"
+    force: yes
+
+- name: copy env file to server
+  become: yes
+  copy:
+    src: "{{ENV_FILE_TEMP}}"
+    dest: "{{ENV_FILE}}"
+
+- name: start gitlab-runner-bastion docker container
+  become: yes
+  docker_container:
+    name: gitlab-runner
+    image: gitlab/gitlab-runner
+    state: started
+    restart: yes
+    restart_policy: always
+    privileged: yes
+    cleanup: no
+    env_file: "{{ENV_FILE}}"
+    # vars in env will override env_file
+    env:
+      CONFIG_FILE: "{{CONFIG_FILE}}"
+      CI_SERVER_URL: "{{CI_SERVER_URL}}"
+      REGISTRATION_TOKEN: "{{REGISTRATION_TOKEN}}"
+
+      REGISTER_NON_INTERACTIVE: true
+      REGISTER_LEAVE_RUNNER: true
+      REGISTER_RUN_UNTAGGED: false
+      REGISTER_LOCKED: true
+      REGISTER_MAXIMUM_TIMEOUT: 0
+
+      RUNNER_NAME: "{{RUNNER_NAME}}"
+      RUNNER_LIMIT: "{{RUNNER_LIMIT}}"
+      RUNNER_SHELL: bash
+      RUNNER_OUTPUT_LIMIT: 8192
+      RUNNER_EXECUTOR: docker+machine
+      RUNNER_TAG_LIST: docker,private
+
+      MACHINE_DRIVER: "{{MACHINE_DRIVER}}"
+      MACHINE_NAME: "{{RUNNER_NAME}}-%s"
+      MACHINE_IDLE_COUNT: 0
+      MACHINE_IDLE_TIME: 0
+      MACHINE_MAX_BUILDS: 1
+
+      DOCKER_IMAGE: "{{DOCKER_IMAGE}}"
+      DOCKER_PRIVILEGED: true
+
+    volumes:
+      - "{{CONFIG_ROOT}}:{{CONFIG_ROOT}}:rw"
+
+  - name: test docker-machine create if this is a new build
+  include_tasks: test-docker-machine-create.yml
+  when: create_config_root.changed
+
+- name: gitlab-runner register
+  become: yes
+  # --machine-machine-options "engine-opt=storage-opt dm.mountopt=nobarrier"
+  command: >
+    docker exec gitlab-runner
+    gitlab-runner register
+    --machine-machine-options "engine-storage-driver=devicemapper"

@@ -1,0 +1,16 @@
+---
+# required vars,
+
+ENV_FILE_TEMP: /tmp/env_file
+
+CI_SERVER_URL: https://gitlab.com/
+CONFIG_ROOT: /etc/gitlab-runner
+CONFIG_FILE: "{{CONFIG_ROOT}}/config.toml"
+USER_DATA_FILE: "{{CONFIG_ROOT}}/userdata.txt"
+ENV_FILE: "{{CONFIG_ROOT}}/env_file"
+
+RUNNER_LIMIT: 30
+DOCKER_IMAGE: registry.gitlab.com/samba-team/samba
+
+ansible_python_interpreter: /usr/bin/python3
+test_docker_machine_create: false

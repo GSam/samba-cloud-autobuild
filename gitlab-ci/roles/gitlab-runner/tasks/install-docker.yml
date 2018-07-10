@@ -1,0 +1,33 @@
+---
+- name: check docker bin path
+  command: which docker
+  register: which_docker_output
+  ignore_errors: yes
+
+- name: print docker bin path
+  debug: var=which_docker_output
+
+- name: get get-docker.sh script to install docker
+  get_url:
+    url: https://get.docker.com
+    dest: /tmp/get-docker.sh
+    mode: 0755
+    force: true
+  when: not which_docker_output.stdout
+
+- name: run get-docker.sh script to install docker
+  become: yes
+  shell: /tmp/get-docker.sh
+  when: not which_docker_output.stdout
+
+- name: start docker service
+  become: yes
+  service:
+    name: docker
+    state: started
+
+- name: add user to docker group
+  become: yes
+  user:
+    name: "{{ REMOTE_USER }}"
+    groups: docker
