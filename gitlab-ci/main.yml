@@ -1,0 +1,14 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: create gitlab-runner server with driver role
+  hosts: localhost
+  gather_facts: no
+  roles:
+    - "{{MACHINE_DRIVER}}"
+
+- name: provision gitlab-runner server with gitlab-runner role
+  hosts:  "{{RUNNER_NAME}}"
+  remote_user: "{{REMOTE_USER}}"
+  gather_facts: no
+  roles:
+    - "gitlab-runner"
