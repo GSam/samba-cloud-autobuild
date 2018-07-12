@@ -1,0 +1,45 @@
+---
+- name: render /etc/resolv.conf
+  become: yes
+  copy:
+    dest: /etc/resolv.conf
+    content: |
+      nameserver {{ runner_nameserver }}
+      search {{ samba_realm }}
+  tags: resolv
+
+- name: copy model file to runner and make readonly
+  copy:
+    src: "files/{{model_file_name}}"
+    dest: "{{ansible_env.HOME}}/samba/{{model_file_name}}"
+    mode: 0444
+  tags: model
+
+- name: render templates
+  template:
+    src: templates/{{item}}
+    dest: "{{repo_root}}/{{item}}"
+    mode: 0755
+  with_items:
+    - run.py
+  tags: templates
+
+- name: run traffic-replay commands
+  command: python run.py --all
+  args:
+    chdir: "{{repo_root}}"
+  tags: run
+
+- name: fetch tar file
+  fetch:
+    src: "{{repo_root}}/{{stats_dir_name}}.tgz"
+    dest: "{{stats_tar_dest}}/{{ansible_date_time.iso8601_basic_short}}.tgz"
+    flat: yes
+  tags: fetch-stats-tarfile
+
+- name: fetch summary.txt
+  fetch:
+    src: "{{repo_root}}/{{stats_dir_name}}/summary.txt"
+    dest: "{{stats_tar_dest}}/{{ansible_date_time.iso8601_basic_short}}-summary.txt"
+    flat: yes
+  tags: fetch-summary-txt

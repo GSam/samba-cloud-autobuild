@@ -1,0 +1,3015 @@
+{
+  "ngrams": {
+    "wait:0\tsrvsvc:16": {
+      "wait:7": 1, 
+      "wait:6": 2, 
+      "wait:4": 2, 
+      "wait:3": 11, 
+      "wait:2": 1, 
+      "wait:1": 2, 
+      "wait:0": 4
+    }, 
+    "kerberos:\trpc_netlogon:45": {
+      "kerberos:": 1
+    }, 
+    "ldap:0\trpc_netlogon:29": {
+      "kerberos:": 2, 
+      "ldap:0": 1
+    }, 
+    "ldap:2\twait:10": {
+      "rpc_netlogon:29": 1, 
+      "kerberos:": 1, 
+      "drsuapi:0": 1, 
+      "ldap:0": 1
+    }, 
+    "drsuapi:0\tdrsuapi:12": {
+      "rpc_netlogon:29": 1, 
+      "drsuapi:1": 438, 
+      "lsarpc:77": 1, 
+      "lsarpc:76": 1, 
+      "wait:1": 1, 
+      "kerberos:": 1, 
+      "ldap:0": 1, 
+      "drsuapi:12": 212
+    }, 
+    "drsuapi:0\tdrsuapi:13": {
+      "drsuapi:13": 58, 
+      "drsuapi:12": 1
+    }, 
+    "cldap:3\tldap:0": {
+      "ldap:3": 1
+    }, 
+    "cldap:3\tldap:3": {
+      "kerberos:": 1
+    }, 
+    "wait:3\tdrsuapi:0": {
+      "rpc_netlogon:29": 1, 
+      "drsuapi:13": 12, 
+      "drsuapi:12": 13
+    }, 
+    "samr:34\tsamr:36": {
+      "samr:1": 1, 
+      "samr:3": 59, 
+      "wait:1": 1
+    }, 
+    "ldap:0\tldap:2": {
+      "rpc_netlogon:29": 1, 
+      "lsarpc:77": 17, 
+      "srvsvc:16": 1, 
+      "ldap:2": 532, 
+      "ldap:0": 680, 
+      "drsuapi:0": 3, 
+      "wait:7": 70, 
+      "wait:6": 76, 
+      "wait:5": 67, 
+      "wait:4": 50, 
+      "wait:3": 98, 
+      "wait:2": 98, 
+      "wait:1": 219, 
+      "wait:0": 143, 
+      "kerberos:": 71, 
+      "wait:9": 5, 
+      "wait:8": 53
+    }, 
+    "ldap:0\tldap:3": {
+      "kerberos:": 2, 
+      "ldap:3": 17, 
+      "ldap:0": 4
+    }, 
+    "ldap:0\tldap:0": {
+      "wait:10": 1, 
+      "lsarpc:77": 1, 
+      "wait:7": 14, 
+      "wait:6": 13, 
+      "wait:5": 9, 
+      "wait:4": 8, 
+      "wait:3": 2, 
+      "wait:2": 7, 
+      "wait:1": 21, 
+      "wait:0": 59, 
+      "kerberos:": 78, 
+      "ldap:0": 109, 
+      "ldap:2": 450, 
+      "wait:9": 1, 
+      "wait:8": 8
+    }, 
+    "samr:36\tsamr:3": {
+      "samr:39": 60
+    }, 
+    "wait:1\tdrsuapi:1": {
+      "wait:6": 1, 
+      "wait:9": 1, 
+      "ldap:0": 1
+    }, 
+    "wait:1\tdrsuapi:0": {
+      "wait:1": 1, 
+      "drsuapi:0": 1, 
+      "drsuapi:13": 12, 
+      "drsuapi:12": 12
+    }, 
+    "wait:6\tlsarpc:76": {
+      "lsarpc:77": 1, 
+      "lsarpc:76": 4, 
+      "wait:7": 8, 
+      "wait:6": 2, 
+      "wait:5": 2, 
+      "wait:4": 3, 
+      "wait:3": 1, 
+      "wait:2": 2, 
+      "wait:1": 3, 
+      "wait:8": 2
+    }, 
+    "wait:6\tlsarpc:77": {
+      "lsarpc:77": 5, 
+      "lsarpc:76": 3, 
+      "wait:6": 3, 
+      "wait:5": 2, 
+      "wait:4": 8, 
+      "wait:3": 4, 
+      "wait:1": 3, 
+      "wait:0": 1, 
+      "kerberos:": 19, 
+      "wait:9": 1, 
+      "wait:8": 4
+    }, 
+    "wait:5\tlsarpc:77": {
+      "lsarpc:76": 2, 
+      "wait:7": 2, 
+      "wait:6": 1, 
+      "wait:5": 5, 
+      "wait:4": 3, 
+      "wait:3": 44, 
+      "wait:2": 3, 
+      "wait:1": 2, 
+      "wait:0": 2, 
+      "kerberos:": 37, 
+      "wait:8": 3, 
+      "wait:9": 2, 
+      "ldap:0": 1
+    }, 
+    "wait:5\tlsarpc:76": {
+      "wait:7": 1, 
+      "wait:6": 2, 
+      "wait:5": 1, 
+      "wait:3": 2, 
+      "wait:1": 3, 
+      "wait:0": 2, 
+      "lsarpc:76": 2
+    }, 
+    "wait:6\tnbns:0": {
+      "nbns:0": 17, 
+      "wait:7": 1, 
+      "wait:6": 3, 
+      "wait:5": 2, 
+      "wait:2": 172, 
+      "wait:1": 5, 
+      "wait:0": 7, 
+      "wait:8": 1
+    }, 
+    "wait:1\tsamr:36": {
+      "samr:1": 1, 
+      "samr:3": 1
+    }, 
+    "-\t-": {
+      "rpc_netlogon:29": 11, 
+      "drsuapi:0": 6, 
+      "dcerpc:16": 1, 
+      "cldap:3": 4, 
+      "nbns:0": 59, 
+      "lsarpc:77": 19, 
+      "lsarpc:76": 2, 
+      "srvsvc:16": 1, 
+      "wait:0": 1, 
+      "kerberos:": 108, 
+      "rpc_netlogon:39": 1, 
+      "ldap:3": 1, 
+      "ldap:0": 15
+    }, 
+    "-\tkerberos:": {
+      "rpc_netlogon:29": 3, 
+      "wait:7": 1, 
+      "wait:6": 1, 
+      "kerberos:": 95, 
+      "wait:0": 4, 
+      "wait:9": 1, 
+      "wait:8": 3
+    }, 
+    "wait:2\tdrsuapi:0": {
+      "kerberos:": 1, 
+      "drsuapi:0": 1, 
+      "drsuapi:13": 8, 
+      "drsuapi:12": 9
+    }, 
+    "wait:9\tlsarpc:77": {
+      "wait:7": 1, 
+      "wait:6": 2, 
+      "wait:5": 1, 
+      "wait:2": 1, 
+      "wait:1": 1, 
+      "wait:0": 1, 
+      "kerberos:": 5, 
+      "wait:8": 1, 
+      "wait:9": 6, 
+      "ldap:0": 1
+    }, 
+    "wait:9\tlsarpc:76": {
+      "lsarpc:76": 1, 
+      "wait:8": 1
+    }, 
+    "kerberos:\tsrvsvc:16": {
+      "wait:5": 3, 
+      "wait:4": 4, 
+      "wait:3": 20, 
+      "wait:2": 3, 
+      "wait:1": 1
+    }, 
+    "srvsvc:21\tkerberos:": {
+      "kerberos:": 1, 
+      "srvsvc:21": 6, 
+      "ldap:0": 1
+    }, 
+    "-\tlsarpc:77": {
+      "wait:7": 2, 
+      "wait:6": 1, 
+      "wait:5": 2, 
+      "wait:2": 1, 
+      "wait:1": 1, 
+      "wait:0": 2, 
+      "kerberos:": 8, 
+      "wait:9": 1, 
+      "wait:8": 1
+    }, 
+    "-\tlsarpc:76": {
+      "lsarpc:76": 1, 
+      "wait:8": 1
+    }, 
+    "wait:3\tsamr:64": {
+      "samr:6": 2
+    }, 
+    "wait:7\tlsarpc:39": {
+      "wait:0": 1, 
+      "lsarpc:14": 2
+    }, 
+    "wait:0\tsamr:16": {
+      "samr:1": 57, 
+      "samr:16": 46, 
+      "samr:18": 3, 
+      "wait:1": 7, 
+      "wait:0": 4
+    }, 
+    "samr:34\tsamr:39": {
+      "wait:1": 2, 
+      "wait:0": 55
+    }, 
+    "samr:39\twait:1": {
+      "samr:16": 2
+    }, 
+    "samr:39\twait:0": {
+      "kerberos:": 1, 
+      "samr:16": 114, 
+      "lsarpc:76": 1
+    }, 
+    "wait:0\tsamr:18": {
+      "wait:0": 1
+    }, 
+    "wait:10\tkerberos:": {
+      "kerberos:": 2
+    }, 
+    "wait:0\tlsarpc:39": {
+      "wait:7": 3, 
+      "wait:6": 4, 
+      "wait:5": 5, 
+      "wait:4": 2, 
+      "wait:1": 5, 
+      "wait:0": 44
+    }, 
+    "samr:1\tsamr:19": {
+      "samr:25": 3
+    }, 
+    "samr:36\tsamr:1": {
+      "samr:1": 2
+    }, 
+    "kerberos:\tsamr:64": {
+      "samr:6": 40
+    }, 
+    "wait:1\tsamr:3": {
+      "samr:39": 1
+    }, 
+    "wait:1\tsamr:1": {
+      "samr:1": 1, 
+      "wait:1": 1, 
+      "wait:0": 1
+    }, 
+    "wait:1\tnbns:0": {
+      "nbns:0": 254, 
+      "wait:7": 5, 
+      "wait:6": 2, 
+      "wait:5": 4, 
+      "wait:4": 1, 
+      "wait:3": 1, 
+      "wait:2": 67, 
+      "wait:1": 128, 
+      "wait:0": 194, 
+      "wait:9": 2
+    }, 
+    "wait:2\tlsarpc:39": {
+      "wait:0": 1
+    }, 
+    "lsarpc:77\trpc_netlogon:39": {
+      "wait:6": 9
+    }, 
+    "wait:5\tnbns:0": {
+      "wait:4": 1, 
+      "wait:3": 1, 
+      "wait:2": 140, 
+      "wait:1": 3, 
+      "wait:0": 2, 
+      "nbns:0": 2, 
+      "wait:8": 1
+    }, 
+    "wait:4\tlsarpc:76": {
+      "lsarpc:77": 8, 
+      "lsarpc:76": 3, 
+      "wait:7": 1, 
+      "wait:6": 2, 
+      "wait:5": 2, 
+      "wait:4": 1, 
+      "wait:3": 1, 
+      "wait:2": 5, 
+      "wait:1": 2, 
+      "wait:0": 2, 
+      "wait:8": 1
+    }, 
+    "wait:4\tlsarpc:77": {
+      "wait:7": 5, 
+      "wait:6": 2, 
+      "wait:5": 9, 
+      "wait:4": 6, 
+      "wait:3": 55, 
+      "wait:2": 1, 
+      "wait:1": 3, 
+      "wait:0": 6, 
+      "kerberos:": 55, 
+      "wait:8": 3, 
+      "ldap:0": 1
+    }, 
+    "ldap:3\tkerberos:": {
+      "kerberos:": 5, 
+      "ldap:0": 2
+    }, 
+    "samr:6\tsamr:5": {
+      "samr:7": 175
+    }, 
+    "wait:1\tsrvsvc:16": {
+      "wait:6": 2, 
+      "wait:3": 2, 
+      "wait:2": 5, 
+      "wait:1": 1, 
+      "wait:0": 1
+    }, 
+    "drsuapi:1\tldap:3": {
+      "ldap:0": 1
+    }, 
+    "drsuapi:1\tldap:2": {
+      "wait:1": 1
+    }, 
+    "drsuapi:1\tldap:0": {
+      "drsuapi:0": 48, 
+      "wait:1": 1, 
+      "wait:0": 5, 
+      "kerberos:": 20, 
+      "ldap:0": 5, 
+      "ldap:2": 2, 
+      "wait:2": 2
+    }, 
+    "ldap:0\tlsarpc:76": {
+      "kerberos:": 1, 
+      "ldap:0": 1, 
+      "wait:2": 1, 
+      "wait:0": 1
+    }, 
+    "ldap:0\tlsarpc:77": {
+      "ldap:0": 2
+    }, 
+    "wait:7\tnbns:0": {
+      "nbns:0": 16, 
+      "wait:7": 2, 
+      "wait:6": 2, 
+      "wait:3": 1, 
+      "wait:2": 134, 
+      "wait:1": 7, 
+      "wait:0": 25, 
+      "wait:8": 10
+    }, 
+    "wait:3\trpc_netlogon:39": {
+      "wait:5": 1, 
+      "rpc_netlogon:39": 5, 
+      "wait:0": 1
+    }, 
+    "drsuapi:0\trpc_netlogon:29": {
+      "drsuapi:12": 6
+    }, 
+    "lsarpc:76\tsamr:1": {
+      "samr:1": 1, 
+      "samr:19": 1
+    }, 
+    "lsarpc:77\twait:9": {
+      "kerberos:": 1, 
+      "drsuapi:0": 1, 
+      "lsarpc:77": 8, 
+      "lsarpc:76": 1
+    }, 
+    "ldap:2\tdrsuapi:1": {
+      "drsuapi:1": 1, 
+      "wait:7": 3, 
+      "wait:6": 2, 
+      "wait:4": 8, 
+      "wait:3": 4, 
+      "wait:2": 2, 
+      "wait:1": 1, 
+      "wait:8": 7, 
+      "ldap:0": 23
+    }, 
+    "lsarpc:77\twait:5": {
+      "kerberos:": 24, 
+      "rpc_netlogon:39": 3, 
+      "drsuapi:0": 3, 
+      "lsarpc:77": 48, 
+      "ldap:0": 2
+    }, 
+    "lsarpc:77\twait:4": {
+      "ldap:0": 3, 
+      "drsuapi:0": 1, 
+      "kerberos:": 3, 
+      "rpc_netlogon:39": 1, 
+      "lsarpc:77": 64, 
+      "lsarpc:76": 1
+    }, 
+    "lsarpc:77\twait:7": {
+      "rpc_netlogon:29": 2, 
+      "rpc_netlogon:40": 1, 
+      "drsuapi:0": 8, 
+      "kerberos:": 23, 
+      "ldap:0": 11, 
+      "lsarpc:77": 56, 
+      "lsarpc:76": 1
+    }, 
+    "lsarpc:77\twait:6": {
+      "rpc_netlogon:29": 2, 
+      "rpc_netlogon:40": 2, 
+      "drsuapi:0": 9, 
+      "kerberos:": 23, 
+      "ldap:0": 3, 
+      "lsarpc:77": 3, 
+      "lsarpc:76": 1
+    }, 
+    "lsarpc:77\twait:1": {
+      "kerberos:": 28, 
+      "drsuapi:0": 1, 
+      "rpc_netlogon:30": 1, 
+      "ldap:0": 8
+    }, 
+    "lsarpc:77\twait:0": {
+      "kerberos:": 30, 
+      "ldap:0": 15, 
+      "ldap:2": 1, 
+      "rpc_netlogon:39": 1
+    }, 
+    "lsarpc:77\twait:3": {
+      "kerberos:": 2, 
+      "drsuapi:0": 1, 
+      "lsarpc:77": 394, 
+      "lsarpc:76": 2
+    }, 
+    "lsarpc:77\twait:2": {
+      "kerberos:": 21, 
+      "rpc_netlogon:39": 1, 
+      "lsarpc:77": 17, 
+      "ldap:0": 4
+    }, 
+    "wait:4\tnbns:0": {
+      "nbns:0": 10, 
+      "wait:1": 2, 
+      "wait:2": 65, 
+      "wait:9": 1, 
+      "wait:0": 3
+    }, 
+    "lsarpc:77\tlsarpc:76": {
+      "wait:7": 2, 
+      "wait:6": 1, 
+      "wait:5": 3, 
+      "wait:4": 2, 
+      "wait:0": 3, 
+      "kerberos:": 1, 
+      "lsarpc:76": 26
+    }, 
+    "wait:2\tsamr:64": {
+      "samr:6": 1
+    }, 
+    "drsuapi:1\tdrsuapi:1": {
+      "wait:1": 1, 
+      "wait:9": 1, 
+      "ldap:0": 1
+    }, 
+    "drsuapi:1\tdrsuapi:0": {
+      "wait:1": 1, 
+      "drsuapi:12": 81
+    }, 
+    "samr:34\twait:1": {
+      "samr:36": 2
+    }, 
+    "wait:3\tkerberos:": {
+      "drsuapi:0": 18, 
+      "wait:7": 2, 
+      "wait:6": 3, 
+      "wait:5": 5, 
+      "wait:4": 5, 
+      "wait:3": 6, 
+      "wait:2": 4, 
+      "wait:1": 6, 
+      "wait:0": 5, 
+      "kerberos:": 135, 
+      "ldap:0": 15
+    }, 
+    "-\tnbns:0": {
+      "wait:8": 6, 
+      "wait:2": 11, 
+      "nbns:0": 37, 
+      "wait:1": 2, 
+      "wait:0": 3
+    }, 
+    "wait:5\trpc_netlogon:40": {
+      "wait:4": 1
+    }, 
+    "samr:64\tsamr:7": {
+      "samr:1": 3, 
+      "samr:16": 1
+    }, 
+    "samr:64\tsamr:6": {
+      "samr:5": 174
+    }, 
+    "samr:64\tsamr:1": {
+      "samr:7": 1
+    }, 
+    "wait:5\tldap:0": {
+      "wait:7": 6, 
+      "wait:6": 4, 
+      "wait:4": 2, 
+      "wait:1": 33, 
+      "wait:0": 48, 
+      "kerberos:": 2, 
+      "ldap:3": 1, 
+      "ldap:2": 59, 
+      "wait:9": 4, 
+      "ldap:0": 21
+    }, 
+    "nbns:0\tnbns:0": {
+      "nbns:0": 689, 
+      "wait:7": 25, 
+      "wait:6": 16, 
+      "wait:5": 5, 
+      "wait:4": 13, 
+      "wait:3": 15, 
+      "wait:2": 194, 
+      "wait:1": 226, 
+      "wait:0": 163, 
+      "wait:9": 1, 
+      "wait:8": 4
+    }, 
+    "samr:18\tsamr:1": {
+      "samr:1": 54, 
+      "kerberos:": 1
+    }, 
+    "samr:19\tsamr:1": {
+      "wait:1": 1
+    }, 
+    "wait:1\tlsarpc:15": {
+      "wait:0": 1
+    }, 
+    "wait:10\trpc_netlogon:29": {
+      "wait:0": 1
+    }, 
+    "wait:4\trpc_netlogon:39": {
+      "wait:6": 1, 
+      "wait:5": 4, 
+      "kerberos:": 1, 
+      "lsarpc:77": 2, 
+      "rpc_netlogon:39": 7
+    }, 
+    "nbns:0\twait:10": {
+      "nbns:0": 9
+    }, 
+    "lsarpc:76\tsamr:64": {
+      "samr:7": 1, 
+      "samr:6": 56
+    }, 
+    "samr:25\tsamr:1": {
+      "samr:1": 1
+    }, 
+    "wait:7\tlsarpc:77": {
+      "lsarpc:77": 3, 
+      "wait:7": 4, 
+      "wait:6": 2, 
+      "wait:5": 33, 
+      "wait:4": 35, 
+      "wait:3": 27, 
+      "wait:2": 15, 
+      "wait:1": 12, 
+      "wait:0": 7, 
+      "kerberos:": 108, 
+      "wait:8": 11
+    }, 
+    "wait:7\tlsarpc:76": {
+      "lsarpc:77": 12, 
+      "lsarpc:76": 4, 
+      "wait:7": 6, 
+      "wait:6": 2, 
+      "wait:5": 2, 
+      "wait:3": 1, 
+      "wait:0": 2, 
+      "wait:8": 3
+    }, 
+    "wait:0\tlsarpc:76": {
+      "lsarpc:76": 9, 
+      "wait:7": 2, 
+      "wait:6": 1, 
+      "wait:5": 1, 
+      "wait:4": 1, 
+      "wait:2": 2, 
+      "wait:1": 2, 
+      "wait:0": 3, 
+      "samr:16": 1, 
+      "wait:8": 1
+    }, 
+    "wait:0\tlsarpc:77": {
+      "wait:3": 1, 
+      "drsuapi:0": 1, 
+      "wait:1": 2, 
+      "wait:0": 2, 
+      "kerberos:": 1, 
+      "ldap:0": 8
+    }, 
+    "wait:0\tkerberos:": {
+      "rpc_netlogon:29": 3, 
+      "ldap:3": 1, 
+      "ldap:0": 49, 
+      "drsuapi:0": 16, 
+      "wait:7": 4, 
+      "wait:6": 5, 
+      "wait:5": 1, 
+      "samr:16": 1, 
+      "wait:3": 4, 
+      "wait:2": 5, 
+      "wait:1": 9, 
+      "wait:0": 20, 
+      "wait:4": 3, 
+      "kerberos:": 181, 
+      "wait:9": 1, 
+      "wait:8": 3
+    }, 
+    "samr:1\tsamr:64": {
+      "samr:7": 1, 
+      "samr:6": 55
+    }, 
+    "wait:3\tlsarpc:77": {
+      "wait:7": 74, 
+      "wait:6": 20, 
+      "wait:5": 21, 
+      "wait:4": 18, 
+      "wait:3": 259, 
+      "wait:2": 12, 
+      "wait:1": 1, 
+      "wait:0": 2, 
+      "kerberos:": 3
+    }, 
+    "wait:3\tlsarpc:76": {
+      "drsuapi:0": 1, 
+      "lsarpc:77": 4, 
+      "lsarpc:76": 25, 
+      "wait:5": 1, 
+      "wait:4": 1, 
+      "wait:3": 2, 
+      "wait:2": 4, 
+      "wait:1": 14, 
+      "wait:0": 12, 
+      "wait:8": 1, 
+      "ldap:0": 4
+    }, 
+    "rpc_netlogon:29\tlsarpc:77": {
+      "wait:6": 1, 
+      "wait:4": 1, 
+      "wait:1": 1, 
+      "wait:0": 2, 
+      "kerberos:": 8, 
+      "lsarpc:77": 2, 
+      "ldap:0": 1
+    }, 
+    "rpc_netlogon:29\tlsarpc:76": {
+      "wait:7": 1, 
+      "wait:3": 1, 
+      "wait:2": 1, 
+      "wait:1": 2, 
+      "wait:0": 1, 
+      "lsarpc:76": 2
+    }, 
+    "wait:3\tldap:3": {
+      "ldap:0": 1
+    }, 
+    "wait:3\tldap:2": {
+      "lsarpc:77": 1, 
+      "wait:6": 2, 
+      "wait:5": 1, 
+      "srvsvc:16": 5, 
+      "wait:3": 1, 
+      "wait:2": 1, 
+      "wait:1": 3, 
+      "wait:0": 1, 
+      "wait:4": 2, 
+      "kerberos:": 1, 
+      "ldap:2": 1, 
+      "wait:8": 2
+    }, 
+    "wait:1\tsamr:25": {
+      "wait:2": 1
+    }, 
+    "wait:4\tkerberos:": {
+      "drsuapi:0": 13, 
+      "wait:7": 4, 
+      "wait:6": 8, 
+      "wait:5": 8, 
+      "wait:4": 5, 
+      "wait:2": 2, 
+      "wait:1": 5, 
+      "wait:0": 1, 
+      "kerberos:": 86, 
+      "wait:8": 1, 
+      "wait:9": 1, 
+      "ldap:0": 6
+    }, 
+    "wait:4\tlsarpc:39": {
+      "wait:1": 1, 
+      "lsarpc:14": 1
+    }, 
+    "samr:17\tsamr:34": {
+      "samr:39": 57, 
+      "samr:36": 60, 
+      "wait:1": 1
+    }, 
+    "wait:10\tdrsuapi:0": {
+      "drsuapi:12": 1
+    }, 
+    "drsuapi:12\tdrsuapi:13": {
+      "drsuapi:1": 1
+    }, 
+    "rpc_netlogon:39\tlsarpc:14": {
+      "lsarpc:15": 1
+    }, 
+    "lsarpc:39\tlsarpc:15": {
+      "wait:0": 1
+    }, 
+    "lsarpc:39\tlsarpc:14": {
+      "wait:6": 1, 
+      "lsarpc:14": 1, 
+      "lsarpc:15": 5, 
+      "wait:0": 3
+    }, 
+    "wait:8\tlsarpc:76": {
+      "wait:7": 4, 
+      "wait:6": 3, 
+      "wait:2": 1, 
+      "wait:1": 2, 
+      "wait:8": 7, 
+      "wait:9": 1, 
+      "lsarpc:76": 5
+    }, 
+    "wait:8\tlsarpc:77": {
+      "wait:7": 8, 
+      "wait:6": 6, 
+      "wait:5": 5, 
+      "wait:3": 1, 
+      "wait:2": 1, 
+      "wait:1": 5, 
+      "wait:0": 9, 
+      "kerberos:": 51, 
+      "wait:9": 1, 
+      "wait:8": 19
+    }, 
+    "samr:18\tsamr:64": {
+      "samr:1": 1
+    }, 
+    "-\tcldap:3": {
+      "cldap:3": 2, 
+      "wait:0": 2
+    }, 
+    "wait:0\tldap:2": {
+      "lsarpc:77": 5, 
+      "srvsvc:16": 4, 
+      "ldap:2": 16, 
+      "ldap:0": 45, 
+      "drsuapi:0": 1, 
+      "wait:10": 1, 
+      "wait:7": 39, 
+      "wait:6": 62, 
+      "wait:5": 74, 
+      "wait:4": 104, 
+      "wait:3": 82, 
+      "wait:2": 66, 
+      "wait:1": 38, 
+      "wait:0": 22, 
+      "kerberos:": 5, 
+      "wait:9": 3, 
+      "wait:8": 29
+    }, 
+    "wait:0\tldap:3": {
+      "kerberos:": 1, 
+      "ldap:0": 2
+    }, 
+    "wait:0\tldap:0": {
+      "drsuapi:0": 3, 
+      "wait:7": 1, 
+      "wait:6": 3, 
+      "wait:5": 7, 
+      "wait:4": 1, 
+      "wait:3": 4, 
+      "wait:2": 8, 
+      "wait:1": 36, 
+      "wait:0": 180, 
+      "kerberos:": 36, 
+      "ldap:0": 360, 
+      "ldap:3": 3, 
+      "ldap:2": 339, 
+      "wait:9": 1, 
+      "wait:8": 2
+    }, 
+    "lsarpc:15\twait:6": {
+      "lsarpc:39": 1, 
+      "lsarpc:14": 1
+    }, 
+    "wait:2\tsamr:1": {
+      "samr:19": 1
+    }, 
+    "ldap:3\tldap:3": {
+      "ldap:3": 13, 
+      "wait:0": 7, 
+      "wait:3": 1, 
+      "ldap:2": 10, 
+      "ldap:0": 2
+    }, 
+    "ldap:3\tldap:2": {
+      "samr:64": 1, 
+      "wait:3": 1, 
+      "wait:1": 1, 
+      "wait:0": 1, 
+      "ldap:2": 3, 
+      "ldap:0": 5
+    }, 
+    "ldap:3\tldap:0": {
+      "rpc_netlogon:29": 1, 
+      "wait:2": 1, 
+      "wait:0": 1, 
+      "ldap:3": 6, 
+      "ldap:2": 2, 
+      "ldap:0": 1
+    }, 
+    "kerberos:\tkerberos:": {
+      "rpc_netlogon:29": 13, 
+      "samr:64": 40, 
+      "srvsvc:21": 5, 
+      "lsarpc:76": 1, 
+      "samr:1": 1, 
+      "srvsvc:16": 30, 
+      "ldap:3": 2, 
+      "ldap:2": 68, 
+      "ldap:0": 169, 
+      "drsuapi:0": 59, 
+      "wait:10": 1, 
+      "wait:7": 311, 
+      "wait:6": 160, 
+      "wait:5": 205, 
+      "wait:4": 109, 
+      "wait:3": 129, 
+      "wait:2": 141, 
+      "wait:1": 186, 
+      "wait:0": 182, 
+      "kerberos:": 2097, 
+      "drsuapi:12": 6, 
+      "wait:9": 218, 
+      "wait:8": 427
+    }, 
+    "samr:3\tsamr:39": {
+      "wait:0": 61
+    }, 
+    "ldap:2\tldap:0": {
+      "wait:7": 5, 
+      "wait:6": 3, 
+      "wait:5": 3, 
+      "wait:4": 7, 
+      "wait:3": 6, 
+      "wait:2": 2, 
+      "wait:1": 5, 
+      "wait:0": 112, 
+      "kerberos:": 4, 
+      "ldap:0": 15, 
+      "ldap:3": 5, 
+      "ldap:2": 572, 
+      "wait:8": 3
+    }, 
+    "ldap:2\tldap:2": {
+      "rpc_netlogon:45": 1, 
+      "srvsvc:16": 8, 
+      "ldap:3": 2, 
+      "ldap:2": 26, 
+      "ldap:0": 4, 
+      "drsuapi:0": 1, 
+      "wait:10": 3, 
+      "wait:7": 50, 
+      "wait:6": 49, 
+      "wait:5": 30, 
+      "wait:4": 27, 
+      "wait:3": 18, 
+      "wait:2": 16, 
+      "wait:1": 14, 
+      "wait:0": 325, 
+      "kerberos:": 28, 
+      "wait:8": 32, 
+      "wait:9": 6, 
+      "drsuapi:12": 1
+    }, 
+    "ldap:2\tldap:3": {
+      "ldap:3": 2
+    }, 
+    "wait:6\tldap:0": {
+      "drsuapi:0": 1, 
+      "wait:7": 8, 
+      "wait:6": 2, 
+      "wait:5": 4, 
+      "wait:4": 2, 
+      "wait:3": 1, 
+      "wait:2": 1, 
+      "wait:1": 37, 
+      "wait:0": 34, 
+      "kerberos:": 1, 
+      "ldap:0": 20, 
+      "ldap:2": 86, 
+      "wait:8": 1
+    }, 
+    "wait:10\tnbns:0": {
+      "wait:2": 6, 
+      "nbns:0": 3
+    }, 
+    "rpc_netlogon:29\twait:5": {
+      "kerberos:": 1, 
+      "rpc_netlogon:39": 1
+    }, 
+    "-\twait:0": {
+      "kerberos:": 1
+    }, 
+    "wait:5\trpc_netlogon:39": {
+      "lsarpc:77": 4, 
+      "rpc_netlogon:39": 239, 
+      "wait:6": 1, 
+      "wait:4": 3, 
+      "wait:3": 4, 
+      "wait:2": 2, 
+      "wait:1": 2, 
+      "wait:0": 5, 
+      "lsarpc:14": 1
+    }, 
+    "wait:8\tnbns:0": {
+      "wait:7": 7, 
+      "wait:6": 1, 
+      "wait:2": 82, 
+      "wait:1": 1, 
+      "wait:0": 9, 
+      "nbns:0": 16, 
+      "wait:8": 109
+    }, 
+    "drsuapi:0\twait:0": {
+      "drsuapi:12": 1
+    }, 
+    "drsuapi:0\twait:1": {
+      "drsuapi:12": 4
+    }, 
+    "drsuapi:0\twait:3": {
+      "drsuapi:0": 1
+    }, 
+    "wait:8\trpc_netlogon:29": {
+      "wait:7": 1, 
+      "wait:6": 1, 
+      "wait:3": 1, 
+      "drsuapi:0": 19, 
+      "wait:0": 2, 
+      "lsarpc:76": 1
+    }, 
+    "rpc_netlogon:29\twait:1": {
+      "kerberos:": 3, 
+      "drsuapi:0": 2, 
+      "lsarpc:77": 1, 
+      "ldap:0": 7
+    }, 
+    "ldap:2\trpc_netlogon:45": {
+      "wait:2": 1
+    }, 
+    "rpc_netlogon:40\twait:6": {
+      "lsarpc:76": 2, 
+      "rpc_netlogon:39": 3
+    }, 
+    "rpc_netlogon:40\twait:4": {
+      "rpc_netlogon:39": 1
+    }, 
+    "rpc_netlogon:40\twait:5": {
+      "rpc_netlogon:39": 2
+    }, 
+    "wait:1\tldap:0": {
+      "lsarpc:77": 1, 
+      "lsarpc:76": 1, 
+      "wait:3": 1, 
+      "wait:2": 6, 
+      "wait:1": 28, 
+      "wait:0": 138, 
+      "kerberos:": 58, 
+      "ldap:0": 87, 
+      "ldap:3": 3, 
+      "ldap:2": 56, 
+      "wait:8": 1
+    }, 
+    "wait:1\tldap:3": {
+      "kerberos:": 1
+    }, 
+    "wait:1\tldap:2": {
+      "wait:9": 3, 
+      "lsarpc:77": 2, 
+      "wait:7": 22, 
+      "wait:6": 22, 
+      "wait:5": 9, 
+      "wait:4": 31, 
+      "wait:3": 92, 
+      "wait:2": 68, 
+      "wait:1": 23, 
+      "wait:0": 11, 
+      "kerberos:": 24, 
+      "ldap:0": 7, 
+      "srvsvc:16": 2, 
+      "wait:8": 25
+    }, 
+    "ldap:0\twait:10": {
+      "ldap:0": 1
+    }, 
+    "srvsvc:16\tkerberos:": {
+      "kerberos:": 1, 
+      "drsuapi:0": 1
+    }, 
+    "samr:16\tsamr:16": {
+      "samr:18": 48, 
+      "wait:1": 1
+    }, 
+    "wait:4\tdrsuapi:0": {
+      "drsuapi:12": 20
+    }, 
+    "ldap:2\tdrsuapi:12": {
+      "drsuapi:1": 1
+    }, 
+    "samr:16\tsamr:18": {
+      "samr:1": 54, 
+      "samr:64": 1
+    }, 
+    "drsuapi:0\tkerberos:": {
+      "kerberos:": 5, 
+      "drsuapi:12": 7
+    }, 
+    "samr:16\tkerberos:": {
+      "samr:1": 1
+    }, 
+    "srvsvc:21\tldap:0": {
+      "kerberos:": 4, 
+      "ldap:0": 1
+    }, 
+    "wait:6\tlsarpc:14": {
+      "wait:6": 1, 
+      "wait:4": 1, 
+      "lsarpc:15": 2
+    }, 
+    "wait:6\tlsarpc:15": {
+      "wait:5": 1
+    }, 
+    "wait:3\tsrvsvc:16": {
+      "kerberos:": 1, 
+      "wait:4": 1, 
+      "wait:2": 1
+    }, 
+    "kerberos:\twait:10": {
+      "kerberos:": 1
+    }, 
+    "ldap:2\tsrvsvc:16": {
+      "wait:7": 2, 
+      "wait:6": 3, 
+      "wait:4": 1, 
+      "wait:3": 6, 
+      "wait:2": 2, 
+      "wait:1": 3, 
+      "wait:0": 4, 
+      "kerberos:": 1
+    }, 
+    "kerberos:\tlsarpc:76": {
+      "wait:6": 1, 
+      "ldap:0": 1
+    }, 
+    "wait:0\tnbns:0": {
+      "nbns:0": 126, 
+      "wait:7": 11, 
+      "wait:6": 16, 
+      "wait:5": 6, 
+      "wait:4": 2, 
+      "wait:2": 29, 
+      "wait:1": 223, 
+      "wait:0": 107, 
+      "wait:8": 23
+    }, 
+    "wait:3\trpc_netlogon:29": {
+      "wait:7": 1, 
+      "rpc_netlogon:29": 1, 
+      "wait:1": 1, 
+      "lsarpc:77": 5, 
+      "lsarpc:76": 1
+    }, 
+    "ldap:0\tkerberos:": {
+      "drsuapi:0": 3, 
+      "cldap:3": 1, 
+      "wait:3": 4, 
+      "wait:2": 5, 
+      "wait:1": 6, 
+      "wait:0": 21, 
+      "kerberos:": 179, 
+      "ldap:0": 74, 
+      "ldap:3": 1, 
+      "ldap:2": 5, 
+      "drsuapi:12": 1
+    }, 
+    "rpc_netlogon:45\twait:2": {
+      "lsarpc:76": 1
+    }, 
+    "wait:2\tldap:0": {
+      "drsuapi:0": 1, 
+      "wait:7": 2, 
+      "wait:4": 2, 
+      "wait:3": 2, 
+      "wait:2": 2, 
+      "wait:1": 19, 
+      "wait:0": 103, 
+      "wait:8": 1, 
+      "ldap:3": 1, 
+      "ldap:2": 66, 
+      "ldap:0": 12
+    }, 
+    "kerberos:\trpc_netlogon:29": {
+      "kerberos:": 18, 
+      "drsuapi:0": 3
+    }, 
+    "wait:2\tldap:3": {
+      "ldap:0": 1
+    }, 
+    "samr:1\twait:7": {
+      "kerberos:": 2, 
+      "drsuapi:0": 2, 
+      "lsarpc:77": 12, 
+      "ldap:0": 3
+    }, 
+    "samr:1\twait:6": {
+      "kerberos:": 5, 
+      "ldap:0": 4, 
+      "drsuapi:0": 1, 
+      "lsarpc:77": 1, 
+      "lsarpc:76": 1
+    }, 
+    "samr:1\twait:5": {
+      "kerberos:": 4, 
+      "ldap:0": 2, 
+      "drsuapi:0": 3, 
+      "lsarpc:76": 1
+    }, 
+    "samr:1\twait:4": {
+      "kerberos:": 4, 
+      "lsarpc:77": 1, 
+      "lsarpc:76": 2
+    }, 
+    "samr:1\twait:3": {
+      "kerberos:": 6, 
+      "drsuapi:0": 1
+    }, 
+    "samr:1\twait:2": {
+      "kerberos:": 3, 
+      "lsarpc:76": 1
+    }, 
+    "samr:1\twait:1": {
+      "samr:1": 1, 
+      "samr:64": 1, 
+      "kerberos:": 1, 
+      "samr:19": 1, 
+      "samr:25": 1
+    }, 
+    "samr:1\twait:0": {
+      "samr:1": 3, 
+      "samr:64": 1, 
+      "kerberos:": 1, 
+      "samr:34": 1, 
+      "lsarpc:76": 1
+    }, 
+    "ldap:0\twait:8": {
+      "rpc_netlogon:29": 1, 
+      "kerberos:": 14, 
+      "drsuapi:0": 1, 
+      "lsarpc:77": 2, 
+      "ldap:0": 16
+    }, 
+    "ldap:0\twait:9": {
+      "rpc_netlogon:29": 1, 
+      "kerberos:": 5, 
+      "ldap:0": 2
+    }, 
+    "ldap:0\twait:6": {
+      "kerberos:": 16, 
+      "drsuapi:0": 4, 
+      "lsarpc:77": 8, 
+      "ldap:0": 24
+    }, 
+    "ldap:0\twait:7": {
+      "kerberos:": 7, 
+      "ldap:0": 30, 
+      "drsuapi:0": 2, 
+      "lsarpc:77": 16, 
+      "lsarpc:76": 1
+    }, 
+    "ldap:0\twait:4": {
+      "kerberos:": 8, 
+      "ldap:0": 26, 
+      "drsuapi:0": 2, 
+      "lsarpc:77": 3, 
+      "lsarpc:76": 1
+    }, 
+    "ldap:2\tkerberos:": {
+      "drsuapi:0": 1, 
+      "wait:7": 3, 
+      "wait:5": 2, 
+      "srvsvc:16": 1, 
+      "wait:3": 2, 
+      "wait:2": 1, 
+      "wait:1": 2, 
+      "wait:0": 2, 
+      "wait:4": 1, 
+      "kerberos:": 117, 
+      "ldap:2": 2, 
+      "ldap:0": 4
+    }, 
+    "ldap:0\twait:2": {
+      "rpc_netlogon:29": 2, 
+      "drsuapi:0": 4, 
+      "kerberos:": 22, 
+      "ldap:2": 5, 
+      "lsarpc:77": 1, 
+      "ldap:0": 18
+    }, 
+    "wait:9\tldap:0": {
+      "wait:7": 1, 
+      "wait:4": 1, 
+      "ldap:2": 14, 
+      "ldap:0": 3, 
+      "wait:0": 2
+    }, 
+    "ldap:0\twait:0": {
+      "rpc_netlogon:29": 1, 
+      "kerberos:": 64, 
+      "ldap:0": 742, 
+      "drsuapi:0": 1, 
+      "ldap:2": 213
+    }, 
+    "lsarpc:39\twait:2": {
+      "lsarpc:39": 1
+    }, 
+    "drsuapi:1\trpc_netlogon:45": {
+      "ldap:0": 1
+    }, 
+    "wait:5\tlsarpc:14": {
+      "lsarpc:15": 1
+    }, 
+    "wait:5\tlsarpc:15": {
+      "wait:6": 1, 
+      "wait:4": 1, 
+      "wait:1": 1
+    }, 
+    "wait:6\trpc_netlogon:29": {
+      "wait:6": 1, 
+      "kerberos:": 2, 
+      "wait:4": 1, 
+      "drsuapi:0": 8, 
+      "wait:8": 1
+    }, 
+    "wait:10\tldap:0": {
+      "ldap:0": 1, 
+      "wait:0": 1
+    }, 
+    "samr:19\tsamr:25": {
+      "samr:1": 1, 
+      "lsarpc:76": 2
+    }, 
+    "lsarpc:76\twait:2": {
+      "kerberos:": 7, 
+      "lsarpc:76": 6, 
+      "drsuapi:0": 1, 
+      "lsarpc:77": 2, 
+      "ldap:0": 9
+    }, 
+    "lsarpc:76\twait:3": {
+      "rpc_netlogon:29": 1, 
+      "drsuapi:0": 2, 
+      "kerberos:": 6, 
+      "ldap:0": 1, 
+      "lsarpc:77": 3, 
+      "lsarpc:76": 25
+    }, 
+    "lsarpc:76\twait:0": {
+      "ldap:0": 39, 
+      "kerberos:": 1, 
+      "rpc_netlogon:39": 3, 
+      "ldap:3": 1, 
+      "ldap:2": 2, 
+      "lsarpc:77": 8, 
+      "lsarpc:76": 16
+    }, 
+    "lsarpc:76\twait:1": {
+      "samr:64": 1, 
+      "kerberos:": 4, 
+      "ldap:0": 25, 
+      "lsarpc:77": 4, 
+      "lsarpc:76": 16
+    }, 
+    "lsarpc:76\twait:6": {
+      "rpc_netlogon:40": 1, 
+      "ldap:0": 5, 
+      "drsuapi:0": 2, 
+      "kerberos:": 4, 
+      "rpc_netlogon:39": 1, 
+      "lsarpc:77": 6, 
+      "lsarpc:76": 2
+    }, 
+    "lsarpc:76\twait:7": {
+      "rpc_netlogon:29": 2, 
+      "rpc_netlogon:40": 1, 
+      "drsuapi:0": 10, 
+      "lsarpc:77": 15, 
+      "rpc_netlogon:39": 1, 
+      "kerberos:": 16, 
+      "lsarpc:76": 12, 
+      "ldap:0": 3
+    }, 
+    "lsarpc:76\twait:4": {
+      "rpc_netlogon:29": 1, 
+      "kerberos:": 4, 
+      "lsarpc:77": 4, 
+      "rpc_netlogon:39": 1
+    }, 
+    "ldap:0\tdrsuapi:1": {
+      "kerberos:": 1, 
+      "wait:1": 1
+    }, 
+    "lsarpc:76\twait:8": {
+      "kerberos:": 17, 
+      "lsarpc:76": 1, 
+      "drsuapi:0": 1, 
+      "ldap:0": 3
+    }, 
+    "lsarpc:76\twait:9": {
+      "kerberos:": 2, 
+      "ldap:0": 1
+    }, 
+    "rpc_netlogon:45\tkerberos:": {
+      "ldap:0": 1
+    }, 
+    "kerberos:\tdrsuapi:1": {
+      "kerberos:": 2
+    }, 
+    "kerberos:\tdrsuapi:0": {
+      "rpc_netlogon:29": 2, 
+      "drsuapi:0": 1, 
+      "wait:1": 1, 
+      "kerberos:": 8, 
+      "ldap:0": 5, 
+      "ldap:2": 1, 
+      "drsuapi:13": 20, 
+      "drsuapi:12": 161
+    }, 
+    "kerberos:\twait:1": {
+      "samr:64": 13, 
+      "rpc_netlogon:29": 5, 
+      "drsuapi:0": 16, 
+      "rpc_netlogon:30": 1, 
+      "cldap:3": 1, 
+      "lsarpc:77": 3, 
+      "lsarpc:76": 15, 
+      "srvsvc:16": 5, 
+      "kerberos:": 140, 
+      "ldap:2": 9, 
+      "ldap:0": 34
+    }, 
+    "kerberos:\twait:0": {
+      "rpc_netlogon:29": 3, 
+      "samr:64": 5, 
+      "rpc_netlogon:40": 1, 
+      "drsuapi:0": 10, 
+      "lsarpc:77": 1, 
+      "lsarpc:76": 1, 
+      "srvsvc:16": 15, 
+      "kerberos:": 98, 
+      "ldap:3": 1, 
+      "ldap:2": 16, 
+      "ldap:0": 115
+    }, 
+    "kerberos:\twait:3": {
+      "rpc_netlogon:29": 5, 
+      "samr:64": 1, 
+      "drsuapi:0": 11, 
+      "srvsvc:21": 1, 
+      "lsarpc:77": 11, 
+      "rpc_netlogon:39": 2, 
+      "srvsvc:16": 1, 
+      "kerberos:": 102, 
+      "lsarpc:76": 24, 
+      "ldap:2": 1, 
+      "ldap:0": 11
+    }, 
+    "kerberos:\twait:2": {
+      "samr:64": 1, 
+      "rpc_netlogon:29": 3, 
+      "drsuapi:0": 9, 
+      "lsarpc:77": 4, 
+      "lsarpc:76": 36, 
+      "srvsvc:16": 1, 
+      "kerberos:": 112, 
+      "rpc_netlogon:39": 1, 
+      "ldap:3": 1, 
+      "ldap:2": 4, 
+      "ldap:0": 15
+    }, 
+    "samr:7\tsamr:17": {
+      "samr:34": 118
+    }, 
+    "samr:7\tsamr:16": {
+      "samr:1": 1
+    }, 
+    "drsuapi:12\tdrsuapi:0": {
+      "drsuapi:1": 1
+    }, 
+    "kerberos:\twait:6": {
+      "rpc_netlogon:29": 11, 
+      "ldap:0": 40, 
+      "drsuapi:0": 23, 
+      "kerberos:": 141, 
+      "rpc_netlogon:39": 1, 
+      "lsarpc:77": 8, 
+      "lsarpc:76": 9
+    }, 
+    "kerberos:\twait:9": {
+      "kerberos:": 197, 
+      "drsuapi:0": 6, 
+      "lsarpc:77": 8, 
+      "ldap:0": 17
+    }, 
+    "kerberos:\twait:8": {
+      "rpc_netlogon:29": 15, 
+      "drsuapi:0": 57, 
+      "rpc_netlogon:30": 1, 
+      "srvsvc:21": 1, 
+      "lsarpc:77": 75, 
+      "lsarpc:76": 21, 
+      "kerberos:": 256, 
+      "ldap:0": 52
+    }, 
+    "drsuapi:0\tldap:0": {
+      "kerberos:": 1, 
+      "drsuapi:12": 6
+    }, 
+    "drsuapi:0\tldap:2": {
+      "drsuapi:1": 52, 
+      "ldap:2": 1
+    }, 
+    "wait:2\tsrvsvc:21": {
+      "kerberos:": 1
+    }, 
+    "nbns:0\twait:4": {
+      "nbns:0": 81
+    }, 
+    "nbns:0\twait:5": {
+      "nbns:0": 150
+    }, 
+    "nbns:0\twait:6": {
+      "nbns:0": 208
+    }, 
+    "nbns:0\twait:7": {
+      "nbns:0": 197
+    }, 
+    "nbns:0\twait:0": {
+      "nbns:0": 547
+    }, 
+    "nbns:0\twait:1": {
+      "nbns:0": 661
+    }, 
+    "nbns:0\twait:2": {
+      "nbns:0": 2934
+    }, 
+    "nbns:0\twait:3": {
+      "nbns:0": 65
+    }, 
+    "samr:16\twait:0": {
+      "samr:1": 1, 
+      "samr:16": 3, 
+      "samr:18": 1
+    }, 
+    "samr:16\twait:1": {
+      "samr:1": 2, 
+      "samr:16": 5, 
+      "samr:18": 1
+    }, 
+    "nbns:0\twait:8": {
+      "nbns:0": 237
+    }, 
+    "nbns:0\twait:9": {
+      "nbns:0": 23
+    }, 
+    "-\tldap:3": {
+      "wait:0": 1
+    }, 
+    "wait:2\trpc_netlogon:29": {
+      "wait:6": 1, 
+      "wait:4": 1, 
+      "wait:3": 3, 
+      "wait:1": 1, 
+      "wait:0": 2, 
+      "kerberos:": 2, 
+      "lsarpc:77": 2
+    }, 
+    "-\tldap:0": {
+      "-": 1, 
+      "wait:6": 1, 
+      "wait:3": 1, 
+      "wait:0": 1, 
+      "kerberos:": 2, 
+      "wait:8": 2, 
+      "ldap:2": 4, 
+      "ldap:0": 2
+    }, 
+    "rpc_netlogon:29\tdrsuapi:12": {
+      "drsuapi:1": 3, 
+      "drsuapi:12": 3
+    }, 
+    "wait:0\tlsarpc:14": {
+      "wait:1": 1
+    }, 
+    "kerberos:\tsamr:16": {
+      "kerberos:": 1
+    }, 
+    "wait:7\tlsarpc:14": {
+      "wait:6": 1
+    }, 
+    "samr:16\tsamr:1": {
+      "samr:1": 56, 
+      "kerberos:": 1, 
+      "wait:0": 1
+    }, 
+    "-\tsrvsvc:16": {
+      "wait:6": 1
+    }, 
+    "wait:7\tdrsuapi:0": {
+      "drsuapi:12": 77
+    }, 
+    "wait:7\trpc_netlogon:40": {
+      "wait:6": 2
+    }, 
+    "rpc_netlogon:30\tcldap:3": {
+      "ldap:0": 1
+    }, 
+    "ldap:2\twait:4": {
+      "srvsvc:16": 3, 
+      "drsuapi:0": 2, 
+      "kerberos:": 20, 
+      "ldap:0": 182, 
+      "ldap:2": 1, 
+      "lsarpc:77": 4, 
+      "lsarpc:76": 2
+    }, 
+    "drsuapi:12\tlsarpc:76": {
+      "drsuapi:1": 1, 
+      "drsuapi:12": 1
+    }, 
+    "drsuapi:12\tlsarpc:77": {
+      "drsuapi:1": 1, 
+      "drsuapi:12": 2
+    }, 
+    "ldap:2\twait:5": {
+      "rpc_netlogon:29": 2, 
+      "ldap:0": 138, 
+      "drsuapi:0": 10, 
+      "kerberos:": 17, 
+      "rpc_netlogon:39": 1, 
+      "lsarpc:77": 10, 
+      "lsarpc:76": 5
+    }, 
+    "wait:0\trpc_netlogon:29": {
+      "kerberos:": 3, 
+      "wait:3": 2, 
+      "drsuapi:0": 4, 
+      "wait:1": 1, 
+      "wait:0": 2
+    }, 
+    "cldap:3\tkerberos:": {
+      "drsuapi:0": 1
+    }, 
+    "ldap:2\twait:7": {
+      "rpc_netlogon:29": 3, 
+      "drsuapi:0": 12, 
+      "kerberos:": 61, 
+      "ldap:0": 68, 
+      "lsarpc:77": 31, 
+      "lsarpc:76": 10
+    }, 
+    "lsarpc:77\tdrsuapi:12": {
+      "drsuapi:1": 2
+    }, 
+    "ldap:2\twait:2": {
+      "rpc_netlogon:29": 5, 
+      "drsuapi:0": 2, 
+      "srvsvc:21": 1, 
+      "lsarpc:77": 35, 
+      "lsarpc:76": 6, 
+      "srvsvc:16": 5, 
+      "kerberos:": 28, 
+      "ldap:2": 13, 
+      "ldap:0": 157
+    }, 
+    "wait:7\trpc_netlogon:39": {
+      "wait:6": 1, 
+      "lsarpc:77": 1
+    }, 
+    "wait:5\tkerberos:": {
+      "drsuapi:0": 3, 
+      "wait:7": 7, 
+      "wait:6": 5, 
+      "wait:5": 5, 
+      "wait:4": 2, 
+      "wait:3": 2, 
+      "wait:2": 2, 
+      "wait:0": 3, 
+      "kerberos:": 214, 
+      "wait:8": 3, 
+      "wait:9": 2, 
+      "ldap:0": 12
+    }, 
+    "ldap:2\twait:3": {
+      "rpc_netlogon:29": 1, 
+      "drsuapi:0": 4, 
+      "srvsvc:21": 1, 
+      "lsarpc:77": 3, 
+      "lsarpc:76": 11, 
+      "srvsvc:16": 2, 
+      "kerberos:": 25, 
+      "ldap:3": 1, 
+      "ldap:2": 17, 
+      "ldap:0": 229
+    }, 
+    "lsarpc:14\twait:0": {
+      "lsarpc:39": 3
+    }, 
+    "lsarpc:14\twait:1": {
+      "lsarpc:15": 1
+    }, 
+    "lsarpc:14\twait:6": {
+      "lsarpc:39": 5, 
+      "lsarpc:15": 1, 
+      "lsarpc:14": 1
+    }, 
+    "lsarpc:14\twait:4": {
+      "lsarpc:39": 1
+    }, 
+    "wait:1\tlsarpc:77": {
+      "lsarpc:77": 1, 
+      "wait:7": 1, 
+      "wait:6": 1, 
+      "wait:4": 2, 
+      "wait:3": 2, 
+      "wait:1": 5, 
+      "wait:0": 4, 
+      "kerberos:": 3, 
+      "ldap:2": 2, 
+      "ldap:0": 69
+    }, 
+    "wait:1\tlsarpc:76": {
+      "lsarpc:76": 4, 
+      "wait:7": 7, 
+      "wait:4": 1, 
+      "wait:2": 4, 
+      "wait:1": 2, 
+      "wait:0": 9, 
+      "kerberos:": 1, 
+      "ldap:0": 12, 
+      "wait:9": 2, 
+      "wait:8": 1
+    }, 
+    "wait:0\tdrsuapi:12": {
+      "drsuapi:1": 1
+    }, 
+    "wait:1\tsamr:64": {
+      "samr:7": 1, 
+      "wait:1": 1, 
+      "samr:6": 13
+    }, 
+    "samr:1\trpc_netlogon:29": {
+      "lsarpc:76": 1
+    }, 
+    "wait:3\tldap:0": {
+      "drsuapi:0": 1, 
+      "lsarpc:76": 2, 
+      "wait:7": 2, 
+      "wait:6": 1, 
+      "wait:4": 4, 
+      "wait:3": 2, 
+      "wait:2": 1, 
+      "wait:1": 37, 
+      "wait:0": 126, 
+      "kerberos:": 3, 
+      "ldap:3": 1, 
+      "ldap:2": 73, 
+      "ldap:0": 13
+    }, 
+    "wait:3\tsrvsvc:21": {
+      "kerberos:": 2
+    }, 
+    "rpc_netlogon:39\tlsarpc:77": {
+      "wait:7": 1, 
+      "wait:6": 1, 
+      "wait:5": 1, 
+      "lsarpc:76": 6, 
+      "wait:0": 1
+    }, 
+    "drsuapi:13\tdrsuapi:13": {
+      "drsuapi:1": 57, 
+      "ldap:0": 1
+    }, 
+    "drsuapi:13\tdrsuapi:12": {
+      "drsuapi:13": 1
+    }, 
+    "wait:1\tsamr:16": {
+      "samr:16": 2, 
+      "samr:18": 4, 
+      "wait:0": 1
+    }, 
+    "wait:1\tsamr:19": {
+      "samr:1": 1
+    }, 
+    "wait:1\tsamr:18": {
+      "samr:1": 1
+    }, 
+    "lsarpc:76\tkerberos:": {
+      "kerberos:": 2, 
+      "drsuapi:0": 1
+    }, 
+    "drsuapi:12\trpc_netlogon:29": {
+      "drsuapi:1": 1
+    }, 
+    "lsarpc:76\tdrsuapi:12": {
+      "lsarpc:76": 1
+    }, 
+    "wait:0\tdrsuapi:0": {
+      "drsuapi:13": 2, 
+      "drsuapi:12": 23
+    }, 
+    "wait:2\tsrvsvc:16": {
+      "wait:4": 1, 
+      "wait:3": 1, 
+      "wait:2": 2, 
+      "wait:0": 2
+    }, 
+    "lsarpc:76\tdrsuapi:0": {
+      "drsuapi:13": 1
+    }, 
+    "lsarpc:76\tdrsuapi:1": {
+      "lsarpc:76": 1
+    }, 
+    "kerberos:\tdrsuapi:12": {
+      "kerberos:": 1, 
+      "drsuapi:1": 5, 
+      "drsuapi:12": 8
+    }, 
+    "wait:9\tkerberos:": {
+      "wait:7": 1, 
+      "wait:6": 2, 
+      "wait:3": 2, 
+      "wait:1": 1, 
+      "wait:0": 1, 
+      "kerberos:": 205, 
+      "wait:8": 4, 
+      "ldap:0": 2
+    }, 
+    "kerberos:\tsamr:1": {
+      "samr:1": 3, 
+      "kerberos:": 1
+    }, 
+    "wait:0\tsamr:34": {
+      "wait:1": 1
+    }, 
+    "wait:7\tkerberos:": {
+      "drsuapi:0": 8, 
+      "wait:7": 24, 
+      "wait:6": 12, 
+      "wait:5": 8, 
+      "wait:4": 5, 
+      "wait:3": 2, 
+      "wait:2": 3, 
+      "wait:0": 2, 
+      "kerberos:": 210, 
+      "wait:8": 16, 
+      "ldap:0": 19
+    }, 
+    "samr:1\tsamr:1": {
+      "samr:64": 56, 
+      "rpc_netlogon:29": 1, 
+      "samr:1": 229, 
+      "lsarpc:76": 55, 
+      "wait:7": 19, 
+      "wait:6": 12, 
+      "wait:5": 10, 
+      "wait:4": 7, 
+      "wait:3": 7, 
+      "wait:2": 4, 
+      "wait:1": 3, 
+      "wait:0": 3, 
+      "wait:8": 1
+    }, 
+    "drsuapi:12\tdrsuapi:12": {
+      "kerberos:": 1, 
+      "drsuapi:12": 22, 
+      "drsuapi:1": 223, 
+      "drsuapi:0": 1, 
+      "ldap:0": 1
+    }, 
+    "samr:1\tsamr:7": {
+      "samr:1": 1
+    }, 
+    "wait:5\trpc_netlogon:29": {
+      "wait:7": 1, 
+      "wait:5": 1, 
+      "drsuapi:0": 1, 
+      "wait:0": 1, 
+      "lsarpc:77": 4, 
+      "lsarpc:76": 3
+    }, 
+    "samr:18\twait:0": {
+      "samr:1": 1
+    }, 
+    "wait:2\tldap:2": {
+      "wait:7": 4, 
+      "wait:6": 2, 
+      "wait:5": 1, 
+      "srvsvc:16": 1, 
+      "wait:3": 1, 
+      "wait:2": 3, 
+      "wait:1": 4, 
+      "kerberos:": 3, 
+      "ldap:2": 1, 
+      "ldap:0": 1
+    }, 
+    "samr:1\tsamr:34": {
+      "samr:36": 1
+    }, 
+    "wait:8\trpc_netlogon:30": {
+      "wait:1": 1
+    }, 
+    "samr:1\twait:8": {
+      "ldap:0": 1
+    }, 
+    "wait:3\tnbns:0": {
+      "wait:0": 4, 
+      "nbns:0": 1, 
+      "wait:1": 3, 
+      "wait:2": 57
+    }, 
+    "samr:1\tkerberos:": {
+      "samr:1": 2, 
+      "kerberos:": 1
+    }, 
+    "lsarpc:77\tldap:0": {
+      "wait:0": 7, 
+      "ldap:3": 1, 
+      "ldap:2": 118, 
+      "ldap:0": 3
+    }, 
+    "lsarpc:77\tldap:2": {
+      "kerberos:": 1, 
+      "ldap:0": 3
+    }, 
+    "wait:8\tldap:0": {
+      "wait:7": 2, 
+      "wait:6": 10, 
+      "wait:5": 6, 
+      "wait:4": 3, 
+      "wait:3": 1, 
+      "wait:2": 1, 
+      "wait:0": 8, 
+      "wait:8": 8, 
+      "ldap:2": 58, 
+      "wait:9": 1, 
+      "ldap:0": 17
+    }, 
+    "lsarpc:76\tsamr:16": {
+      "samr:16": 1
+    }, 
+    "srvsvc:16\twait:6": {
+      "kerberos:": 5, 
+      "srvsvc:16": 1, 
+      "lsarpc:76": 2
+    }, 
+    "srvsvc:16\twait:7": {
+      "lsarpc:77": 3
+    }, 
+    "srvsvc:16\twait:4": {
+      "kerberos:": 8, 
+      "lsarpc:76": 1
+    }, 
+    "srvsvc:16\twait:5": {
+      "kerberos:": 2, 
+      "drsuapi:0": 1
+    }, 
+    "srvsvc:16\twait:2": {
+      "kerberos:": 11, 
+      "lsarpc:76": 1, 
+      "drsuapi:0": 3, 
+      "ldap:0": 1
+    }, 
+    "srvsvc:16\twait:3": {
+      "samr:64": 1, 
+      "kerberos:": 34, 
+      "drsuapi:0": 3, 
+      "ldap:0": 3
+    }, 
+    "srvsvc:16\twait:0": {
+      "kerberos:": 8, 
+      "drsuapi:0": 2, 
+      "ldap:0": 1
+    }, 
+    "srvsvc:16\twait:1": {
+      "kerberos:": 7, 
+      "ldap:0": 1
+    }, 
+    "lsarpc:76\tlsarpc:76": {
+      "samr:64": 53, 
+      "lsarpc:77": 1, 
+      "lsarpc:76": 461, 
+      "wait:7": 25, 
+      "wait:6": 7, 
+      "wait:5": 1, 
+      "wait:3": 29, 
+      "wait:2": 3, 
+      "wait:1": 4, 
+      "wait:0": 10, 
+      "wait:8": 3, 
+      "ldap:0": 1
+    }, 
+    "lsarpc:76\tlsarpc:77": {
+      "drsuapi:0": 1, 
+      "lsarpc:77": 2, 
+      "lsarpc:76": 24
+    }, 
+    "wait:1\trpc_netlogon:30": {
+      "wait:6": 1, 
+      "cldap:3": 1
+    }, 
+    "lsarpc:15\tlsarpc:15": {
+      "wait:4": 1, 
+      "wait:2": 1
+    }, 
+    "wait:1\trpc_netlogon:39": {
+      "wait:5": 2, 
+      "rpc_netlogon:39": 12, 
+      "wait:2": 1, 
+      "wait:1": 1, 
+      "wait:0": 3
+    }, 
+    "ldap:2\tlsarpc:77": {
+      "kerberos:": 1, 
+      "ldap:0": 21, 
+      "wait:0": 3
+    }, 
+    "ldap:0\tsamr:64": {
+      "samr:7": 1
+    }, 
+    "wait:8\tsrvsvc:21": {
+      "wait:3": 1
+    }, 
+    "wait:2\tlsarpc:14": {
+      "wait:6": 1
+    }, 
+    "wait:4\tldap:2": {
+      "srvsvc:16": 1
+    }, 
+    "wait:4\tldap:0": {
+      "wait:7": 1, 
+      "wait:6": 5, 
+      "wait:5": 2, 
+      "wait:4": 2, 
+      "wait:3": 1, 
+      "wait:2": 2, 
+      "wait:1": 61, 
+      "wait:0": 82, 
+      "kerberos:": 1, 
+      "wait:8": 3, 
+      "ldap:2": 54, 
+      "ldap:0": 17
+    }, 
+    "wait:4\tlsarpc:14": {
+      "wait:6": 2
+    }, 
+    "wait:4\tlsarpc:15": {
+      "wait:7": 1
+    }, 
+    "ldap:0\twait:5": {
+      "kerberos:": 9, 
+      "drsuapi:0": 1, 
+      "lsarpc:77": 8, 
+      "ldap:0": 21
+    }, 
+    "ldap:0\twait:3": {
+      "kerberos:": 9, 
+      "ldap:0": 15, 
+      "drsuapi:0": 2, 
+      "lsarpc:77": 1, 
+      "ldap:2": 3
+    }, 
+    "wait:9\trpc_netlogon:29": {
+      "drsuapi:0": 3
+    }, 
+    "lsarpc:15\twait:5": {
+      "lsarpc:14": 1
+    }, 
+    "lsarpc:15\twait:4": {
+      "lsarpc:39": 1, 
+      "lsarpc:14": 1
+    }, 
+    "lsarpc:15\twait:7": {
+      "lsarpc:39": 2
+    }, 
+    "ldap:0\twait:1": {
+      "rpc_netlogon:29": 5, 
+      "drsuapi:0": 4, 
+      "lsarpc:77": 1, 
+      "lsarpc:76": 4, 
+      "kerberos:": 30, 
+      "ldap:3": 1, 
+      "ldap:2": 210, 
+      "ldap:0": 56
+    }, 
+    "lsarpc:15\twait:1": {
+      "lsarpc:39": 1
+    }, 
+    "lsarpc:15\twait:0": {
+      "lsarpc:39": 7
+    }, 
+    "lsarpc:15\twait:2": {
+      "lsarpc:14": 1
+    }, 
+    "kerberos:\twait:5": {
+      "rpc_netlogon:29": 9, 
+      "ldap:0": 17, 
+      "drsuapi:0": 11, 
+      "kerberos:": 188, 
+      "rpc_netlogon:39": 3, 
+      "lsarpc:77": 38, 
+      "lsarpc:76": 4
+    }, 
+    "rpc_netlogon:29\twait:3": {
+      "kerberos:": 9
+    }, 
+    "rpc_netlogon:29\twait:2": {
+      "kerberos:": 2, 
+      "rpc_netlogon:30": 1, 
+      "lsarpc:76": 1
+    }, 
+    "samr:5\tsamr:7": {
+      "samr:8": 57, 
+      "samr:7": 118
+    }, 
+    "rpc_netlogon:29\twait:0": {
+      "kerberos:": 7, 
+      "drsuapi:0": 8, 
+      "lsarpc:77": 2, 
+      "ldap:0": 2
+    }, 
+    "rpc_netlogon:29\twait:7": {
+      "kerberos:": 5
+    }, 
+    "rpc_netlogon:29\twait:6": {
+      "kerberos:": 4, 
+      "lsarpc:76": 1
+    }, 
+    "wait:6\trpc_netlogon:40": {
+      "wait:6": 3, 
+      "wait:5": 1
+    }, 
+    "rpc_netlogon:29\twait:4": {
+      "kerberos:": 3
+    }, 
+    "drsuapi:1\trpc_netlogon:29": {
+      "wait:3": 1, 
+      "drsuapi:0": 17, 
+      "wait:1": 8, 
+      "wait:0": 2, 
+      "kerberos:": 5, 
+      "lsarpc:77": 1, 
+      "ldap:0": 1
+    }, 
+    "kerberos:\twait:4": {
+      "rpc_netlogon:29": 3, 
+      "ldap:0": 16, 
+      "drsuapi:0": 14, 
+      "kerberos:": 78, 
+      "lsarpc:76": 12, 
+      "lsarpc:77": 66, 
+      "rpc_netlogon:39": 5
+    }, 
+    "rpc_netlogon:29\twait:8": {
+      "rpc_netlogon:29": 1
+    }, 
+    "rpc_netlogon:29\tdrsuapi:1": {
+      "drsuapi:0": 1
+    }, 
+    "rpc_netlogon:29\tdrsuapi:0": {
+      "drsuapi:12": 68, 
+      "ldap:0": 1, 
+      "wait:0": 1
+    }, 
+    "wait:5\tdrsuapi:0": {
+      "rpc_netlogon:29": 2, 
+      "kerberos:": 1, 
+      "drsuapi:13": 1, 
+      "drsuapi:12": 29
+    }, 
+    "wait:6\trpc_netlogon:39": {
+      "wait:3": 1, 
+      "lsarpc:77": 3, 
+      "wait:1": 1
+    }, 
+    "samr:8\tsamr:8": {
+      "samr:1": 57
+    }, 
+    "samr:8\tsamr:1": {
+      "samr:1": 56, 
+      "wait:0": 1
+    }, 
+    "samr:7\tsamr:1": {
+      "samr:1": 1, 
+      "samr:34": 1, 
+      "samr:19": 1, 
+      "wait:0": 1
+    }, 
+    "samr:7\tsamr:7": {
+      "samr:17": 118
+    }, 
+    "wait:1\tcldap:3": {
+      "cldap:3": 1
+    }, 
+    "samr:7\tsamr:8": {
+      "samr:8": 57
+    }, 
+    "wait:6\tkerberos:": {
+      "drsuapi:0": 6, 
+      "wait:7": 17, 
+      "wait:6": 16, 
+      "wait:5": 4, 
+      "wait:4": 3, 
+      "wait:3": 3, 
+      "wait:2": 1, 
+      "wait:0": 1, 
+      "kerberos:": 193, 
+      "wait:8": 8, 
+      "wait:9": 4, 
+      "ldap:0": 12
+    }, 
+    "lsarpc:14\tlsarpc:14": {
+      "wait:6": 1
+    }, 
+    "lsarpc:14\tlsarpc:15": {
+      "wait:7": 1, 
+      "wait:6": 1, 
+      "lsarpc:15": 2, 
+      "wait:0": 5
+    }, 
+    "kerberos:\tldap:0": {
+      "rpc_netlogon:29": 2, 
+      "samr:64": 1, 
+      "lsarpc:76": 1, 
+      "ldap:3": 1, 
+      "ldap:2": 133, 
+      "ldap:0": 71, 
+      "drsuapi:0": 1, 
+      "wait:7": 1, 
+      "wait:5": 2, 
+      "wait:4": 2, 
+      "wait:3": 8, 
+      "wait:2": 16, 
+      "wait:1": 26, 
+      "wait:0": 88, 
+      "kerberos:": 85, 
+      "wait:8": 4
+    }, 
+    "kerberos:\tldap:3": {
+      "kerberos:": 2, 
+      "ldap:3": 1, 
+      "ldap:2": 2, 
+      "ldap:0": 1
+    }, 
+    "kerberos:\tldap:2": {
+      "wait:5": 1, 
+      "wait:3": 1, 
+      "wait:1": 2, 
+      "wait:0": 3, 
+      "kerberos:": 5, 
+      "ldap:2": 64
+    }, 
+    "kerberos:\tcldap:3": {
+      "kerberos:": 1
+    }, 
+    "wait:2\trpc_netlogon:39": {
+      "rpc_netlogon:39": 3, 
+      "wait:6": 1, 
+      "wait:5": 1, 
+      "wait:3": 1, 
+      "wait:2": 1, 
+      "wait:1": 1, 
+      "wait:0": 1, 
+      "wait:8": 1
+    }, 
+    "-\tdrsuapi:0": {
+      "drsuapi:12": 6
+    }, 
+    "wait:2\trpc_netlogon:30": {
+      "wait:1": 1
+    }, 
+    "samr:64\twait:1": {
+      "samr:6": 1
+    }, 
+    "wait:0\tsamr:64": {
+      "samr:6": 6
+    }, 
+    "cldap:3\tcldap:3": {
+      "cldap:3": 2, 
+      "ldap:3": 1, 
+      "wait:0": 2
+    }, 
+    "drsuapi:12\tkerberos:": {
+      "kerberos:": 1, 
+      "drsuapi:1": 2
+    }, 
+    "ldap:2\trpc_netlogon:29": {
+      "kerberos:": 1
+    }, 
+    "wait:1\tsrvsvc:21": {
+      "kerberos:": 1
+    }, 
+    "-\trpc_netlogon:39": {
+      "rpc_netlogon:39": 1
+    }, 
+    "wait:7\tldap:2": {
+      "wait:0": 1
+    }, 
+    "wait:7\tldap:0": {
+      "wait:7": 13, 
+      "wait:6": 10, 
+      "wait:5": 6, 
+      "wait:4": 6, 
+      "wait:3": 1, 
+      "wait:1": 6, 
+      "wait:0": 23, 
+      "kerberos:": 3, 
+      "ldap:0": 21, 
+      "ldap:2": 92, 
+      "wait:9": 1, 
+      "wait:8": 1
+    }, 
+    "wait:0\trpc_netlogon:39": {
+      "wait:7": 1, 
+      "wait:5": 8, 
+      "rpc_netlogon:39": 13, 
+      "wait:1": 2, 
+      "wait:0": 7
+    }, 
+    "wait:1\tkerberos:": {
+      "rpc_netlogon:29": 1, 
+      "drsuapi:0": 9, 
+      "lsarpc:76": 1, 
+      "wait:7": 5, 
+      "wait:6": 1, 
+      "wait:5": 2, 
+      "wait:4": 6, 
+      "wait:3": 8, 
+      "wait:2": 8, 
+      "wait:1": 13, 
+      "wait:0": 9, 
+      "kerberos:": 163, 
+      "ldap:0": 31, 
+      "wait:8": 2
+    }, 
+    "lsarpc:76\tldap:0": {
+      "drsuapi:0": 1, 
+      "wait:1": 1, 
+      "wait:0": 2, 
+      "kerberos:": 1, 
+      "ldap:0": 3, 
+      "ldap:2": 14, 
+      "wait:2": 3
+    }, 
+    "wait:9\tnbns:0": {
+      "wait:2": 9, 
+      "wait:1": 1, 
+      "nbns:0": 13
+    }, 
+    "rpc_netlogon:39\trpc_netlogon:39": {
+      "wait:5": 243, 
+      "wait:4": 6, 
+      "wait:3": 3, 
+      "wait:2": 4, 
+      "wait:1": 13, 
+      "wait:0": 10, 
+      "rpc_netlogon:39": 1525
+    }, 
+    "ldap:0\tdrsuapi:0": {
+      "drsuapi:0": 3, 
+      "kerberos:": 1, 
+      "ldap:2": 47, 
+      "drsuapi:13": 1, 
+      "drsuapi:12": 4
+    }, 
+    "drsuapi:13\tdrsuapi:1": {
+      "drsuapi:1": 1, 
+      "wait:6": 2, 
+      "wait:5": 2, 
+      "wait:4": 3, 
+      "wait:3": 11, 
+      "wait:2": 17, 
+      "wait:1": 10, 
+      "wait:0": 7, 
+      "kerberos:": 1, 
+      "ldap:0": 4
+    }, 
+    "lsarpc:76\twait:5": {
+      "kerberos:": 6, 
+      "rpc_netlogon:40": 1, 
+      "drsuapi:0": 3, 
+      "lsarpc:77": 4, 
+      "lsarpc:76": 1
+    }, 
+    "rpc_netlogon:29\tkerberos:": {
+      "kerberos:": 22, 
+      "ldap:0": 11, 
+      "ldap:3": 2, 
+      "ldap:2": 1, 
+      "drsuapi:0": 7
+    }, 
+    "cldap:3\twait:0": {
+      "rpc_netlogon:29": 1, 
+      "kerberos:": 2, 
+      "lsarpc:76": 1
+    }, 
+    "rpc_netlogon:30\twait:6": {
+      "kerberos:": 1
+    }, 
+    "rpc_netlogon:30\twait:1": {
+      "kerberos:": 1, 
+      "ldap:0": 1
+    }, 
+    "wait:2\tnbns:0": {
+      "wait:10": 9, 
+      "nbns:0": 174, 
+      "wait:7": 146, 
+      "wait:6": 168, 
+      "wait:5": 133, 
+      "wait:4": 64, 
+      "wait:3": 47, 
+      "wait:2": 1968, 
+      "wait:1": 60, 
+      "wait:0": 30, 
+      "wait:9": 19, 
+      "wait:8": 83
+    }, 
+    "drsuapi:12\twait:1": {
+      "drsuapi:1": 3, 
+      "drsuapi:12": 1
+    }, 
+    "-\trpc_netlogon:29": {
+      "kerberos:": 2, 
+      "wait:2": 1, 
+      "drsuapi:0": 2, 
+      "lsarpc:77": 1, 
+      "wait:0": 4
+    }, 
+    "wait:6\tlsarpc:39": {
+      "wait:2": 1, 
+      "lsarpc:15": 1, 
+      "lsarpc:14": 6
+    }, 
+    "samr:36\twait:1": {
+      "samr:3": 1
+    }, 
+    "wait:8\tdrsuapi:0": {
+      "rpc_netlogon:29": 1, 
+      "drsuapi:0": 2, 
+      "wait:1": 1, 
+      "drsuapi:12": 76
+    }, 
+    "drsuapi:1\tdrsuapi:12": {
+      "drsuapi:1": 1
+    }, 
+    "wait:2\tkerberos:": {
+      "drsuapi:0": 24, 
+      "wait:7": 1, 
+      "wait:6": 3, 
+      "wait:5": 2, 
+      "wait:3": 6, 
+      "wait:2": 11, 
+      "wait:1": 10, 
+      "wait:0": 8, 
+      "kerberos:": 132, 
+      "ldap:0": 16, 
+      "wait:9": 1, 
+      "wait:8": 4
+    }, 
+    "rpc_netlogon:39\twait:8": {
+      "rpc_netlogon:29": 1
+    }, 
+    "rpc_netlogon:39\twait:6": {
+      "kerberos:": 2, 
+      "rpc_netlogon:40": 1, 
+      "drsuapi:0": 8, 
+      "lsarpc:77": 1, 
+      "ldap:0": 1
+    }, 
+    "rpc_netlogon:39\twait:7": {
+      "lsarpc:77": 1
+    }, 
+    "rpc_netlogon:39\twait:4": {
+      "kerberos:": 1, 
+      "drsuapi:0": 1, 
+      "rpc_netlogon:39": 7
+    }, 
+    "rpc_netlogon:39\twait:5": {
+      "kerberos:": 5, 
+      "rpc_netlogon:40": 1, 
+      "rpc_netlogon:39": 251, 
+      "lsarpc:76": 2
+    }, 
+    "rpc_netlogon:39\twait:2": {
+      "rpc_netlogon:39": 8
+    }, 
+    "rpc_netlogon:39\twait:3": {
+      "rpc_netlogon:29": 1, 
+      "kerberos:": 2, 
+      "rpc_netlogon:39": 5, 
+      "ldap:0": 1
+    }, 
+    "rpc_netlogon:39\twait:0": {
+      "rpc_netlogon:39": 27
+    }, 
+    "rpc_netlogon:39\twait:1": {
+      "lsarpc:77": 1, 
+      "rpc_netlogon:39": 19
+    }, 
+    "samr:1\tlsarpc:76": {
+      "samr:64": 4, 
+      "wait:1": 1, 
+      "lsarpc:76": 51
+    }, 
+    "kerberos:\twait:7": {
+      "rpc_netlogon:29": 17, 
+      "drsuapi:0": 40, 
+      "lsarpc:77": 108, 
+      "lsarpc:76": 7, 
+      "kerberos:": 168, 
+      "rpc_netlogon:39": 1, 
+      "ldap:2": 1, 
+      "ldap:0": 59
+    }, 
+    "drsuapi:12\tdrsuapi:1": {
+      "rpc_netlogon:29": 35, 
+      "rpc_netlogon:45": 1, 
+      "lsarpc:77": 1, 
+      "ldap:3": 1, 
+      "ldap:2": 1, 
+      "ldap:0": 53, 
+      "drsuapi:1": 1, 
+      "drsuapi:0": 81, 
+      "wait:7": 60, 
+      "wait:6": 23, 
+      "wait:5": 7, 
+      "wait:4": 20, 
+      "wait:3": 10, 
+      "wait:2": 7, 
+      "wait:1": 204, 
+      "wait:0": 43, 
+      "kerberos:": 63, 
+      "wait:9": 6, 
+      "wait:8": 56
+    }, 
+    "lsarpc:77\tdrsuapi:1": {
+      "ldap:0": 1
+    }, 
+    "lsarpc:77\tdrsuapi:0": {
+      "drsuapi:12": 2
+    }, 
+    "drsuapi:0\tdrsuapi:0": {
+      "ldap:2": 5, 
+      "drsuapi:13": 1, 
+      "drsuapi:12": 2
+    }, 
+    "drsuapi:0\tdrsuapi:1": {
+      "drsuapi:12": 1
+    }, 
+    "wait:5\tlsarpc:39": {
+      "wait:0": 2
+    }, 
+    "-\tdcerpc:16": {
+      "drsuapi:0": 1
+    }, 
+    "srvsvc:21\twait:0": {
+      "ldap:0": 2
+    }, 
+    "srvsvc:21\twait:3": {
+      "kerberos:": 1
+    }, 
+    "rpc_netlogon:29\trpc_netlogon:29": {
+      "kerberos:": 1
+    }, 
+    "lsarpc:39\twait:7": {
+      "lsarpc:39": 1, 
+      "lsarpc:15": 1, 
+      "lsarpc:14": 1
+    }, 
+    "lsarpc:39\twait:6": {
+      "lsarpc:39": 2, 
+      "lsarpc:14": 2
+    }, 
+    "lsarpc:39\twait:5": {
+      "lsarpc:39": 2, 
+      "lsarpc:15": 3
+    }, 
+    "lsarpc:39\twait:4": {
+      "lsarpc:15": 1, 
+      "lsarpc:14": 1
+    }, 
+    "drsuapi:13\tldap:0": {
+      "drsuapi:1": 1
+    }, 
+    "lsarpc:39\twait:1": {
+      "lsarpc:39": 6
+    }, 
+    "lsarpc:39\twait:0": {
+      "lsarpc:39": 53, 
+      "lsarpc:14": 1
+    }, 
+    "dcerpc:16\tdrsuapi:0": {
+      "wait:3": 1
+    }, 
+    "ldap:3\twait:3": {
+      "kerberos:": 1
+    }, 
+    "rpc_netlogon:45\tldap:0": {
+      "ldap:0": 1
+    }, 
+    "drsuapi:1\tkerberos:": {
+      "wait:1": 4, 
+      "wait:4": 2, 
+      "drsuapi:0": 22, 
+      "rpc_netlogon:45": 1, 
+      "wait:0": 5, 
+      "kerberos:": 26, 
+      "ldap:0": 7
+    }, 
+    "ldap:3\twait:0": {
+      "ldap:3": 1, 
+      "ldap:2": 4, 
+      "ldap:0": 3
+    }, 
+    "drsuapi:12\tldap:0": {
+      "drsuapi:1": 1, 
+      "drsuapi:12": 1
+    }, 
+    "wait:6\tdrsuapi:0": {
+      "kerberos:": 1, 
+      "drsuapi:12": 59, 
+      "ldap:0": 1
+    }, 
+    "ldap:2\tsamr:64": {
+      "samr:6": 1
+    }, 
+    "ldap:2\twait:6": {
+      "kerberos:": 54, 
+      "ldap:0": 117, 
+      "drsuapi:0": 11, 
+      "lsarpc:77": 25, 
+      "lsarpc:76": 6
+    }, 
+    "wait:1\tsamr:6": {
+      "samr:5": 1
+    }, 
+    "ldap:2\twait:0": {
+      "rpc_netlogon:29": 2, 
+      "drsuapi:0": 2, 
+      "lsarpc:77": 3, 
+      "lsarpc:76": 2, 
+      "srvsvc:16": 8, 
+      "kerberos:": 80, 
+      "ldap:2": 367, 
+      "ldap:0": 43
+    }, 
+    "ldap:2\twait:1": {
+      "rpc_netlogon:29": 4, 
+      "drsuapi:0": 2, 
+      "srvsvc:21": 1, 
+      "lsarpc:77": 79, 
+      "lsarpc:76": 6, 
+      "srvsvc:16": 6, 
+      "kerberos:": 34, 
+      "ldap:2": 126, 
+      "ldap:0": 47
+    }, 
+    "ldap:0\tdrsuapi:12": {
+      "drsuapi:1": 2, 
+      "lsarpc:77": 2, 
+      "drsuapi:12": 3
+    }, 
+    "kerberos:\tsrvsvc:21": {
+      "kerberos:": 4, 
+      "ldap:0": 5, 
+      "wait:0": 2
+    }, 
+    "drsuapi:1\tlsarpc:77": {
+      "ldap:0": 1
+    }, 
+    "drsuapi:1\tlsarpc:76": {
+      "ldap:0": 1
+    }, 
+    "ldap:2\twait:8": {
+      "rpc_netlogon:29": 4, 
+      "drsuapi:0": 8, 
+      "kerberos:": 73, 
+      "ldap:0": 38, 
+      "lsarpc:77": 17, 
+      "lsarpc:76": 1
+    }, 
+    "ldap:2\twait:9": {
+      "rpc_netlogon:29": 1, 
+      "kerberos:": 11, 
+      "drsuapi:0": 2, 
+      "lsarpc:77": 2, 
+      "ldap:0": 1
+    }, 
+    "wait:1\tdrsuapi:12": {
+      "drsuapi:1": 2, 
+      "wait:1": 3
+    }, 
+    "wait:4\trpc_netlogon:29": {
+      "lsarpc:77": 1, 
+      "drsuapi:0": 3, 
+      "wait:1": 1, 
+      "lsarpc:76": 1
+    }, 
+    "wait:8\tkerberos:": {
+      "rpc_netlogon:29": 1, 
+      "drsuapi:0": 7, 
+      "wait:7": 12, 
+      "wait:6": 8, 
+      "wait:5": 5, 
+      "wait:3": 2, 
+      "wait:2": 2, 
+      "wait:0": 1, 
+      "kerberos:": 374, 
+      "wait:8": 7, 
+      "ldap:0": 8
+    }, 
+    "ldap:2\tdrsuapi:0": {
+      "drsuapi:13": 1, 
+      "drsuapi:12": 4
+    }, 
+    "wait:1\trpc_netlogon:29": {
+      "kerberos:": 6, 
+      "wait:3": 2, 
+      "wait:2": 3, 
+      "lsarpc:77": 2, 
+      "lsarpc:76": 1
+    }, 
+    "wait:4\tsrvsvc:16": {
+      "wait:3": 1, 
+      "wait:2": 2, 
+      "wait:1": 1
+    }, 
+    "samr:25\tlsarpc:76": {
+      "samr:1": 2
+    }, 
+    "lsarpc:77\twait:8": {
+      "rpc_netlogon:29": 4, 
+      "kerberos:": 30, 
+      "drsuapi:0": 2, 
+      "lsarpc:77": 5, 
+      "ldap:0": 2
+    }, 
+    "samr:25\twait:2": {
+      "samr:1": 1
+    }, 
+    "drsuapi:1\twait:9": {
+      "rpc_netlogon:29": 1, 
+      "kerberos:": 4, 
+      "lsarpc:77": 2, 
+      "lsarpc:76": 1
+    }, 
+    "drsuapi:1\twait:8": {
+      "kerberos:": 41, 
+      "drsuapi:0": 11, 
+      "lsarpc:77": 8, 
+      "ldap:0": 3
+    }, 
+    "drsuapi:1\twait:7": {
+      "kerberos:": 29, 
+      "ldap:0": 11, 
+      "drsuapi:0": 3, 
+      "lsarpc:77": 19, 
+      "lsarpc:76": 1
+    }, 
+    "drsuapi:1\twait:6": {
+      "kerberos:": 13, 
+      "ldap:0": 5, 
+      "drsuapi:0": 3, 
+      "lsarpc:77": 3, 
+      "lsarpc:76": 4
+    }, 
+    "drsuapi:1\twait:5": {
+      "rpc_netlogon:29": 1, 
+      "kerberos:": 5, 
+      "drsuapi:0": 1, 
+      "lsarpc:77": 1, 
+      "ldap:0": 1
+    }, 
+    "drsuapi:1\twait:4": {
+      "rpc_netlogon:29": 2, 
+      "srvsvc:16": 1, 
+      "kerberos:": 11, 
+      "ldap:0": 4, 
+      "lsarpc:77": 4, 
+      "lsarpc:76": 9
+    }, 
+    "drsuapi:1\twait:3": {
+      "rpc_netlogon:29": 1, 
+      "drsuapi:0": 2, 
+      "kerberos:": 8, 
+      "ldap:0": 6, 
+      "ldap:2": 1, 
+      "lsarpc:76": 7
+    }, 
+    "drsuapi:1\twait:2": {
+      "rpc_netlogon:29": 2, 
+      "kerberos:": 12, 
+      "lsarpc:76": 4, 
+      "lsarpc:77": 1, 
+      "ldap:0": 7
+    }, 
+    "drsuapi:1\twait:1": {
+      "kerberos:": 12, 
+      "ldap:0": 201, 
+      "drsuapi:0": 1, 
+      "lsarpc:77": 1, 
+      "lsarpc:76": 2
+    }, 
+    "drsuapi:1\twait:0": {
+      "rpc_netlogon:29": 5, 
+      "drsuapi:0": 2, 
+      "kerberos:": 14, 
+      "ldap:0": 23, 
+      "ldap:2": 4, 
+      "lsarpc:77": 1, 
+      "lsarpc:76": 1
+    }, 
+    "lsarpc:77\tkerberos:": {
+      "wait:7": 9, 
+      "wait:6": 8, 
+      "wait:5": 23, 
+      "wait:4": 53, 
+      "wait:2": 2, 
+      "wait:0": 1, 
+      "kerberos:": 203, 
+      "ldap:0": 3
+    }, 
+    "rpc_netlogon:39\tkerberos:": {
+      "wait:6": 1
+    }, 
+    "wait:1\tlsarpc:39": {
+      "wait:0": 6, 
+      "lsarpc:14": 1
+    }, 
+    "wait:7\trpc_netlogon:29": {
+      "drsuapi:0": 10, 
+      "wait:7": 2, 
+      "wait:6": 2, 
+      "wait:5": 1, 
+      "wait:4": 1, 
+      "wait:1": 1, 
+      "wait:0": 5, 
+      "kerberos:": 1
+    }, 
+    "rpc_netlogon:29\tldap:0": {
+      "kerberos:": 1, 
+      "wait:0": 1
+    }, 
+    "lsarpc:77\tlsarpc:77": {
+      "wait:5": 1, 
+      "wait:1": 1, 
+      "kerberos:": 2, 
+      "rpc_netlogon:39": 9, 
+      "lsarpc:77": 6, 
+      "lsarpc:76": 1
+    }, 
+    "wait:2\tlsarpc:76": {
+      "lsarpc:77": 1, 
+      "wait:7": 3, 
+      "wait:5": 2, 
+      "wait:4": 1, 
+      "wait:3": 1, 
+      "wait:2": 2, 
+      "wait:1": 15, 
+      "wait:0": 25, 
+      "ldap:0": 5, 
+      "wait:8": 1
+    }, 
+    "wait:2\tlsarpc:77": {
+      "lsarpc:77": 1, 
+      "lsarpc:76": 2, 
+      "wait:7": 4, 
+      "wait:6": 3, 
+      "wait:3": 6, 
+      "wait:2": 9, 
+      "wait:1": 1, 
+      "wait:0": 5, 
+      "kerberos:": 2, 
+      "ldap:0": 24, 
+      "ldap:2": 2, 
+      "wait:8": 1
+    }, 
+    "wait:0\tsamr:1": {
+      "samr:1": 4, 
+      "lsarpc:76": 1
+    }, 
+    "wait:9\tdrsuapi:0": {
+      "drsuapi:12": 9
+    }, 
+    "wait:0\trpc_netlogon:40": {
+      "wait:5": 1
+    }
+  }, 
+  "conversation_rate": [
+    229, 
+    7867.6231780052185
+  ], 
+  "dns": {
+    "1": 211531, 
+    "0": 211531
+  }, 
+  "query_details": {
+    "rpc_netlogon:29": {
+      "-": 212
+    }, 
+    "samr:39": {
+      "-": 118
+    }, 
+    "rpc_netlogon:40": {
+      "-": 9
+    }, 
+    "rpc_netlogon:45": {
+      "-": 3
+    }, 
+    "dcerpc:16": {
+      "-": 1
+    }, 
+    "samr:36": {
+      "-": 63
+    }, 
+    "samr:34": {
+      "-": 120
+    }, 
+    "samr:1": {
+      "-": 602
+    }, 
+    "samr:3": {
+      "-": 61
+    }, 
+    "samr:5": {
+      "-": 175
+    }, 
+    "samr:7": {
+      "-": 298
+    }, 
+    "samr:6": {
+      "-": 175
+    }, 
+    "samr:8": {
+      "-": 114
+    }, 
+    "drsuapi:1": {
+      "-": 802
+    }, 
+    "drsuapi:0": {
+      "-": 809
+    }, 
+    "cldap:3": {
+      "\t\t\tNetlogon\t\t\t": 12
+    }, 
+    "kerberos:": {
+      "": 8274
+    }, 
+    "lsarpc:15": {
+      "-": 19
+    }, 
+    "lsarpc:14": {
+      "-": 22
+    }, 
+    "samr:64": {
+      "-": 180
+    }, 
+    "rpc_netlogon:30": {
+      "-": 4
+    }, 
+    "lsarpc:39": {
+      "-": 86
+    }, 
+    "nbns:0": {
+      "-": 6529
+    }, 
+    "lsarpc:77": {
+      "-": 1398
+    }, 
+    "srvsvc:21": {
+      "-": 16
+    }, 
+    "srvsvc:16": {
+      "-": 102
+    }, 
+    "lsarpc:76": {
+      "-": 1030
+    }, 
+    "ldap:3": {
+      "\t\t\tconfigurationNamingContext,nTSecurityDescriptor\t\t\t": 3, 
+      "2\tCN,CN,CN,CN,DC,DC\t\tcn,distinguishedName,displayName,pKIExtendedKeyUsage,pKIDefaultCSPs,pKICriticalExtensions,flags,pKIDefaultKeySpec,NTSecurityDescriptor,pKIKeyUsage,pKIMaxIssuingDepth,pKIExpirationPeriod,pKIOverlapPeriod,revision,msPKI-Template-Minor-Revision,msPKI-RA-Signature,msPKI-Enrollment-Flag,msPKI-Private-Key-Flag,msPKI-Certificate-Name-Flag,msPKI-Minimal-Key-Size,msPKI-Template-Schema-Version,msPKI-Cert-Template-OID,msPKI-Supersede-Templates,msPKI-RA-Policies,msPKI-Certificate-Policy,msPKI-RA-Application-Policies,msPKI-Certificate-Application-Policy,msPKI-Symmetric-Key-Length,msPKI-Asymmetric-Algorithm,msPKI-Key-Security-Descriptor,msPKI-Symmetric-Algorithm,msPKI-Hash-Algorithm,msPKI-Key-Usage\t\t\t": 2, 
+      "\tSID\t\t\t\t\t": 10, 
+      "2\tDC,DC\t\t\t\t\t": 1, 
+      "2\tCN,CN,CN,DC,DC\t\tuSNChanged\t\t\t": 2, 
+      "\t\t\tsubschemaSubentry,supportedControl,supportedCapabilities\t\t\t": 4, 
+      "\t\t\tdefaultNamingContext,configurationNamingContext\t\t\t": 2, 
+      "\tCN,CN,CN,DC,DC\t\tmodifyTimeStamp\t\t\t": 2, 
+      "\tCN,CN,CN,DC,DC\t\tgPLink,gPOptions\t\t\t": 3, 
+      "2\tDC,DC\t\tdn\t\t\t": 6, 
+      "2\tDC,DC\t\tgPLink,gPOptions\t\t\t": 3, 
+      "\t\t\tsubschemaSubentry,dsServiceName,namingContexts,defaultNamingContext,schemaNamingContext,configurationNamingContext,rootDomainNamingContext,supportedControl,supportedLDAPVersion,supportedLDAPPolicies,supportedSASLMechanisms,dnsHostName,ldapServiceName,serverName,supportedCapabilities\t\t\t": 10, 
+      "2\tcn,cn,DC,DC\t\tnTSecurityDescriptor,gPCFileSysPath,cn,displayName,versionNumber,gPCFunctionalityVersion,flags,gPCMachineExtensionNames,gPCUserExtensionNames,objectClass,gPCWQLFilter\t\t\t": 3, 
+      "\tSID\t\tobjectClass\t\t\t": 10, 
+      "\t\t\tconfigurationNamingContext\t\t\t": 2, 
+      "2\tDC,DC\t\tcn\t\t\t": 6, 
+      "\t\t\tdsServiceName\t\t\t": 2, 
+      "\tCN,CN,CN,CN,CN,CN,DC,DC\t\tinvocationId\t\t\t": 2
+    }, 
+    "ldap:2": {
+      "\t\t\t\t\t\t": 3951, 
+      "\t\t\t\t\t\t1.2.840.113554.1.2.2": 29
+    }, 
+    "ldap:0": {
+      "\t\t\t\t0\tsimple\t": 1617, 
+      "\t\t\t\t3\tsasl\t1.3.6.1.5.5.2": 3397, 
+      "\t\t\t\t3\tsasl\t": 15
+    }, 
+    "samr:25": {
+      "-": 4
+    }, 
+    "samr:17": {
+      "-": 118
+    }, 
+    "samr:16": {
+      "-": 176
+    }, 
+    "drsuapi:13": {
+      "-": 118
+    }, 
+    "samr:19": {
+      "-": 4
+    }, 
+    "samr:18": {
+      "-": 57
+    }, 
+    "rpc_netlogon:39": {
+      "-": 2165
+    }, 
+    "drsuapi:12": {
+      "-": 943
+    }
+  }, 
+  "cumulative_duration": 1162158.9385943413
+}

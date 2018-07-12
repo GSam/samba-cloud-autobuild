@@ -1,0 +1,14 @@
+---
+ansible_python_interpreter: /usr/bin/python3
+ansible_user: ubuntu
+
+samba_realm: samdom.example.com
+# target dc ip to use, define explicitly
+# if you have your own dc, e.g.: windows
+# runner_nameserver: "10.10.10.10"
+
+model_file_name: "traffic-model.txt"
+
+stats_dir_name: "stats"
+
+stats_tar_dest: "/var/www/traffic-replay/"
