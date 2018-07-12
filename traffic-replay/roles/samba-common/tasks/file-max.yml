@@ -1,0 +1,19 @@
+---
+- name: set fs.file-max in /etc/sysctl.conf
+  become: yes
+  lineinfile:
+    path: /etc/sysctl.conf
+    regexp: 'fs\.file\-max'
+    line: "{{file_max_config}}"
+
+- name: apply file-max change with sysctl -p
+  become: yes
+  command: sysctl -p
+  register: sysctl_task
+
+- debug: var=sysctl_result
+
+- name: check file-max
+  fail:
+    msg: "{{file_max_config}} in sysctl -p result"
+  when: file_max_config not in sysctl_task.stdout_lines

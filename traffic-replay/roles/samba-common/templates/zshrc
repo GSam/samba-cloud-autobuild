@@ -1,0 +1,4 @@
+# TODO: add more useful config
+autoload -Uz compinit promptinit
+compinit
+promptinit

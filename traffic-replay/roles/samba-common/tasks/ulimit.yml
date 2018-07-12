@@ -1,0 +1,19 @@
+---
+
+- name: set soft ulimit
+  become: yes
+  lineinfile:
+    path: /etc/security/limits.conf
+    regexp: "soft nofile"
+    line: "* soft nofile {{ulimit_max}}"
+    insertbefore: "# End of file"
+  notify: reboot
+
+- name: set hard ulimit
+  become: yes
+  lineinfile:
+    path: /etc/security/limits.conf
+    regexp: "hard nofile"
+    line: "* hard nofile {{ulimit_max}}"
+    insertbefore: "# End of file"
+  notify: reboot

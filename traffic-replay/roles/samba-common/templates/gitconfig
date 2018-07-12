@@ -1,0 +1,32 @@
+[user]
+    email = samba@catalyst.net.nz
+    name = Samba Catalyst
+
+[color]
+    ui = true
+
+[push]
+    default = simple
+
+[core]
+    editor = vim
+    pager = less
+    autocrlf = input
+    compression = 9
+
+[alias]
+    br = branch
+    bl = branch -l
+    bd = branch -d
+    co = checkout
+    cb = checkout -b
+    ci = commit
+    ca = commit --amend
+    cl = config --list
+    dc = diff --cached
+    st = status
+    fa = fetch --all
+    rb = rebase
+    rd = push origin --delete
+    ll = log --oneline
+    lg = log --oneline --graph

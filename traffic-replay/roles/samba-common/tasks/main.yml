@@ -1,0 +1,98 @@
+---
+- name: set nz timezone
+  become: yes
+  timezone:
+    name: Pacific/Auckland
+
+- name: add hostname to /etc/hosts to avoid sudo time out
+  become: yes
+  lineinfile:
+    path: "/etc/hosts"
+    line: "127.0.0.1 {{ansible_hostname}}"
+
+- name: link resolv.conf
+  become: yes
+  file:
+    src: /run/resolvconf/resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    force: yes
+
+- name: apt update
+  become: yes
+  apt:
+    update_cache: yes
+
+- name: apt upgrade
+  become: yes
+  apt:
+    upgrade: dist
+
+- name: apt install common packages
+  become: yes
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - zsh
+    - htop
+    - tree
+    - rng-tools
+    - silversearcher-ag
+    - language-pack-en
+
+- name: load samba dependencies package list
+  include_vars: "{{ playbook_dir }}/../package-lists/ubuntu"
+
+- name: apt install samba deps
+  become: yes
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ packages }}"
+
+- name: link ld to ld.gold
+  become: yes
+  file:
+    src: /usr/bin/ld.gold
+    dest: /usr/bin/ld
+    state: link
+    force: yes
+
+- name: git clone samba repo
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ repo_root }}"
+    version: "{{ repo_branch }}"
+  tags: git-clone
+  register: git_clone_task
+
+- name: config samba code
+  command: "./configure.developer"
+  args:
+    chdir: "{{ repo_root }}"
+  tags: samba-config
+  when: git_clone_task.changed
+
+- name: compile samba code
+  command: "make -j"
+  args:
+    chdir: "{{ repo_root }}"
+  tags: samba-compile
+  when: git_clone_task.changed
+
+- import_tasks: file-max.yml
+  tags: file-max
+
+- import_tasks: ulimit.yml
+  tags: ulimit
+
+- name: render dotfiles
+  template:
+    src: "templates/{{item}}"
+    dest: "{{ansible_env.HOME}}/.{{item}}"
+  with_items:
+    - gitconfig
+    - vimrc
+    - zshrc
+  tags: dotfiles
