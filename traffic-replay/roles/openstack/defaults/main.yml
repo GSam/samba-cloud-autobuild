@@ -1,0 +1,26 @@
+---
+# vars need override while use role
+ENV_NAME: test
+
+OS_NETWORK_NAME: "{{ ENV_NAME }}-network "
+OS_ROUTER_NAME: "{{ ENV_NAME }}-router"
+OS_SUBNET_NAME: "{{ ENV_NAME }}-subnet"
+OS_SUBNET_CIDR: "10.0.0.0/24"
+
+## Porirua region DNS
+OS_NAMESERVERS: [202.78.247.197, 202.78.247.198, 202.78.247.199]
+
+OS_IMAGE_NAME: ubuntu-16.04-x86_64
+OS_FLAVOR_NAME: c1.c1r1
+
+OS_AUTO_FLOATING_IP: yes
+OS_SECURITY_GROUP_NAME: default
+
+OS_KEYPAIR_NAME: catalyst_samba
+OS_PUBLIC_KEY_FILE: "{{ role_path }}/files/id_rsa_catalyst_samba.pub"
+
+ansible_user: ubuntu
+ansible_python_interpreter: /usr/bin/env python3
+
+# present or absent
+state: present

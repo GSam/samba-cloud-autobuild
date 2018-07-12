@@ -1,0 +1,22 @@
+---
+- name: delete servers
+  os_server:
+    name: "{{item.name}}"
+    delete_fip: yes
+    state: absent
+  with_items: "{{OS_SERVERS}}"
+
+- name: delete router
+  os_router:
+    name: "{{ OS_ROUTER_NAME }}"
+    state: absent
+
+- name: delete subnet
+  os_subnet:
+    name: "{{ OS_SUBNET_NAME }}"
+    state: absent
+
+- name: delete network
+  os_network:
+    name: "{{ OS_NETWORK_NAME }}"
+    state: absent

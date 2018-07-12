@@ -1,0 +1,56 @@
+---
+# A generic role to create a accessable server
+- name: verify authentication
+  os_auth:
+
+- name: import ssh keypair {{ OS_KEYPAIR_NAME }}
+  os_keypair:
+    name: "{{ OS_KEYPAIR_NAME }}"
+    public_key_file: "{{ OS_PUBLIC_KEY_FILE }}"
+
+- name: create network {{ OS_NETWORK_NAME }}
+  os_network:
+    name: "{{ OS_NETWORK_NAME }}"
+
+- name: create subnet {{ OS_SUBNET_NAME }} with cidr {{ OS_SUBNET_CIDR }}
+  os_subnet:
+    name: "{{ OS_SUBNET_NAME }}"
+    network_name: "{{ OS_NETWORK_NAME }}"
+    cidr: "{{ OS_SUBNET_CIDR }}"
+    dns_nameservers: "{{ OS_NAMESERVERS }}"
+
+
+- name: create public-net router {{ OS_ROUTER_NAME }}
+  os_router:
+    name: "{{ OS_ROUTER_NAME }}"
+    network: public-net
+    interfaces:
+      - "{{ OS_SUBNET_NAME }}"
+  when: OS_AUTO_FLOATING_IP
+
+- name: create server instances
+  os_server:
+    name: "{{ item.name }}"
+    flavor: "{{ item.flavor }}"
+    image: "{{ item.image|default(OS_IMAGE_NAME) }}"
+    key_name: "{{ item.keypair|default(OS_KEYPAIR_NAME) }}"
+    network: "{{ OS_NETWORK_NAME }}"
+    auto_floating_ip: "{{ OS_AUTO_FLOATING_IP }}"
+    # userdata: "{{lookup('file', 'files/cloud-config.txt')}}"
+    meta:
+      group: "{{ ENV_NAME }}"
+      groups: "{{ item.groups }}"
+      cloud: openstack  #  will create hosts group meta-cloud_openstack
+    security_groups: "{{ OS_SECURITY_GROUP_NAME }}"
+  with_items: "{{OS_SERVERS}}"
+  register: os_server_task
+
+- name: refresh in-memory openstack dynamic inventory
+  meta: refresh_inventory
+  when: os_server_task.changed
+
+- name: refresh cached openstack dynamic inventory
+  command: "{{item}} --refresh --list"
+  with_items:
+    -  "{{lookup('config', 'DEFAULT_HOST_LIST')}}"
+  when: os_server_task.changed
