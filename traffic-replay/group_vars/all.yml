@@ -1,0 +1,38 @@
+---
+ansible_python_interpreter: /usr/bin/env python3
+ansible_user: ubuntu
+
+repo_url: https://gitlab.com/samba-team/samba.git
+repo_branch: master
+repo_root: "{{ ansible_env.HOME }}/samba"
+
+samba_realm: 'samdom.example.com'
+samba_domain: 'samdom'
+samba_password: 'Password01@'
+
+ENV_NAME: traffic-replay
+
+SAMBA_DC:
+  name: samba-dc-0
+  flavor: c1.c2r4
+  groups: samba-common,samba-dc
+
+SAMBA_TRAFFIC_RUNNER:
+  name: samba-traffic-runner-0
+  flavor: c1.c8r16
+  groups: samba-common,samba-traffic-runner
+
+OS_SERVERS:
+  - "{{SAMBA_DC}}"
+  - "{{SAMBA_TRAFFIC_RUNNER}}"
+
+# target samba-dc ip to use as nameserver
+# define explicitly if you have your own dc, e.g.: windows
+# runner_nameserver: "10.10.10.10"
+
+OS_SUBNET_CIDR: "10.10.10.0/24"
+# TODO: need to create this sg
+OS_SECURITY_GROUP_NAME: ad-domain-and-clients
+
+# delete env after all finished
+delete_env: false
