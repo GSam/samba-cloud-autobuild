@@ -1,0 +1,90 @@
+---
+# A playbook to set up a samba server as AD DC
+# ref: https://wiki.samba.org/index.php/Setting_up_Samba_as_an_Active_Directory_Domain_Controller
+- name: disable resolvconf
+  become: yes
+  service:
+    name: resolvconf
+    enabled: no
+
+- name: kill existing samba service and its friends
+  become: yes
+  shell: "killall --quiet --wait samba smbd nmdb winbindd || true"
+
+- name: make sure /etc/hosts resolves DC's FQDN and short name to LAN IP
+  become: yes
+  lineinfile:
+    path: "/etc/hosts"
+    line: "{{openstack.private_v4}} {{ansible_hostname}}.{{samba_realm}} {{ansible_hostname}}"
+
+- name: remove existing samba files from previous installation if any
+  become: yes
+  file:
+    path: "{{ ansible_env[item] }}"
+    state: absent
+  when: item in ansible_env
+  with_items:
+    - CONFIGFILE
+    - LOCKDIR
+    - STATEDIR
+    - CACHEDIR
+    - PRIVATE_DIR
+
+- name: remove an existing /etc/krb5.conf file
+  become: yes
+  file:
+    path: "/etc/krb5.conf"
+    state: absent
+
+- name: include tasks/mit-krb5.yml if enabled
+  include_tasks: tasks/mit-krb5.yml
+  when: mit_krb5_enabled is defined and mit_krb5_enabled
+
+- name: make install samba
+  become: yes
+  command: "make install"
+  args:
+    chdir: "{{ repo_root }}"
+
+- name: Create a link to krb5.conf
+  become: yes
+  file:
+    src: /usr/local/samba/private/krb5.conf
+    dest: /etc/krb5.conf
+    force: true
+    state: link
+    owner: root
+    group: root
+
+- name: kill samba
+  become: yes
+  command: killall samba || true
+  ignore_errors: yes
+
+- name: provision dc
+  become: yes
+  command: >
+    /usr/local/samba/bin/samba-tool domain provision --use-rfc2307
+    --realm={{ samba_realm }}
+    --domain={{ samba_domain }}
+    --server-role=dc
+    --adminpass='{{ samba_password }}'
+    --krbtgtpass='{{ samba_password }}'
+    --machinepass='{{ samba_password }}'
+    --dnspass='{{ samba_password }}'
+    --option='dns forwarder={{ samba_dns_forwarder }}'
+    --option='kccsrv:samba_kcc={{ use_samba_kcc }}'
+    --option='ldapserverrequirestrongauth=no'
+
+- name: render /etc/resolv.conf
+  become: yes
+  copy:
+    dest: /etc/resolv.conf
+    content: |
+      nameserver {{openstack.private_v4}}
+      search {{samba_realm}}
+
+- name: restart samba
+  become: yes
+  command: /usr/local/samba/sbin/samba
+

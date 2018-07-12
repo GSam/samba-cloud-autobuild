@@ -1,0 +1,15 @@
+---
+samba_realm: 'samdom.example.com'
+samba_domain: 'samdom'
+samba_password: 'Password01@'
+
+samba_dns_forwarder: '202.78.247.197'
+
+samba_scripts_dir: '/run/shm/samba-scripts'
+
+mit_krb5_enabled: false
+mit_krb5_download_url: 'http://web.mit.edu/kerberos/dist/krb5/1.16/krb5-1.16.1.tar.gz'
+
+# this is a string, make sure you use quote
+# otherwise, bool true/false will be render to 'True/False'
+use_samba_kcc: 'true'

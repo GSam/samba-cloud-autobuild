@@ -1,0 +1,33 @@
+---
+# tasks for mit krb5 installation
+
+- name: create krb5 dir
+  file:
+    path: "/tmp/krb5"
+    state: directory
+
+- name: download mit krb5 release
+  get_url:
+    url: "{{ mit_krb5_download_url }}"
+    dest: "/tmp/krb5/krb5.tar.gz"
+
+- name: unarchive krb5 release
+  command: tar --strip-components 1 -xzf krb5.tar.gz
+  args:
+    chdir: "/tmp/krb5/"
+
+- name: configure mit krb5
+  command: ./configure --prefix /usr/local/
+  args:
+    chdir: "/tmp/krb5/src/"
+
+- name: compile mit krb5
+  command: make -j
+  args:
+    chdir: "/tmp/krb5/src/"
+
+- name: install mit krb5
+  command: make install
+  args:
+    chdir: "/tmp/krb5/src/"
+  become: true
