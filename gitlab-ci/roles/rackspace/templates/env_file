@@ -1,0 +1,11 @@
+# env vars FOO=BAR
+# should only contains driver specialized env vars needed for
+# docker-machine create cmd
+
+OS_FLAVOR_ID={{OS_FLAVOR_ID}}
+OS_IMAGE_ID={{OS_IMAGE_ID}}
+
+# these vars should be sourced from your rackspace.rc
+OS_REGION_NAME={{ lookup('env', 'RAX_REGION') }}
+OS_USERNAME={{ lookup('env', 'RAX_USERNAME') }}
+OS_API_KEY={{ lookup('env', 'RAX_API_KEY') }}

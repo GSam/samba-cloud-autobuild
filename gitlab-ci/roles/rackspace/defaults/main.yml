@@ -1,0 +1,23 @@
+---
+# increase the number for each new build
+ENV_FILE_TEMP: /tmp/env_file
+MACHINE_DRIVER: rackspace
+
+RUNNER_NAME: gitlab-runner-{{MACHINE_DRIVER}}-0
+
+# bastion and executors use this same image
+# docker-machine only accept image id for rackspace driver
+# OS_IMAGE_NAME: "Ubuntu 16.04 LTS (Xenial Xerus) (PVHVM)"
+OS_IMAGE_ID: "8b7afdfb-5406-44fa-a7ca-3a652a77e220"
+
+# flavor for docker-machine servers, 8G RAM, 4 VCPUs, 320G Disk
+# https://developer.rackspace.com/docs/cloud-servers/v2/general-api-info/flavors/#supported-flavors-for-cloud-servers
+# docker-machine only accept flavor id for rackspace driver
+# OS_FLAVOR_NAME: "8 GB Standard Instance"
+OS_FLAVOR_ID: 6
+
+required_env_vars:
+  - RAX_USERNAME
+  - RAX_API_KEY
+  - RAX_REGION
+  - RAX_CREDS_FILE

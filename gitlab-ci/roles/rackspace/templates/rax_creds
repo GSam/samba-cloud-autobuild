@@ -1,0 +1,3 @@
+[rackspace_cloud]
+username = {{lookup('env', 'RAX_USERNAME')}}
+api_key = {{lookup('env', 'RAX_API_KEY')}}
