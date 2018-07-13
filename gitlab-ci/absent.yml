@@ -1,0 +1,15 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: unregister gitlab-runner with gitlab-runner role
+  hosts:  "{{RUNNER_NAME}}-group"
+  remote_user: "{{REMOTE_USER}}"
+  gather_facts: no
+  roles:
+    - "gitlab-runner"
+
+- name: delete gitlab-runner server with driver role
+  hosts: localhost
+  gather_facts: yes
+  roles:
+    - "{{MACHINE_DRIVER}}"
+

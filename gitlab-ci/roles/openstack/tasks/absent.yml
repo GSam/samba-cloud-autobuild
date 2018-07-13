@@ -1,0 +1,7 @@
+---
+- name: absent instance
+  os_server:
+    name: "{{RUNNER_NAME}}"
+    state: absent
+    delete_fip: yes
+    wait: yes

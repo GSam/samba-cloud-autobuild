@@ -13,4 +13,4 @@ RUNNER_LIMIT: 30
 DOCKER_IMAGE: registry.gitlab.com/samba-team/samba
 
 ansible_python_interpreter: /usr/bin/python3
-test_docker_machine_create: false
+state: present

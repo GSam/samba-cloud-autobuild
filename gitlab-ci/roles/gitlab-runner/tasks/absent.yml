@@ -1,0 +1,6 @@
+---
+- name: gitlab-runner unregister exsiting runners
+  become: yes
+  command: >
+    docker exec gitlab-runner
+    gitlab-runner unregister --all-runners

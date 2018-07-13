@@ -16,6 +16,8 @@ OS_IMAGE_ID: "8b7afdfb-5406-44fa-a7ca-3a652a77e220"
 # OS_FLAVOR_NAME: "8 GB Standard Instance"
 OS_FLAVOR_ID: 6
 
+state: present
+
 required_env_vars:
   - RAX_USERNAME
   - RAX_API_KEY

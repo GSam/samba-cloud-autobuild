@@ -1,0 +1,40 @@
+---
+- name: check required env vars
+  fail:
+    msg: "env var {{item}} not found, make sure to source your rackspacerc file"
+  when: item not in ansible_env
+  with_items: "{{required_env_vars}}"
+
+- name: render rackspace cloud credentials file
+  template:
+    src: templates/rax_creds
+    dest: "{{lookup('env', 'RAX_CREDS_FILE')}}"
+
+- name: import ssh keypair
+  rax_keypair:
+    name: "{{ KEYPAIR_NAME }}"
+    public_key: "{{ PUBLIC_KEY_FILE }}"
+
+- name: create gitlab runner bastion instance
+  rax:
+    name: "{{ RUNNER_NAME }}"
+    group: "{{ RUNNER_NAME }}-group"
+    auto_increment: no
+    count: 1
+    exact_count: yes  # only need 1 instance
+    flavor: "2"  # minimal instance
+    image: "{{ OS_IMAGE_ID }}"
+    key_name: "{{ KEYPAIR_NAME }}"
+    networks: ['private', 'public']
+    wait: yes
+
+- name: render env_file
+  template:
+    src: templates/env_file
+    dest: "{{ENV_FILE_TEMP}}"
+
+- name: refresh in-memory dynamic inventory
+  meta: refresh_inventory
+
+- name: refresh cached dynamic inventory
+  command: "{{lookup('env', 'ANSIBLE_INVENTORY')}} --list --refresh-cache"

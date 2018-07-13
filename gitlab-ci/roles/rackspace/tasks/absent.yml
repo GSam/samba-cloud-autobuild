@@ -1,0 +1,7 @@
+---
+- name: absent instance
+  rax:
+    state: absent
+    wait: yes
+    instance_ids:
+      - "{{hostvars[RUNNER_NAME].rax_id}}"
