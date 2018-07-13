@@ -1,13 +1,22 @@
 ---
+- name: set fact
+  set_fact:
+    vm: vm-9527
+
+- name: run docker-machine ls
+  become: yes
+  command: docker exec gitlab-runner docker-machine ls
+  register: ls_result
+
 - name: run docker-machine rm to init
   become: yes
-  command: docker exec gitlab-runner docker-machine rm -f vm || true
-  ignore_errors: yes
+  command: docker exec gitlab-runner docker-machine rm -f {{vm}}
+  when: vm in ls_result.stdout
 
 - name: run docker-machine create to test
   become: yes
-  command: docker exec gitlab-runner docker-machine create vm
+  command: docker exec gitlab-runner docker-machine create {{vm}}
 
 - name: run docker-machine rm to cleanup
   become: yes
-  command: docker exec gitlab-runner docker-machine rm -f vm
+  command: docker exec gitlab-runner docker-machine rm -f {{vm}}
