@@ -110,7 +110,7 @@
     volumes:
       - "{{CONFIG_ROOT}}:{{CONFIG_ROOT}}:rw"
 
-  - name: test docker-machine create if this is a new build
+- name: test docker-machine create if this is a new build
   include_tasks: test-docker-machine-create.yml
   when: create_config_root.changed
 
