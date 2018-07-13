@@ -7,7 +7,7 @@
     - "{{MACHINE_DRIVER}}"
 
 - name: provision gitlab-runner server with gitlab-runner role
-  hosts:  "{{RUNNER_NAME}}"
+  hosts:  "{{RUNNER_NAME}}-group"
   remote_user: "{{REMOTE_USER}}"
   gather_facts: no
   roles:

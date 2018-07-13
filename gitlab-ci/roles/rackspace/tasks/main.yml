@@ -18,9 +18,10 @@
 - name: create gitlab runner bastion instance
   rax:
     name: "{{ RUNNER_NAME }}"
-    group: "{{ RUNNER_NAME }}"
+    group: "{{ RUNNER_NAME }}-group"
     auto_increment: no
-    exact_count: 1  # only need 1 instance
+    count: 1
+    exact_count: yes  # only need 1 instance
     flavor: "2"  # minimal instance
     image: "{{ OS_IMAGE_ID }}"
     key_name: "{{ KEYPAIR_NAME }}"
@@ -37,8 +38,3 @@
 
 - name: refresh cached dynamic inventory
   command: "{{lookup('env', 'ANSIBLE_INVENTORY')}} --list --refresh-cache"
-
-- name: add new host to hosts group
-  add_host:
-    name: "{{ RUNNER_NAME }}"
-    groups: "{{ RUNNER_NAME }}"

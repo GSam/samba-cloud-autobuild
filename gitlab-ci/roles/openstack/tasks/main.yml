@@ -53,9 +53,7 @@
     network: "{{ OS_NETWORK_NAME }}"
     security_groups: "default,{{ OS_SECURITY_GROUP_NAME }}"
     meta:
-      # all gen of gitlab-runner will be in this group
-      # make it possible to kill all of them
-      group: gitlab-runner
+      group:  "{{ RUNNER_NAME }}-group"
 
 - name: render env_file
   template:
