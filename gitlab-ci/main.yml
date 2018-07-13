@@ -2,7 +2,7 @@
 ---
 - name: create gitlab-runner server with driver role
   hosts: localhost
-  gather_facts: no
+  gather_facts: yes
   roles:
     - "{{MACHINE_DRIVER}}"
 
