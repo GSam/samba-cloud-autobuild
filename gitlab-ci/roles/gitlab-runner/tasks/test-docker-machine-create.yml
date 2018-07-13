@@ -1,19 +1,13 @@
 ---
 - name: run docker-machine rm to init
   become: yes
-  command: >
-    docker exec gitlab-runner
-    docker-machine rm -f vm
+  command: docker exec gitlab-runner docker-machine rm -f vm || true
   ignore_errors: yes
 
 - name: run docker-machine create to test
   become: yes
-  command: >
-    docker exec gitlab-runner
-    docker-machine create vm
+  command: docker exec gitlab-runner docker-machine create vm
 
 - name: run docker-machine rm to cleanup
   become: yes
-  command: >
-    docker exec gitlab-runner
-    docker-machine rm -f vm
+  command: docker exec gitlab-runner docker-machine rm -f vm
