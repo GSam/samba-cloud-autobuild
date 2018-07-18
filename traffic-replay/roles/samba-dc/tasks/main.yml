@@ -75,6 +75,29 @@
     --option='dns forwarder={{ samba_dns_forwarder }}'
     --option='kccsrv:samba_kcc={{ use_samba_kcc }}'
     --option='ldapserverrequirestrongauth=no'
+    --option='prefork children={{ansible_processor_vcpus}}'
+
+- name: apt install supervisor
+  become: yes
+  apt:
+    name: supervisor
+    state: latest
+
+- name: render supervisor conf for samba
+  become: yes
+  template:
+    src: templates/supervisor-samba.conf
+    dest: /etc/supervisor/conf.d/samba.conf
+
+- name: supervisor update
+  become: yes
+  command: supervisorctl update all
+
+- name: make sure supervisor server restarted
+  become: yes
+  service:
+    name: supervisor
+    state: restarted
 
 - name: render /etc/resolv.conf
   become: yes
@@ -83,8 +106,3 @@
     content: |
       nameserver {{openstack.private_v4}}
       search {{samba_realm}}
-
-- name: restart samba
-  become: yes
-  command: /usr/local/samba/sbin/samba
-
