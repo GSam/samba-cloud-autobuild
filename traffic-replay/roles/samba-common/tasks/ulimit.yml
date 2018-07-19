@@ -7,7 +7,7 @@
     regexp: "soft nofile"
     line: "* soft nofile {{ulimit_max}}"
     insertbefore: "# End of file"
-  notify: reboot
+  register: soft_nofile_task
 
 - name: set hard ulimit
   become: yes
@@ -16,4 +16,29 @@
     regexp: "hard nofile"
     line: "* hard nofile {{ulimit_max}}"
     insertbefore: "# End of file"
-  notify: reboot
+  register: hard_nofile_task
+
+- name: restart server if ulimit changed
+  become: yes
+  shell: sleep 2 && reboot
+  async: 1
+  poll: 0
+  ignore_errors: yes
+  when: soft_nofile_task.changed or hard_nofile_task.changed
+
+- name: wait for server to come back
+  local_action:
+    module: wait_for
+    host: "{{ansible_host}}"
+    port: 22  # have to provide and harcode it
+    delay: 30
+    timeout: 120
+    sleep: 2
+    state: started
+  when: soft_nofile_task.changed or hard_nofile_task.changed
+
+- name: show ulimit numbers
+  shell: ulimit -n
+  register: ulimit_task
+  failed_when: ulimit_task.stdout|int != ulimit_max
+

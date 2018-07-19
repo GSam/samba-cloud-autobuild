@@ -1,4 +1,4 @@
 ---
 file_max_config: "fs.file-max = 65535"
 
-ulimit_max: 60000
+ulimit_max: 65000
