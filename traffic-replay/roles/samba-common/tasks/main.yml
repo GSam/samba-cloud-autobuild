@@ -64,6 +64,7 @@
     repo: "{{ repo_url }}"
     dest: "{{ repo_root }}"
     version: "{{ repo_branch }}"
+    depth: 1
   tags: git-clone
   register: git_clone_task
 
