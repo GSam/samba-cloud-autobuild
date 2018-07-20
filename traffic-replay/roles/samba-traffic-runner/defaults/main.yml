@@ -12,3 +12,5 @@ model_file_name: "traffic-model.txt"
 stats_dir_name: "stats"
 
 stats_tar_dest: "/var/www/traffic-replay/"
+
+email_recipient: "samba@catalyst.net.nz"
