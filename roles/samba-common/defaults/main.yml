@@ -1,4 +1,8 @@
 ---
+repo_url: https://gitlab.com/samba-team/samba.git
+repo_branch: master
+repo_root: "{{ ansible_env.HOME }}/samba"
+
 file_max_config: "fs.file-max = 65535"
 
 ulimit_max: 65000
