@@ -26,6 +26,7 @@ STATS_DIR = join(HERE, STATS_DIR_NAME)
 os.system('mkdir -p {}'.format(STATS_DIR))
 
 S_MAX = 60
+r_RANGE = [1, 2, 5]
 
 
 CMD = """
@@ -54,7 +55,7 @@ def get_output_path(r, S):
 def replay():
     S = 3
     while S < S_MAX:
-        for r in [1, 2, 5]:
+        for r in r_RANGE:
             output = get_output_path(r, S)
             if os.path.exists(output):
                 if 'Total conversations' in open(output, 'r').read():
