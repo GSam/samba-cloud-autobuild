@@ -70,7 +70,6 @@
     --option='dns forwarder={{ samba_dns_forwarder }}'
     --option='kccsrv:samba_kcc={{ use_samba_kcc }}'
     --option='ldapserverrequirestrongauth=no'
-    --option='prefork children={{ansible_processor_vcpus}}'
 
 - name: apt install supervisor
   become: yes
