@@ -22,24 +22,19 @@
   become: yes
   apt:
     update_cache: yes
-
-- name: apt upgrade
-  become: yes
-  apt:
-    upgrade: dist
+    upgrade: safe
 
 - name: apt install common packages
   become: yes
   apt:
-    name: "{{ item }}"
     state: latest
-  with_items:
-    - zsh
-    - htop
-    - tree
-    - rng-tools
-    - silversearcher-ag
-    - language-pack-en
+    name:
+      - zsh
+      - htop
+      - tree
+      - rng-tools
+      - silversearcher-ag
+      - language-pack-en
 
 - name: load samba dependencies package list
   include_vars: "{{ playbook_dir }}/../package-lists/ubuntu"
@@ -47,9 +42,8 @@
 - name: apt install samba deps
   become: yes
   apt:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: latest
-  with_items: "{{ packages }}"
 
 - name: link ld to ld.gold
   become: yes
