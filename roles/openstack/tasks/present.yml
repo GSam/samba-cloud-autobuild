@@ -42,7 +42,9 @@
       groups: "{{ item.groups|default(OS_META_GROUPS)|join(',') }}"
       cloud: openstack  #  will create hosts group meta-cloud_openstack
     security_groups: "{{ OS_SECURITY_GROUP_NAME }}"
-  with_items: "{{OS_SERVERS}}"
+  loop: "{{OS_SERVERS}}"
+  loop_control:
+    index_var: index
   register: os_server_task
 
 - name: refresh in-memory openstack dynamic inventory
