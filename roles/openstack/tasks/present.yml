@@ -30,7 +30,7 @@
 
 - name: create server instances
   os_server:
-    name: "{{ item.name }}"
+    name: "{{ item.name|default('%s%s'|format(OS_SERVER_PREFIX, index)) }}"
     flavor: "{{ item.flavor|default(OS_FLAVOR_NAME) }}"
     image: "{{ item.image|default(OS_IMAGE_NAME) }}"
     key_name: "{{ item.keypair|default(OS_KEYPAIR_NAME) }}"

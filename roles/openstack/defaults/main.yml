@@ -16,6 +16,8 @@ OS_FLAVOR_NAME: c1.c1r1
 OS_AUTO_FLOATING_IP: yes
 OS_SECURITY_GROUP_NAME: default
 OS_META_GROUPS: ['openstack']
+# used when you create servers in batch
+OS_SERVER_PREFIX: 'server'
 
 OS_KEYPAIR_NAME: catalyst_samba
 OS_PUBLIC_KEY_FILE: "{{ role_path }}/files/id_rsa_catalyst_samba.pub"
