@@ -41,7 +41,7 @@
       group: "{{ ENV_NAME }}"
       groups: "{{ item.groups|default(OS_META_GROUPS)|join(',') }}"
       cloud: openstack  #  will create hosts group meta-cloud_openstack
-    security_groups: "{{ OS_SECURITY_GROUP_NAME }}"
+    security_groups: "{{ OS_SECURITY_GROUPS }}"
   loop: "{{OS_SERVERS}}"
   loop_control:
     index_var: index
