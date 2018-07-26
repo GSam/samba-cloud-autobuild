@@ -59,22 +59,23 @@
     dest: "{{ repo_root }}"
     version: "{{ repo_branch }}"
     depth: 1
-  tags: git-clone
-  register: git_clone_task
+  tags:
+    - git-clone
 
 - name: config samba code
   command: "./configure.developer"
   args:
     chdir: "{{ repo_root }}"
-  tags: samba-config
-  when: git_clone_task.changed
+  tags:
+    - samba-config
+    - samba-compile
 
 - name: compile samba code
   command: "make -j"
   args:
     chdir: "{{ repo_root }}"
-  tags: samba-compile
-  when: git_clone_task.changed
+  tags:
+    - samba-compile
 
 - import_tasks: file-max.yml
   tags: file-max
