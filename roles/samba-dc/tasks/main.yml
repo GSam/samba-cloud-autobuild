@@ -66,10 +66,26 @@
     --adminpass='{{ samba_password }}'
     --krbtgtpass='{{ samba_password }}'
     --machinepass='{{ samba_password }}'
-    --dnspass='{{ samba_password }}'
-    --option='dns forwarder={{ samba_dns_forwarder }}'
-    --option='kccsrv:samba_kcc={{ use_samba_kcc }}'
+    --dnspass='{{samba_password}}'
+    --option='dns forwarder={{samba_dns_forwarder}}'
+    --option='kccsrv:samba_kcc={{use_samba_kcc}}'
     --option='ldapserverrequirestrongauth=no'
+  when: groups["samba-dc"]|length == 1 or primary_dc_name in group_names
+  register: domain_provison_task
+
+- name: join backup DCs to domain
+  become: yes
+  command: >
+    /usr/local/samba/bin/samba-tool domain join {{samba_domain}} DC
+    --server={{primary_dc_name}}
+    --realm={{samba_realm}}
+    --adminpass={{samba_password}}
+    --username={{samba_username}}
+    --password={{samba_password}}
+  when:
+    - groups["samba-dc"]|length > 1
+    - primary_dc_name not in group_names
+  register: domain_join_task
 
 - name: apt install supervisor
   become: yes
