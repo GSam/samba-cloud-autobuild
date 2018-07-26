@@ -15,3 +15,8 @@ mit_krb5_download_url: 'http://web.mit.edu/kerberos/dist/krb5/1.16/krb5-1.16.1.t
 # this is a string, make sure you use quote
 # otherwise, bool true/false will be render to 'True/False'
 use_samba_kcc: 'true'
+
+# this dc will be provisoned as first/primary dc
+# be aware that openstack dynamic inventory will create a group
+# for each server name
+primary_dc_name: dc0
