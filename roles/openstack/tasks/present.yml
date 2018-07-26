@@ -30,7 +30,7 @@
 
 - name: create server instances
   os_server:
-    name: "{{ item.name|default('%s%s'|format(OS_SERVER_PREFIX, index)) }}"
+    name: "{{ item.name|default('%s%d'|format(OS_SERVER_PREFIX, index)) }}"
     flavor: "{{ item.flavor|default(OS_FLAVOR_NAME) }}"
     image: "{{ item.image|default(OS_IMAGE_NAME) }}"
     key_name: "{{ item.keypair|default(OS_KEYPAIR_NAME) }}"
@@ -41,6 +41,7 @@
       group: "{{ ENV_NAME }}"
       groups: "{{ item.groups|default(OS_META_GROUPS)|join(',') }}"
       cloud: openstack  #  will create hosts group meta-cloud_openstack
+      index: "{{index|string}}"
     security_groups: "{{ OS_SECURITY_GROUPS }}"
   loop: "{{OS_SERVERS}}"
   loop_control:
