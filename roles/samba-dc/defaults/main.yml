@@ -3,6 +3,8 @@ samba_realm: 'samdom.example.com'
 samba_domain: 'samdom'
 samba_password: 'Password01@'
 
+repo_root: "{{ansible_env.HOME}}/samba"
+
 samba_dns_forwarder: '202.78.247.197'
 
 samba_scripts_dir: '/run/shm/samba-scripts'
