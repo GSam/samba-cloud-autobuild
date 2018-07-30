@@ -45,14 +45,11 @@
   loop: "{{OS_SERVERS}}"
   loop_control:
     index_var: index
-  register: os_server_task
 
 - name: refresh in-memory openstack dynamic inventory
   meta: refresh_inventory
-  when: os_server_task.changed
 
 - name: refresh cached openstack dynamic inventory
   command: "{{item}} --refresh --list"
   with_items:
     -  "{{lookup('config', 'DEFAULT_HOST_LIST')}}"
-  when: os_server_task.changed
