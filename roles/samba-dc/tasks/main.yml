@@ -1,6 +1,7 @@
 ---
 # A playbook to set up a samba server as AD DC
 # ref: https://wiki.samba.org/index.php/Setting_up_Samba_as_an_Active_Directory_Domain_Controller
+
 - name: disable resolvconf
   become: yes
   service:
@@ -56,21 +57,50 @@
     owner: root
     group: root
 
-- name: provision dc
+- name: set fact for primary_dc_id
+  set_fact:
+    primary_dc_id: "{{groups[primary_dc_name][0]}}"
+  tags:
+    - always
+
+- name: set fact for primary_dc_ip
+  set_fact:
+    primary_dc_ip: "{{hostvars[primary_dc_id].openstack.private_v4}}"
+  tags:
+    - always
+
+- name: render /etc/resolv.conf
+  become: yes
+  copy:
+    dest: /etc/resolv.conf
+    content: |
+      nameserver {{primary_dc_ip}}
+      search {{samba_realm}}
+  tags:
+    - render-resolv-conf
+
+- name: include tasks/supervisor.yml
+  include_tasks: tasks/supervisor.yml
+
+- name: provision primary DC
   become: yes
   command: >
     /usr/local/samba/bin/samba-tool domain provision --use-rfc2307
-    --realm={{ samba_realm }}
-    --domain={{ samba_domain }}
+    --realm={{samba_realm}}
+    --domain={{samba_domain}}
     --server-role=dc
-    --adminpass='{{ samba_password }}'
-    --krbtgtpass='{{ samba_password }}'
-    --machinepass='{{ samba_password }}'
+    --adminpass='{{samba_password}}'
+    --krbtgtpass='{{samba_password}}'
+    --machinepass='{{samba_password}}'
     --dnspass='{{samba_password}}'
     --option='dns forwarder={{samba_dns_forwarder}}'
     --option='kccsrv:samba_kcc={{use_samba_kcc}}'
     --option='ldapserverrequirestrongauth=no'
-  when: groups["samba-dc"]|length == 1 or primary_dc_name in group_names
+  when:
+    - '"samba-dc" in group_names'
+    - 'primary_dc_name in group_names'
+  tags:
+    - samba-dc-privison
   register: domain_provison_task
 
 - name: join backup DCs to domain
@@ -83,36 +113,9 @@
     --username={{samba_username}}
     --password={{samba_password}}
   when:
-    - groups["samba-dc"]|length > 1
-    - primary_dc_name not in group_names
+    - '"samba-dc" in group_names'
+    - 'primary_dc_name not in group_names'
+  tags:
+    - samba-dc-join
   register: domain_join_task
 
-- name: apt install supervisor
-  become: yes
-  apt:
-    name: supervisor
-    state: latest
-
-- name: render supervisor conf for samba
-  become: yes
-  template:
-    src: templates/supervisor-samba.conf
-    dest: /etc/supervisor/conf.d/samba.conf
-
-- name: supervisor update
-  become: yes
-  command: supervisorctl update all
-
-- name: make sure supervisor server restarted
-  become: yes
-  service:
-    name: supervisor
-    state: restarted
-
-- name: render /etc/resolv.conf
-  become: yes
-  copy:
-    dest: /etc/resolv.conf
-    content: |
-      nameserver {{openstack.private_v4}}
-      search {{samba_realm}}

@@ -1,0 +1,32 @@
+---
+
+- name: render supervisor conf for samba
+  become: yes
+  template:
+    src: templates/supervisor-samba.conf
+    dest: /etc/supervisor/conf.d/samba.conf
+
+- name: supervisor update
+  become: yes
+  command: supervisorctl update all
+
+- name: make sure supervisor server restarted
+  become: yes
+  service:
+    name: supervisor
+    state: restarted
+  tag:
+    - samba-restart
+
+- name: check samba status
+  become: yes
+  command: supervisorctl status samba
+  register: samba_status_result
+  tag:
+    - samba-status
+
+- name: failed is samba not running
+  fail:
+    msg: "samba is not running"
+  when:
+    - '"RUNNING" not in samba_status_result.stdout'
