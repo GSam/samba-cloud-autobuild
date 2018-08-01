@@ -28,6 +28,13 @@
       - "{{ OS_SUBNET_NAME }}"
   when: OS_AUTO_FLOATING_IP
 
+- name: create server instances via OS_SERVER_ITEMS
+  os_server: "{{item}}"
+  register: os_server_task
+  loop: "{{OS_SERVER_ITEMS}}"
+  when: OS_SERVER_ITEMS is defined
+
+# to keep flex, this task is deprecated
 - name: create server instances
   os_server:
     name: "{{ item.name|default('%s%d'|format(OS_SERVER_PREFIX, index)) }}"
@@ -46,6 +53,7 @@
   loop: "{{OS_SERVERS}}"
   loop_control:
     index_var: index
+  when: OS_SERVERS is defined
 
 - name: refresh in-memory openstack dynamic inventory
   meta: refresh_inventory
