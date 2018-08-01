@@ -2,7 +2,7 @@
 # vars need override while use role
 ENV_NAME: test
 
-OS_NETWORK_NAME: "{{ ENV_NAME }}-network "
+OS_NETWORK_NAME: "{{ ENV_NAME }}-network"
 OS_ROUTER_NAME: "{{ ENV_NAME }}-router"
 OS_SUBNET_NAME: "{{ ENV_NAME }}-subnet"
 OS_SUBNET_CIDR: "10.0.0.0/24"
