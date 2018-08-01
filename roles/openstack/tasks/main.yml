@@ -4,3 +4,9 @@
 
 - include_tasks: absent.yml
   when: state == 'absent'
+
+- name: dump vars to file
+  copy:
+    content: "{{vars|to_nice_json}}"
+    dest: "/tmp/ansible-vars.json"
+  when: DEBUG is defined and DEBUG
