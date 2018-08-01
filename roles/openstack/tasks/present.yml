@@ -50,6 +50,8 @@
     name: "{{ item.name|default('%s%d'|format(OS_SERVER_PREFIX, index)) }}"
     flavor: "{{ item.flavor|default(OS_FLAVOR_NAME) }}"
     image: "{{ item.image|default(OS_IMAGE_NAME) }}"
+    boot_from_volume: "{{ item.boot_from_volume|default('no') }}"
+    volume_size: "{{ item.volume_size|default(0) }}"
     key_name: "{{ item.keypair|default(OS_KEYPAIR_NAME) }}"
     network: "{{ OS_NETWORK_NAME }}"
     auto_floating_ip: "{{ OS_AUTO_FLOATING_IP }}"
