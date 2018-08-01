@@ -26,6 +26,33 @@ OS_SERVER_PREFIX: 'server'
 OS_KEYPAIR_NAME: catalyst_samba
 OS_PUBLIC_KEY_FILE: "{{ role_path }}/files/id_rsa_catalyst_samba.pub"
 
+security_groups:
+  ssh:
+    - protocol: tcp
+      port_range_min: 22
+      port_range_max: 22
+      remote_ip_prefix: 202.78.240.7/32
+  ping:
+    - protocol: icmp
+      remote_ip_prefix: 202.78.240.7/32
+  domain:
+    - protocol: tcp
+      remote_group: domain
+    - protocol: udp
+      remote_group: domain
+    - protocol: icmp
+      remote_group: domain
+  winrm:
+    - protocol: tcp
+      port_range_min: 5985
+      port_range_max: 5986
+      remote_ip_prefix: 202.78.240.7/32
+  rdp:
+    - protocol: tcp
+      port_range_min: 3389
+      port_range_max: 3389
+      remote_ip_prefix: 202.78.240.7/32
+
 ansible_user: ubuntu
 ansible_python_interpreter: /usr/bin/env python3
 

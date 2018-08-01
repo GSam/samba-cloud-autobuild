@@ -28,6 +28,16 @@
       - "{{ OS_SUBNET_NAME }}"
   when: OS_AUTO_FLOATING_IP
 
+- name: include tasks to create security groups
+  include_tasks: security_groups.yml
+  vars:
+    name: "{{item.key}}"
+    rules: "{{item.value}}"
+  loop: "{{security_groups|dict2items}}"
+  when: security_groups is defined
+  tags:
+    - security_groups
+
 - name: create server instances via OS_SERVER_ITEMS
   os_server: "{{item}}"
   register: os_server_task
@@ -49,7 +59,7 @@
       groups: "{{ item.groups|default(OS_META_GROUPS)|join(',') }}"
       cloud: openstack  #  will create hosts group meta-cloud_openstack
       index: "{{index|string}}"
-    security_groups: "{{ OS_SECURITY_GROUPS }}"
+    security_groups: "{{item.security_groups|default(OS_SECURITY_GROUPS)}}"
   loop: "{{OS_SERVERS}}"
   loop_control:
     index_var: index

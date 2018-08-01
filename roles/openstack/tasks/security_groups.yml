@@ -1,0 +1,14 @@
+---
+- name: create security_group {{name}}
+  os_security_group:
+    name: "{{name}}"
+  tags:
+    - security_groups
+
+- name: add rules
+  os_security_group_rule: "{{rule|combine({'security_group':name})}}"
+  loop: "{{rules}}"
+  loop_control:
+    loop_var: rule
+  tags:
+    - security_groups
