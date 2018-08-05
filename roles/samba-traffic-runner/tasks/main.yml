@@ -75,7 +75,7 @@
     port: 465
     username: "{{lookup('env', 'EMAIL_USERNAME')}}"
     password: "{{lookup('env', 'EMAIL_PASSWORD')}}"
-    from: "ansbile"
+    from: "ansible"
     to:
       - "{{email_recipient}}"
     subject: "A new traffic replay for samba performance test finished"
