@@ -1,11 +1,25 @@
 ---
+
+- name: set fact for primary_dc_id
+  set_fact:
+    primary_dc_id: "{{groups[primary_dc_name][0]}}"
+
+- name: set fact for pdc_ip
+  set_fact:
+    primary_dc_ip: "{{hostvars[primary_dc_id].openstack.private_v4}}"
+
+- name: get primary dc ip as runner_nameserver if not specified
+  set_fact:
+    runner_nameserver: "{{primary_dc_ip}}"
+  when: runner_nameserver is not defined
+
 - name: render /etc/resolv.conf
   become: yes
   copy:
     dest: /etc/resolv.conf
     content: |
-      nameserver {{ runner_nameserver }}
-      search {{ samba_realm }}
+      nameserver {{runner_nameserver}}
+      search {{samba_realm}}
   tags: resolv
 
 - name: copy model file to runner and make readonly
