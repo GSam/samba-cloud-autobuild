@@ -2,6 +2,8 @@
 ansible_python_interpreter: /usr/bin/python3
 ansible_user: ubuntu
 
+repo_root: "{{ansible_env.HOME}}/samba"
+
 samba_realm: samdom.example.com
 # target dc ip to use, define explicitly
 # if you have your own dc, e.g.: windows
