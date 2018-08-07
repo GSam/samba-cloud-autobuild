@@ -39,6 +39,7 @@ packages:
  - libparse-yapp-perl
  - libpopt-dev
  - libreadline-dev
+ - libtasn1-bin
  - linux-tools-generic
  - lmdb-utils/trusty-backports
  - nettle-dev
