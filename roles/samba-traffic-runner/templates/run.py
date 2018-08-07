@@ -39,8 +39,21 @@ script/traffic_replay -U Administrator%{{samba_password}}  \
 --random-seed=1 \
 -D 60 \
 --debuglevel 0 \
-{MODEL}  {{SAMBA_DC.name}}.{{samba_realm}} \
+{MODEL}  {{primary_dc_name}}.{{samba_realm}} \
 | tee {output}
+"""
+
+
+GENERATE_CMD = """
+script/traffic_replay -U Administrator%{{samba_password}}  \
+--realm {{samba_realm}} \
+--workgroup {{samba_domain|upper}} \
+--fixed-password iegh1haevoofoo3looT9  \
+--generate-users-only \
+--number-of-users={{num_users}} \
+--number-of-groups={{num_groups}} \
+--average-groups-per-user={{num_groups_per_user}} \
+{{primary_dc_name}}.{{samba_realm}}
 """
 
 
@@ -50,6 +63,11 @@ def print_err(*args, **kwargs):
 
 def get_output_path(r, S):
     return join(STATS_DIR, 'r{:02}-S{:02}.txt'.format(r, S))
+
+
+def generate():
+    print_err(GENERATE_CMD)
+    return os.system(GENERATE_CMD)
 
 
 def replay():
@@ -176,6 +194,10 @@ def main():
         help='get traffic summary')
 
     parser.add_argument(
+        '-g', '--generate', action='store_true',
+        help='generate users and groups')
+
+    parser.add_argument(
         '-a', '--all', action='store_true',
         help='run replay and get summary')
 
@@ -187,6 +209,9 @@ def main():
         has_task = True
     if args.all or args.summary:
         summary()
+        has_task = True
+    if args.generate:
+        generate()
         has_task = True
 
     if not has_task:
