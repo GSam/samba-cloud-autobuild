@@ -35,6 +35,8 @@
       - rng-tools
       - silversearcher-ag
       - language-pack-en
+      - ipython
+      - supervisor
 
 - name: load samba dependencies package list
   include_vars: "{{ playbook_dir }}/../package-lists/ubuntu"
