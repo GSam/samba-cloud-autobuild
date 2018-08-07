@@ -15,4 +15,4 @@ stats_dir_name: "stats"
 
 stats_tar_dest: "/var/www/traffic-replay/"
 
-email_recipient: "samba@catalyst.net.nz"
+email_recipient: "samba-dev@catalyst.net.nz"
