@@ -1,0 +1,7 @@
+
+export REPO_ROOT=$HOME/samba
+export PYTHONPATH=$REPO_ROOT/bin/python:$PYTHONPATH
+
+export PATH=/usr/local/samba/sbin:/usr/local/samba/bin:$REPO_ROOT/bin:$PATH
+
+cd $REPO_ROOT

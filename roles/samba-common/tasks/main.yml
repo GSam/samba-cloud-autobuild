@@ -92,8 +92,9 @@
   template:
     src: "templates/{{item}}"
     dest: "{{ansible_env.HOME}}/.{{item}}"
+    force: yes
   with_items:
     - gitconfig
     - vimrc
-    - zshrc
+    - bash_profile
   tags: dotfiles

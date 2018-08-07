@@ -27,6 +27,6 @@
     st = status
     fa = fetch --all
     rb = rebase
-    rd = push origin --delete
     ll = log --oneline
+    lp = log --patch
     lg = log --oneline --graph

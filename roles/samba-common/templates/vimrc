@@ -6,24 +6,47 @@ filetype indent plugin on
 nnoremap ; :
 nnoremap 0 ^
 
+" display
 set number
+set relativenumber
 set ruler
+set showcmd
+set cursorline
+
+" behavior
+set hidden
+set noswapfile
+set nobackup
+
+" No annoying sound on errors
+set noerrorbells
+set visualbell
+set t_vb=
+set tm=500
+
+set backspace=indent,eol,start
+set iskeyword+=-
 set scrolloff=10
 
-set noswapfile
-set backspace=indent,eol,start
+" code
+set nowrap
+set list
+set listchars=tab:>-,trail:~,extends:>,precedes:<
+let loaded_matchparen = 1 " disable math parenthiese
 
+" search
 set ignorecase
 set smartcase
 set incsearch
 set hlsearch
 
+" indent
 set autoindent
 set smartindent
-set shiftwidth=4
-set softtabstop=4
-set tabstop=4
+set shiftwidth=2
+set softtabstop=2
+set tabstop=2
 set expandtab
 
-autocmd FileType html,xml,yaml,css,scss,javascript setlocal shiftwidth=2 softtabstop=2 tabstop=2 expandtab
-autocmd FileType c          setlocal shiftwidth=8 softtabstop=8 tabstop=8 noexpandtab
+autocmd FileType python setlocal shiftwidth=4 softtabstop=4 tabstop=4 expandtab
+autocmd FileType c      setlocal shiftwidth=8 softtabstop=8 tabstop=8 noexpandtab
