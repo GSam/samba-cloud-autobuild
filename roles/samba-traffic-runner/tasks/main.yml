@@ -39,9 +39,24 @@
   tags: templates
 
 - name: trigger run.py
-  command: python run.py --all
+  command: python run.py --generate
   args:
     chdir: "{{repo_root}}"
+  when: run_generate is defined and run_generate
+  tags: run
+
+- name: trigger run.py --replay
+  command: python run.py --replay
+  args:
+    chdir: "{{repo_root}}"
+  when: run_replay is defined and run_replay
+  tags: run
+
+- name: trigger run.py --summary
+  command: python run.py --summary
+  args:
+    chdir: "{{repo_root}}"
+  when: run_summary is defined and run_summary
   tags: run
 
 - name: set fact for finished_at

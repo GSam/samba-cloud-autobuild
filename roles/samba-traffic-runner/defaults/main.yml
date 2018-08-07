@@ -16,3 +16,8 @@ stats_dir_name: "stats"
 stats_tar_dest: "/var/www/traffic-replay/"
 
 email_recipient: "samba-dev@catalyst.net.nz"
+
+# control subcmd for run.py
+run_generate: no
+run_replay: yes
+run_summary: yes
