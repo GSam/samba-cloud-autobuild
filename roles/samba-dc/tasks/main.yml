@@ -119,3 +119,30 @@
     - samba-dc-join
   register: domain_join_task
 
+- name: copy samba back file to remote dc
+  copy:
+    src: "{{samba_backup_file}}"
+    dest: "{{ansible_env.HOME}}/{{samba_backup_file}}"
+  when:
+    - samba_backup_file is defined
+
+- name: make sure samba restore target dir exists
+  file:
+    state: directory
+    path: "{{samba_restore_target_dir}}"
+  when:
+    - samba_restore_target_dir is defined
+
+- name: restore db from backup
+  command: >
+    /usr/local/samba/bin/samba-tool domain backup restore
+    --newservername={{primary_dc_name}}
+    --backup-file={{samba_backup_file}}
+    --targetdir={{samba_restore_target_dir}}
+    --username={{samba_username}}
+    --password={{samba_password}}
+  when:
+    - '"samba-dc" in group_names'
+    - 'primary_dc_name in group_names'
+    - 'samba_backup_file is defined'
+    - 'samba_restore_target_dir is defined'

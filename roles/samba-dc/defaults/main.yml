@@ -20,3 +20,6 @@ use_samba_kcc: 'true'
 # be aware that openstack dynamic inventory will create a group
 # for each server name
 primary_dc_name: dc0
+
+# samba_backup_file:
+# samba_restore_target_dir: /opt/samba/
