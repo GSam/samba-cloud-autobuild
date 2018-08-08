@@ -82,6 +82,17 @@
 - name: include tasks/supervisor.yml
   include_tasks: tasks/supervisor.yml
 
+- name: check samba domain info
+  become: yes
+  command: /usr/local/samba/bin/samba-tool domain info 127.0.0.1
+  register: domain_info_result
+  tags:
+    - always
+
+- name: set fact already_in_domain
+  set_fact:
+    already_in_domain: "{{samba_realm|lower in domain_info_result.stdout|lowewer}}"
+
 - name: provision primary DC
   become: yes
   command: >
@@ -99,6 +110,7 @@
   when:
     - '"samba-dc" in group_names'
     - 'primary_dc_name in group_names'
+    - not already_in_domain
   tags:
     - samba-dc-privison
   register: domain_provison_task
@@ -115,6 +127,7 @@
   when:
     - '"samba-dc" in group_names'
     - 'primary_dc_name not in group_names'
+    - not already_in_domain
   tags:
     - samba-dc-join
   register: domain_join_task
