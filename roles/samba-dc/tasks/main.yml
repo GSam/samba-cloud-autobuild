@@ -31,7 +31,7 @@
     - CACHEDIR
     - PRIVATE_DIR
 
-- name: remove an existing /etc/krb5.conf file
+- name: remove existing /etc/krb5.conf file
   become: yes
   file:
     path: "/etc/krb5.conf"
@@ -57,20 +57,10 @@
     owner: root
     group: root
 
-- name: set fact for primary_dc_id
-  set_fact:
-    primary_dc_id: "{{groups[primary_dc_name][0]}}"
-  tags:
-    - always
-
-- name: set fact for primary_dc_ip
-  set_fact:
-    primary_dc_ip: "{{hostvars[primary_dc_id].openstack.private_v4}}"
-  tags:
-    - always
-
 - name: render /etc/resolv.conf
   become: yes
+  vars:
+    primary_dc_ip: "{{hostvars[groups[primary_dc_name][0]].openstack.private_v4}}"
   copy:
     dest: /etc/resolv.conf
     content: |
@@ -79,83 +69,53 @@
   tags:
     - render-resolv-conf
 
-- name: include tasks/supervisor.yml
-  include_tasks: tasks/supervisor.yml
-
-- name: check samba domain info
+- name: make sure supervisor service stopped before domain operations
   become: yes
-  command: /usr/local/samba/bin/samba-tool domain info 127.0.0.1
-  register: domain_info_result
-  tags:
-    - always
+  service:
+    name: supervisor
+    state: stopped
 
-- name: set fact already_in_domain
-  set_fact:
-    already_in_domain: "{{samba_realm|lower in domain_info_result.stdout|lowewer}}"
-
-- name: provision primary DC
-  become: yes
-  command: >
-    /usr/local/samba/bin/samba-tool domain provision --use-rfc2307
-    --realm={{samba_realm}}
-    --domain={{samba_domain}}
-    --server-role=dc
-    --adminpass='{{samba_password}}'
-    --krbtgtpass='{{samba_password}}'
-    --machinepass='{{samba_password}}'
-    --dnspass='{{samba_password}}'
-    --option='dns forwarder={{samba_dns_forwarder}}'
-    --option='kccsrv:samba_kcc={{use_samba_kcc}}'
-    --option='ldapserverrequirestrongauth=no'
-  when:
-    - '"samba-dc" in group_names'
-    - 'primary_dc_name in group_names'
-    - not already_in_domain
-  tags:
-    - samba-dc-privison
-  register: domain_provison_task
-
-- name: join backup DCs to domain
-  become: yes
-  command: >
-    /usr/local/samba/bin/samba-tool domain join {{samba_domain}} DC
-    --server={{primary_dc_name}}
-    --realm={{samba_realm}}
-    --adminpass={{samba_password}}
-    --username={{samba_username}}
-    --password={{samba_password}}
-  when:
-    - '"samba-dc" in group_names'
-    - 'primary_dc_name not in group_names'
-    - not already_in_domain
-  tags:
-    - samba-dc-join
-  register: domain_join_task
-
-- name: copy samba back file to remote dc
+- name: copy samba backup file to remote primary dc if defined
   copy:
     src: "{{samba_backup_file}}"
     dest: "{{ansible_env.HOME}}/{{samba_backup_file}}"
   when:
-    - samba_backup_file is defined
+    - '"samba-dc" in group_names'
+    - 'primary_dc_name in group_names'
+    - 'samba_backup_file is defined'
 
-- name: make sure samba restore target dir exists
+- name: make sure samba restore target dir exists if defined
   file:
     state: directory
     path: "{{samba_restore_target_dir}}"
   when:
-    - samba_restore_target_dir is defined
+    - '"samba-dc" in group_names'
+    - 'primary_dc_name in group_names'
+    - 'samba_restore_target_dir is defined'
 
-- name: restore db from backup
-  command: >
-    /usr/local/samba/bin/samba-tool domain backup restore
-    --newservername={{primary_dc_name}}
-    --backup-file={{samba_backup_file}}
-    --targetdir={{samba_restore_target_dir}}
-    --username={{samba_username}}
-    --password={{samba_password}}
+- name: include tasks to run {{operation}}
+  include_tasks: tasks/domain-operation.yml
+  vars:
+    operation: domain-provision
+  when:
+    - '"samba-dc" in group_names'
+    - 'primary_dc_name in group_names'
+    - 'samba_backup_file is not defined'
+
+- name: include tasks to run {{operation}}
+  include_tasks: tasks/domain-operation.yml
+  vars:
+    operation: domain-restore
   when:
     - '"samba-dc" in group_names'
     - 'primary_dc_name in group_names'
     - 'samba_backup_file is defined'
     - 'samba_restore_target_dir is defined'
+
+- name: include tasks to run {{operation}}
+  include_tasks: tasks/domain-operation.yml
+  vars:
+    operation: domain-join
+  when:
+    - '"samba-dc" in group_names'
+    - 'primary_dc_name not in group_names'
