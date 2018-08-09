@@ -25,6 +25,7 @@
   become: yes
   apt:
     update_cache: yes
+    cache_valid_time: 86400  # 24h
     upgrade: safe
 
 - name: apt install common packages
@@ -63,14 +64,19 @@
     repo: "{{ repo_url }}"
     dest: "{{ repo_root }}"
     version: "{{ repo_branch }}"
-    depth: 1
+    depth: 3
+  register: git_result
   tags:
     - git-clone
+
+- debug: var=git_result
 
 - name: config samba code
   command: "./configure.developer"
   args:
     chdir: "{{ repo_root }}"
+  when:
+    - git_result.changed
   tags:
     - samba-config
     - samba-compile
@@ -79,6 +85,8 @@
   command: "make -j"
   args:
     chdir: "{{ repo_root }}"
+  when:
+    - git_result.changed
   tags:
     - samba-compile
 
