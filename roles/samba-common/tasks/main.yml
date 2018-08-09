@@ -1,4 +1,7 @@
 ---
+- name: ping hosts
+  ping:
+
 - name: set nz timezone
   become: yes
   timezone:
