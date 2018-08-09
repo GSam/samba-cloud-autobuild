@@ -36,3 +36,21 @@
     msg: "samba is not running"
   when:
     - '"RUNNING" not in samba_status_result.stdout'
+
+- name: use testparm to check realm
+  become: yes
+  command: >
+    /usr/local/samba/bin/testparm \
+    --parameter-name=realm \
+    --suppress-prompt
+  register: testparm_realm_result
+  tags:
+    - testparm
+
+- name: fail if realm not right
+  fail:
+    msg: "DC doesn't join the expected realm {{samba_realm}}"
+  when:
+    - 'samba_realm|lower not in testparm_realm_result.stdout|lower'
+  tags:
+    - testparm
