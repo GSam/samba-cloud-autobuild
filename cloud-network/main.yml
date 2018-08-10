@@ -7,11 +7,13 @@
 
 - name: apply role samba-common
   hosts: samba-common
+  serial: 50
   roles:
     - samba-common
 
 - name: apply role samba-dc
   hosts: samba-dc
+  serial: 50
   roles:
     - samba-dc
 
