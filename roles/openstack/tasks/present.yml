@@ -62,10 +62,23 @@
       cloud: openstack  #  will create hosts group meta-cloud_openstack
       index: "{{index|string}}"
     security_groups: "{{item.security_groups|default(OS_SECURITY_GROUPS)}}"
+    wait: yes
+  async: 180
+  poll: 0
   loop: "{{OS_SERVERS}}"
   loop_control:
     index_var: index
+  register: os_server_loop
   when: OS_SERVERS is defined
+
+- name: wait for instance creation to be complete
+  async_status:
+    jid: "{{item.ansible_job_id}}"
+    mode: status
+  until: os_server_jobs.finished
+  retries: 100
+  loop: "{{os_server_loop.results}}"
+  register: os_server_jobs
 
 - name: refresh in-memory openstack dynamic inventory
   meta: refresh_inventory
