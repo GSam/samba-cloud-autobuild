@@ -12,15 +12,23 @@ samba_password: 'Password01@'
 
 ENV_NAME: traffic-replay
 
+run_generate: no
+run_replay: no
+run_summary: no
+
 SAMBA_DC:
   name: samba-dc-0
   flavor: c1.c2r4
-  groups: samba-common,samba-dc
+  groups:
+    - samba-common
+    - samba-dc
 
 SAMBA_TRAFFIC_RUNNER:
   name: samba-traffic-runner-0
   flavor: c1.c8r16
-  groups: samba-common,samba-traffic-runner
+  groups:
+    - samba-common
+    - samba-traffic-runner
 
 OS_SERVERS:
   - "{{SAMBA_DC}}"
