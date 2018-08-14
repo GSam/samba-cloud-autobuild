@@ -1,11 +1,124 @@
 ---
+# A playbook to set up a samba server as AD DC
+# ref: https://wiki.samba.org/index.php/Setting_up_Samba_as_an_Active_Directory_Domain_Controller
 
-- name: check samba binary
-  stat:
-    path: /usr/local/samba/sbin/samba
-  register: stat_result
+- name: disable resolvconf
+  become: yes
+  service:
+    name: resolvconf
+    enabled: no
 
-- name: install samba if not exist
-  include_tasks: install.yml
+- name: kill existing samba service and its friends
+  become: yes
+  shell: "killall --quiet --wait samba smbd nmdb winbindd || true"
+
+- name: make sure /etc/hosts resolves DC's FQDN and short name to LAN IP
+  become: yes
+  lineinfile:
+    path: "/etc/hosts"
+    line: "{{openstack.private_v4}} {{ansible_hostname}}.{{samba_realm}} {{ansible_hostname}}"
+
+- name: remove existing samba files from previous installation if any
+  become: yes
+  file:
+    path: "{{ ansible_env[item] }}"
+    state: absent
   when:
-    - not stat_result.stat.exists
+    - item in ansible_env
+    - samba_purge
+  with_items:
+    - CONFIGFILE
+    - LOCKDIR
+    - STATEDIR
+    - CACHEDIR
+    - PRIVATE_DIR
+
+- name: remove existing /etc/krb5.conf file
+  become: yes
+  file:
+    path: "/etc/krb5.conf"
+    state: absent
+
+- name: include tasks/mit-krb5.yml if enabled
+  include_tasks: tasks/mit-krb5.yml
+  when: mit_krb5_enabled is defined and mit_krb5_enabled
+
+- name: make install samba
+  become: yes
+  command: "make install"
+  args:
+    chdir: "{{ repo_root }}"
+
+- name: Create a link to krb5.conf
+  become: yes
+  file:
+    src: /usr/local/samba/private/krb5.conf
+    dest: /etc/krb5.conf
+    force: true
+    state: link
+    owner: root
+    group: root
+
+- name: render /etc/resolv.conf
+  become: yes
+  vars:
+    primary_dc_ip: "{{hostvars[groups[primary_dc_name][0]].openstack.private_v4}}"
+  copy:
+    dest: /etc/resolv.conf
+    content: |
+      nameserver {{primary_dc_ip}}
+      search {{samba_realm}}
+  tags:
+    - render-resolv-conf
+
+- name: make sure supervisor service stopped before domain operations
+  become: yes
+  service:
+    name: supervisor
+    state: stopped
+
+- name: copy samba backup file to remote primary dc if defined
+  copy:
+    src: "{{samba_backup_file}}"
+    dest: "{{ansible_env.HOME}}/samba-backup"
+  when:
+    - '"samba-dc" in group_names'
+    - 'primary_dc_name in group_names'
+    - 'samba_backup_file is defined'
+
+- name: make sure samba restore target dir exists if defined
+  become: yes
+  file:
+    state: directory
+    path: "{{samba_restore_target_dir}}"
+  when:
+    - '"samba-dc" in group_names'
+    - 'primary_dc_name in group_names'
+    - 'samba_restore_target_dir is defined'
+
+- name: include tasks to run {{operation}}
+  include_tasks: tasks/domain-operation.yml
+  vars:
+    operation: domain-provision
+  when:
+    - '"samba-dc" in group_names'
+    - 'primary_dc_name in group_names'
+    - 'samba_backup_file is not defined'
+
+- name: include tasks to run {{operation}}
+  include_tasks: tasks/domain-operation.yml
+  vars:
+    operation: domain-restore
+  when:
+    - '"samba-dc" in group_names'
+    - 'primary_dc_name in group_names'
+    - 'samba_backup_file is defined'
+    - 'samba_restore_target_dir is defined'
+
+- name: include tasks to run {{operation}}
+  include_tasks: tasks/domain-operation.yml
+  vars:
+    operation: domain-join
+  when:
+    - '"samba-dc" in group_names'
+    - 'primary_dc_name not in group_names'
