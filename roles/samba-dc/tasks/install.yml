@@ -86,6 +86,7 @@
     - 'samba_backup_file is defined'
 
 - name: make sure samba restore target dir exists if defined
+  become: yes
   file:
     state: directory
     path: "{{samba_restore_target_dir}}"
