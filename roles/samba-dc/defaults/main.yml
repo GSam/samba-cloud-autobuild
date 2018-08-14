@@ -23,3 +23,5 @@ primary_dc_name: dc0
 
 # samba_backup_file:
 # samba_restore_target_dir: /opt/samba/
+
+samba_purge: yes

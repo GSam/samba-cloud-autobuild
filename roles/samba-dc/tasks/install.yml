@@ -30,6 +30,7 @@
     - STATEDIR
     - CACHEDIR
     - PRIVATE_DIR
+  when: samba_purge
 
 - name: remove existing /etc/krb5.conf file
   become: yes
