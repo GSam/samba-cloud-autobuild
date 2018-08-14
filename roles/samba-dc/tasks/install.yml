@@ -79,7 +79,7 @@
 - name: copy samba backup file to remote primary dc if defined
   copy:
     src: "{{samba_backup_file}}"
-    dest: "{{ansible_env.HOME}}/{{samba_backup_file}}"
+    dest: "{{ansible_env.HOME}}/samba-backup"
   when:
     - '"samba-dc" in group_names'
     - 'primary_dc_name in group_names'
