@@ -1,0 +1,10 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: apply role samba-traffic-runner
+  hosts: samba-traffic-runner
+  tasks:
+    - name: include role
+      include_role:
+        name: samba-traffic-runner
+      when:
+        - ENV_NAME in group_names

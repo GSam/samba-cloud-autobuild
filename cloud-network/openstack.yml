@@ -1,0 +1,6 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: create computers in openstack cloud
+  hosts: localhost
+  roles:
+    - openstack

@@ -1,23 +1,6 @@
 #!/usr/bin/env ansible-playbook
 ---
-- name: create computers in openstack cloud
-  hosts: localhost
-  roles:
-    - openstack
-
-- name: apply role samba-common
-  hosts: samba-common
-  serial: 50
-  roles:
-    - samba-common
-
-- name: apply role samba-dc
-  hosts: samba-dc
-  serial: 50
-  roles:
-    - samba-dc
-
-- name: apply role samba-traffic-runner
-  hosts: samba-traffic-runner
-  roles:
-    - samba-traffic-runner
+- include: openstack.yml
+- include: samba-common.yml
+- include: samba-dc.yml
+- include: samba-traffic-runner.yml

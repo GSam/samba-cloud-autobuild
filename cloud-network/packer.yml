@@ -1,0 +1,9 @@
+#!/usr/bin/env ansible-playbook
+---
+# to run this alone, you need to provide network id:
+# ./packer.yml -e OS_NETWORK_ID=849ab1e9-7ac5-4618-8801-e6176fbbcf30
+
+- name: create cloud image with packer
+  hosts: localhost
+  roles:
+    - packer

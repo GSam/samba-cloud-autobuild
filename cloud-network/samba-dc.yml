@@ -1,0 +1,11 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: apply role samba-dc
+  hosts: samba-dc
+  serial: 50
+  tasks:
+    - name: include role
+      include_role:
+        name: samba-dc
+      when:
+        - ENV_NAME in group_names
