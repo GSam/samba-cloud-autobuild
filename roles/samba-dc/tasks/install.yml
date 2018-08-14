@@ -23,14 +23,15 @@
   file:
     path: "{{ ansible_env[item] }}"
     state: absent
-  when: item in ansible_env
+  when:
+    - item in ansible_env
+    - samba_purge
   with_items:
     - CONFIGFILE
     - LOCKDIR
     - STATEDIR
     - CACHEDIR
     - PRIVATE_DIR
-  when: samba_purge
 
 - name: remove existing /etc/krb5.conf file
   become: yes
