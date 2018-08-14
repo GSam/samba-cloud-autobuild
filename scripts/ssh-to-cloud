@@ -7,6 +7,17 @@ if [[ "$machine" == "" ]]; then
    exit 1
 fi
 
+if [[ $SSH == '' ]]; then
+    SSH=ssh
+fi
+
+id=$2
+
+if [[ "$id" != "" ]]; then
+    SSH="$SSH -i $id"
+fi
+
+
 KNOWN_HOSTS=~/.known-hosts-on-catalyst-cloud/$machine
 CLOUD_DOT_FILES=~/cloud-dot-files
 
@@ -58,10 +69,10 @@ ip=${ip// }
 if [[ -d $CLOUD_DOT_FILES && ! -f $KNOWN_HOSTS ]]; then
     mkdir -p $(dirname $KNOWN_HOSTS)
     echo "copying $CLOUD_DOT_FILES/ contents to remote $ip:"
-    rsync -v -e "ssh -o 'UserKnownHostsFile $KNOWN_HOSTS' -o 'User $user'" -r "$CLOUD_DOT_FILES/" "$ip":
+    rsync -v -e "$SSH -o 'UserKnownHostsFile $KNOWN_HOSTS' -o 'User $user'" -r "$CLOUD_DOT_FILES/" "$ip":
 fi
 
-ssh -o "UserKnownHostsFile $KNOWN_HOSTS" -o "User $user" $ip
+$SSH -o "UserKnownHostsFile $KNOWN_HOSTS" -o "User $user" $ip
 
 
 
