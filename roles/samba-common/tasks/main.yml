@@ -76,6 +76,8 @@
   command: "./configure.developer"
   args:
     chdir: "{{ repo_root }}"
+  environment:
+    CC: "ccache gcc"
   when:
     - git_result.changed
   tags:
@@ -86,6 +88,8 @@
   command: "make -j"
   args:
     chdir: "{{ repo_root }}"
+  environment:
+    CC: "ccache gcc"
   when:
     - git_result.changed
   tags:
