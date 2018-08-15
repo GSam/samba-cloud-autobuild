@@ -43,7 +43,7 @@
       - supervisor
 
 - name: load samba dependencies package list
-  include_vars: "{{ playbook_dir }}/../package-lists/ubuntu"
+  include_vars: "{{package_list_file}}"
 
 - name: apt install samba deps
   become: yes
