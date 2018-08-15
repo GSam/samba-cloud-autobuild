@@ -55,7 +55,7 @@ ansible_python_interpreter: /usr/bin/env python3
 state: present
 
 # run packer build to build image
-run_packer_build: yes
+run_packer_build: no
 # use the packer image, you can skip packer build, use a existing image
 # to not use packer image, set this to empty
 PACKER_OUTPUT_IMAGE_NAME: "packer-{{OS_IMAGE_NAME}}"
