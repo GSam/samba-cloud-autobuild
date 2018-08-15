@@ -1,0 +1,31 @@
+{
+    "builders": [{
+        "type": "openstack",
+        "ssh_username": "ubuntu",
+        "source_image_name": "{{OS_IMAGE_NAME}}",
+        "image_name": "{{PACKER_OUTPUT_IMAGE_NAME}}",
+        "flavor": "c1.c1r1",
+        "security_groups": ["default"],
+        "floating_ip_pool": "public-net",
+        "networks": ["{{OS_NETWORK_ID}}"]
+    }],
+    "provisioners": [{
+        "type": "shell",
+        "inline_shebang": "/bin/bash -e",
+        "inline": [
+            "set -x",
+            "sudo apt-get update",
+            "sudo apt-get upgrade -yq",
+            "sudo DEBIAN_FRONTEND=noninteractive apt-get install -yq {{apt_install_packages}}",
+            "sudo ln --force --symbolic /usr/bin/ld.gold /usr/bin/ld",
+            "cd ~",
+            "git clone {{repo_url}}",
+            "cd samba",
+            "git fetch --all",
+            "export CC='ccache gcc'",
+            "./script/autobuild.py --restrict-tests=samba.tests.source --testbase=$HOME/autobuild",
+            "./configure.developer",
+            "make -j"
+        ]
+    }]
+}

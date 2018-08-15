@@ -1,0 +1,13 @@
+---
+ansible_user: ubuntu
+ansible_python_interpreter: /usr/bin/python3
+
+repo_url: https://gitlab.com/catalyst-samba/samba.git
+repo_branch: master
+
+OS_IMAGE_NAME: ubuntu-16.04-x86_64
+
+PACKER_OUTPUT_IMAGE_NAME: "packer-{{OS_IMAGE_NAME}}"
+
+# this must match the OS_IMAGE_NAME
+package_list_file: "{{ playbook_dir }}/../package-lists/ubuntu"

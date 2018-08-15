@@ -1,0 +1,18 @@
+---
+
+- name: load samba dependencies package list
+  include_vars: "{{package_list_file}}"
+
+- name: set fact for apt_install_packages
+  set_fact:
+    apt_install_packages: "{{packages|join(' ')}}"
+    template_dest: /tmp/samba-common.json
+
+- name: render packer config file
+  template:
+    src: templates/samba-common.json
+    dest: "{{template_dest}}"
+    validate: packer validate %s
+
+- name: packer build
+  command: packer build "{{template_dest}}"
