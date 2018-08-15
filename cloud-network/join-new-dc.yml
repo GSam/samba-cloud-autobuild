@@ -1,0 +1,27 @@
+#!/usr/bin/env ansible-playbook
+---
+# usage: ./join-new-dc.yml -e dc=dc100
+
+- name: create instance
+  hosts: localhost
+  tasks:
+    - name: include role openstack
+      include_role:
+        name: openstack
+      vars:
+        OS_SERVERS:
+          - name: "{{dc}}"
+
+- name: apply samba-common
+  hosts: "{{dc}}"
+  tasks:
+    - name: include role samba-common
+      include_role:
+        name: samba-common
+
+- name: apply samba-dc
+  hosts: "{{dc}}"
+  tasks:
+    - name: include role samba-dc
+      include_role:
+        name: samba-dc
