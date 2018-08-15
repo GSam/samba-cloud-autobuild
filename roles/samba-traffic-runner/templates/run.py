@@ -37,7 +37,7 @@ script/traffic_replay -U Administrator%{{samba_password}}  \
 -r {r} \
 -S {S} \
 --random-seed=1 \
--D 60 \
+-D 300 \
 --debuglevel 0 \
 {MODEL}  {{primary_dc_name}}.{{samba_realm}} \
 | tee {output}
