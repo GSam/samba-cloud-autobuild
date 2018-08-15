@@ -43,6 +43,22 @@
   include_tasks: tasks/mit-krb5.yml
   when: mit_krb5_enabled is defined and mit_krb5_enabled
 
+# should already be done, just for safe
+- name: config samba code
+  command: "./configure.developer"
+  args:
+    chdir: "{{ repo_root }}"
+  environment:
+    CC: "ccache gcc"
+
+# should already be done, just for safe
+- name: compile samba code
+  command: "make -j"
+  args:
+    chdir: "{{ repo_root }}"
+  environment:
+    CC: "ccache gcc"
+
 - name: make install samba
   become: yes
   command: "make install"
