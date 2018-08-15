@@ -10,6 +10,12 @@
   become: yes
   shell: "{{repo_root}}/bin/{{operation}}.sh"
 
+- name: apt install supervisor
+  become: yes
+  apt:
+    name: supervisor
+    state: latest
+
 - name: render supervisor conf for samba
   become: yes
   template:
