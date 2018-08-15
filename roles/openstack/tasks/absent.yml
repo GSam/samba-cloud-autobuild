@@ -1,10 +1,12 @@
 ---
 - name: delete servers
   os_server:
-    name: "{{item.name}}"
+    name: "{{hostvars[item].openstack.name}}"
     delete_fip: yes
     state: absent
-  with_items: "{{OS_SERVERS}}"
+  loop: "{{groups[ENV_NAME]}}"
+  when:
+    - ENV_NAME in groups
 
 - name: delete router
   os_router:
