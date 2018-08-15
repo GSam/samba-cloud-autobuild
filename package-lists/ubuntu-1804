@@ -18,6 +18,7 @@ packages:
  - gdb
  - git
  - htop
+ - tree
  - jed
  - krb5-user
  - libacl1-dev
