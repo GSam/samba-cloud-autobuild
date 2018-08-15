@@ -15,10 +15,6 @@ OS_FLAVOR_NAME: c1.c1r1
 
 OS_AUTO_FLOATING_IP: yes
 
-OS_SECURITY_GROUPS:
-  - default
-  - ad-domain-and-clients
-
 OS_META_GROUPS: ['openstack']
 # used when you create servers in batch
 OS_SERVER_PREFIX: 'server'
@@ -26,29 +22,28 @@ OS_SERVER_PREFIX: 'server'
 OS_KEYPAIR_NAME: catalyst_samba
 OS_PUBLIC_KEY_FILE: "{{ role_path }}/files/id_rsa_catalyst_samba.pub"
 
+OS_SECURITY_GROUP: domain
+
+OS_SECURITY_GROUPS:
+  - "{{OS_SECURITY_GROUP}}"
+
 security_groups:
-  ssh:
-    - protocol: tcp
+  domain:
+    - protocol: tcp  # tcp traffic in domain
+      remote_group: domain
+    - protocol: udp  # tcp traffic in domain
+      remote_group: domain
+    - protocol: icmp  # ping
+      remote_ip_prefix: 202.78.240.7/32
+    - protocol: tcp  # ssh
       port_range_min: 22
       port_range_max: 22
       remote_ip_prefix: 202.78.240.7/32
-  ping:
-    - protocol: icmp
-      remote_ip_prefix: 202.78.240.7/32
-  domain:
-    - protocol: tcp
-      remote_group: domain
-    - protocol: udp
-      remote_group: domain
-    - protocol: icmp
-      remote_group: domain
-  winrm:
-    - protocol: tcp
+    - protocol: tcp  # winrm
       port_range_min: 5985
       port_range_max: 5986
       remote_ip_prefix: 202.78.240.7/32
-  rdp:
-    - protocol: tcp
+    - protocol: tcp  # rdp
       port_range_min: 3389
       port_range_max: 3389
       remote_ip_prefix: 202.78.240.7/32
@@ -58,3 +53,9 @@ ansible_python_interpreter: /usr/bin/env python3
 
 # present or absent
 state: present
+
+# run packer build to build image
+run_packer_build: yes
+# use the packer image, you can skip packer build, use a existing image
+# to not use packer image, set this to empty
+PACKER_OUTPUT_IMAGE_NAME: "packer-{{OS_IMAGE_NAME}}"
