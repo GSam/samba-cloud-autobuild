@@ -1,6 +1,7 @@
 # cloud-network
 
 This ansible project aims to:
+- build a image with packer
 - create a network in a cloud, e.g.: openstack
 - create required number of domain controllers
 - provision first dc, and join the other ones
