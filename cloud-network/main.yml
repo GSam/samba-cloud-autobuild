@@ -1,6 +1,6 @@
 #!/usr/bin/env ansible-playbook
 ---
-- include: openstack.yml
-- include: samba-common.yml
-- include: samba-dc.yml
-- include: samba-traffic-runner.yml
+- import_playbook: openstack.yml
+- import_playbook: samba-common.yml
+- import_playbook: samba-dc.yml
+- import_playbook: samba-traffic-runner.yml
