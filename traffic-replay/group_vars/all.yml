@@ -8,6 +8,7 @@ repo_root: "{{ ansible_env.HOME }}/samba"
 
 samba_realm: 'samdom.example.com'
 samba_domain: 'samdom'
+samba_username: 'Administrator'
 samba_password: 'Password01@'
 
 ENV_NAME: traffic-replay
