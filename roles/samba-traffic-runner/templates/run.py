@@ -30,7 +30,7 @@ r_RANGE = [1, 2, 5]
 
 
 CMD = """
-script/traffic_replay -U Administrator%{{samba_password}}  \
+script/traffic_replay -U {{samba_username}}%{{samba_password}}  \
 --realm {{samba_realm}} \
 --workgroup {{samba_domain|upper}} \
 --fixed-password iegh1haevoofoo3looT9  \
@@ -45,7 +45,7 @@ script/traffic_replay -U Administrator%{{samba_password}}  \
 
 
 GENERATE_CMD = """
-script/traffic_replay -d 5 -U Administrator%{{samba_password}}  \
+script/traffic_replay -d 5 -U {{samba_username}}%{{samba_password}}  \
 --realm {{samba_realm}} \
 --workgroup {{samba_domain|upper}} \
 --fixed-password iegh1haevoofoo3looT9  \
