@@ -105,5 +105,4 @@
   with_items:
     - gitconfig
     - vimrc
-    - bash_profile
   tags: dotfiles
