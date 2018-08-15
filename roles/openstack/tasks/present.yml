@@ -50,13 +50,12 @@
     OS_IMAGE_NAME: "{{PACKER_OUTPUT_IMAGE_NAME}}"
   when:
     - PACKER_OUTPUT_IMAGE_NAME is defined
-    - PACKER_OUTPUT_IMAGE_NAME|bool
   tags:
     - PACKER_OUTPUT_IMAGE_NAME
 
-- debug: var=OS_IMAGE_NAME
-  tags:
-    - PACKER_OUTPUT_IMAGE_NAME
+- name: print OS_IMAGE_NAME in use
+  debug:
+    var: OS_IMAGE_NAME
 
 - name: create server instances via OS_SERVER_ITEMS
   os_server: "{{item}}"
@@ -99,11 +98,14 @@
   retries: 100
   loop: "{{os_server_loop.results}}"
   register: os_server_jobs
+  when: OS_SERVERS is defined
 
 - name: refresh in-memory openstack dynamic inventory
   meta: refresh_inventory
+  when: OS_SERVERS is defined
 
 - name: refresh cached openstack dynamic inventory
   command: "{{item}} --refresh --list"
   with_items:
     -  "{{lookup('config', 'DEFAULT_HOST_LIST')}}"
+  when: OS_SERVERS is defined
