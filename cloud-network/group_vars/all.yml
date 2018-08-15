@@ -7,7 +7,7 @@ ansible_python_interpreter: /usr/bin/env python3
 
 
 repo_url: https://gitlab.com/catalyst-samba/samba.git
-repo_branch: traffic-replay
+repo_branch: master
 repo_root: "{{ansible_env.HOME}}/samba"
 
 
@@ -20,7 +20,7 @@ dns_domain_name: "{{samba_realm|lower}}"
 
 ENV_NAME: indeed
 
-num_dcs: 33
+num_dcs: 2
 num_users: 5000
 num_groups: 750
 num_groups_per_user: 15
@@ -30,6 +30,11 @@ num_users_in_largest_group: 3000
 OS_AUTO_FLOATING_IP: yes
 OS_FLAVOR_NAME: c1.c1r1
 OS_IMAGE_NAME: ubuntu-16.04-x86_64
+
+PACKER_OUTPUT_IMAGE_NAME: "packer-{{OS_IMAGE_NAME}}"
+
+# must match above image
+package_list_file: "{{ playbook_dir }}/../package-lists/ubuntu"
 
 OS_NAMESERVERS: [202.78.247.197, 202.78.247.198, 202.78.247.199]
 
@@ -54,6 +59,8 @@ OS_SERVERS_MISC:
 OS_SERVERS_DCS: "{{range(num_dcs)|list}}"
 
 OS_SERVERS: "{{OS_SERVERS_DCS + OS_SERVERS_MISC}}"
+
+run_packer_build: no
 
   # - name: windows0
     # image: windows-server-2016-x86_64
