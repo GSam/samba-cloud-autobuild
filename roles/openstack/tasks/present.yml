@@ -11,6 +11,7 @@
 - name: create network {{ OS_NETWORK_NAME }}
   os_network:
     name: "{{ OS_NETWORK_NAME }}"
+  register: os_network_result
 
 - name: create subnet {{ OS_SUBNET_NAME }} with cidr {{ OS_SUBNET_CIDR }}
   os_subnet:
@@ -18,7 +19,6 @@
     network_name: "{{ OS_NETWORK_NAME }}"
     cidr: "{{ OS_SUBNET_CIDR }}"
     dns_nameservers: "{{ OS_NAMESERVERS }}"
-
 
 - name: create public-net router {{ OS_ROUTER_NAME }}
   os_router:
@@ -37,6 +37,22 @@
   when: security_groups is defined
   tags:
     - security_groups
+
+- name: include packer role if enabled
+  include_role:
+    name: packer
+  vars:
+    OS_NETWORK_ID: "{{os_network_result.network.id}}"
+  when: run_packer_build
+
+- name: set fact for OS_IMAGE_NAME if packer enabeld
+  set_fact:
+    OS_IMAGE_NAME: "{{PACKER_OUTPUT_IMAGE_NAME}}"
+  when:
+    - PACKER_OUTPUT_IMAGE_NAME is defined
+    - PACKER_OUTPUT_IMAGE_NAME|bool
+
+- debug: var=OS_IMAGE_NAME
 
 - name: create server instances via OS_SERVER_ITEMS
   os_server: "{{item}}"
