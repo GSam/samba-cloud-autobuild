@@ -21,3 +21,9 @@ email_recipient: "samba-dev@catalyst.net.nz"
 run_generate: no
 run_replay: yes
 run_summary: yes
+
+num_dcs: 2
+num_users: 6
+num_groups: 2
+num_groups_per_user: 2
+num_users_in_largest_group: 2
