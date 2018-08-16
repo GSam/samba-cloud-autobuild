@@ -13,5 +13,3 @@ Refer to tests/test.yml
 
 ## TODO
 network id is hardcoded.
-
-
