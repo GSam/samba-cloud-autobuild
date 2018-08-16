@@ -6,7 +6,7 @@
         "image_name": "{{PACKER_OUTPUT_IMAGE_NAME}}",
         "image_visibility": "public",
         "flavor": "c1.c1r1",
-        "security_groups": ["default"],
+        "security_groups": ["{{OS_SECURITY_GROUP}}"],
         "floating_ip_pool": "public-net",
         "networks": ["{{OS_NETWORK_ID}}"]
     }],
