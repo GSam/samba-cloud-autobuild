@@ -3,18 +3,24 @@
 - name: create servers with openstack role
   hosts: "localhost"
   gather_facts: no
-  roles:
-    - {role: openstack, state: present}
+  tasks:
+    - name: absent instances
+      include_role:
+        name: openstack
+      vars:
+        state: present
 
 
 - name: provision all servers with samba-common role in parallel
   hosts: samba-common
+  gather_facts: yes
   roles:
     - samba-common
 
 
 - name: provision samba-dc with role
   hosts: samba-dc
+  gather_facts: yes
   roles:
     - samba-dc
 
@@ -22,24 +28,6 @@
 - name: setup server as samba-traffic-runner
   hosts: samba-traffic-runner
   gather_facts: yes
-  pre_tasks:
-
-    - name: check either a samba-dc or runner_nameserver is specified
-      fail:
-        msg: neither a samba-dc nor runner_nameserver are specified
-      when:
-        - runner_nameserver is not defined
-        - groups['samba-dc']|length == 0
-
-    - name: get samba-dc ip as nameserver if not specified
-      set_fact:
-        runner_nameserver: "{{hostvars[groups['samba-dc'][0]]['openstack']['private_v4']}}"
-      when: runner_nameserver is not defined
-
-    - name: print runner_nameserver
-      debug:
-        msg: "samba-traffic-runner nameserver is {{runner_nameserver}}"
-
   roles:
     - samba-traffic-runner
 
@@ -47,5 +35,10 @@
 - name: delete env with openstack role
   hosts: "localhost"
   gather_facts: no
-  roles:
-    - {role: openstack, state: absent}
+  tasks:
+    - name: absent instances
+      include_role:
+        name: openstack
+      vars:
+        state: absent
+      when: delete_env
