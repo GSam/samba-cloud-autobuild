@@ -1,0 +1,57 @@
+---
+
+- name: set fact for primary_dc_id
+  set_fact:
+    primary_dc_id: "{{groups[primary_dc_name][0]}}"
+
+- name: set fact for pdc_ip
+  set_fact:
+    primary_dc_ip: "{{hostvars[primary_dc_id].openstack.private_v4}}"
+
+- name: get primary dc ip as runner_nameserver if not specified
+  set_fact:
+    runner_nameserver: "{{primary_dc_ip}}"
+  when: runner_nameserver is not defined
+
+- name: render /etc/resolv.conf
+  become: yes
+  copy:
+    dest: /etc/resolv.conf
+    content: |
+      nameserver {{runner_nameserver}}
+      search {{samba_realm}}
+  tags: resolv
+
+- name: copy model file to runner and make readonly
+  copy:
+    src: "files/{{model_file_name}}"
+    dest: "{{ansible_env.HOME}}/samba/{{model_file_name}}"
+    mode: 0444
+  tags: model
+
+- name: render templates
+  template:
+    src: templates/{{item}}
+    dest: "{{repo_root}}/{{item}}"
+    mode: 0755
+  with_items:
+    - run.py
+  tags: templates
+
+- name: trigger run.py
+  command: python run.py --generate
+  args:
+    chdir: "{{repo_root}}"
+  when: run_generate is defined and run_generate
+  tags: run
+
+- name: trigger run.py --replay
+  command: python run.py --replay
+  args:
+    chdir: "{{repo_root}}"
+  when: run_replay is defined and run_replay
+  tags: run
+
+- name: include tasks/summary.yml if enabled
+  include_tasks: tasks/summary.yml
+  when: run_summary is defined and run_summary
