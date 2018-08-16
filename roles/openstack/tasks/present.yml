@@ -46,17 +46,17 @@
   when:
     - PACKER_OUTPUT_IMAGE_NAME is defined
 
-- name: init packer_image_is_null to no
+- name: init packer_image_exist to yes
   set_fact:
-    packer_image_is_null: no
+    packer_image_exist: yes
 
 - name: set image_is_null to yes on conditions
   set_fact:
-    packer_image_is_null: yes
+    packer_image_exist: no
   when:
     - PACKER_OUTPUT_IMAGE_NAME is defined
-    - not os_image_facts_result.failed # even not exist, task will not fail
-    - not os_image_facts_result.ansible_facts.openstack_image|bool
+    - not os_image_facts_result.failed
+    - '"checksum" not in os_image_facts_result.ansible_facts.openstack_image'
 
 - name: include packer role if enabled
   include_role:
@@ -64,7 +64,7 @@
   vars:
     OS_NETWORK_ID: "{{os_network_result.network.id}}"
   when:
-    - run_packer_build or packer_image_is_null
+    - run_packer_build or not packer_image_exist
 
 - name: set fact for OS_IMAGE_NAME if packer enabeld
   set_fact:
