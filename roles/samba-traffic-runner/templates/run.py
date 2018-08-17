@@ -101,15 +101,44 @@ EXTRACTORS = {
     # Failed operations:              0 (0.000 per second)
 }
 
+# stat line example:
+# cldap             3  searchRequest                                  1            0     0.240764     0.240764     0.240764     0.000000     0.240764
+STAT_LINE_PATTERN = r"""^
+\w+\s+         # Protocol
+\d+\s+         # Op Code
+\w+\s+         # Description
+\d+\s+         # Count
+\d+\s+         # Failed
+\d+\.\d+\s+    # Mean
+\d+\.\d+\s+    # Median
+(\d+\.\d+\s+)  # 95%
+\d+\.\d+\s+    # Range
+\d+\.\d+$      # Max
+"""
+
+STAT_LINE_FLAGS = re.ASCII | re.MULTILINE | re.VERBOSE
+
+STAT_LINE_RE = re.compile(STAT_LINE_PATTERN, flags=STAT_LINE_FLAGS)
+
+
+def is_latency_acceptable(result_text):
+    """Find 95% column, ignore file data if any one > 1.0 s"""
+    for number in STAT_LINE_RE.findall(result_text):
+        number = float(number)
+        if number >= 1.0:
+            return False
+    return True
+
 
 def extract_number(filepath, extractor='successful-operations-per-second'):
     if os.path.isfile(filepath):
         with open(filepath, 'r') as f:
             text = f.read()
-            pattern = EXTRACTORS[extractor]
-            m = re.search(pattern, text)
-            if m:
-                return float(m.group(1))
+            if is_acceptable(text):
+                pattern = EXTRACTORS[extractor]
+                m = re.search(pattern, text)
+                if m:
+                    return float(m.group(1))
     return 0.0
 
 
