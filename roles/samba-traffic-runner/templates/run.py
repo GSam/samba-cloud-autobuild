@@ -132,13 +132,13 @@ def is_latency_acceptable(result_text):
 
 def extract_number(filepath, extractor='successful-operations-per-second'):
     if os.path.isfile(filepath):
-        with open(filepath, 'r') as f:
-            text = f.read()
-            if is_acceptable(text):
+        with open(filepath, 'r') as text_file:
+            text = text_file.read()
+            if is_latency_acceptable(text):
                 pattern = EXTRACTORS[extractor]
-                m = re.search(pattern, text)
-                if m:
-                    return float(m.group(1))
+                match = re.search(pattern, text)
+                if match:
+                    return float(match.group(1))
     return 0.0
 
 
