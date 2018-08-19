@@ -1,0 +1,13 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- name: delete env with openstack role
+  hosts: "localhost"
+  gather_facts: no
+  tasks:
+    - name: absent instances
+      include_role:
+        name: openstack
+      vars:
+        state: absent
+      when: delete_env

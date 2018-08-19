@@ -1,0 +1,7 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: provision samba-dc with role
+  hosts: samba-dc
+  gather_facts: yes
+  roles:
+    - samba-dc

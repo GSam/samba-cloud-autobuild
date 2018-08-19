@@ -1,0 +1,11 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: create servers with openstack role
+  hosts: "localhost"
+  gather_facts: no
+  tasks:
+    - name: absent instances
+      include_role:
+        name: openstack
+      vars:
+        state: present

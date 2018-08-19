@@ -1,0 +1,7 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: provision all servers with samba-common role in parallel
+  hosts: samba-common
+  gather_facts: yes
+  roles:
+    - samba-common

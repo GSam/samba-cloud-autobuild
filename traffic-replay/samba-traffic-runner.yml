@@ -1,0 +1,8 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- name: setup server as samba-traffic-runner
+  hosts: samba-traffic-runner
+  gather_facts: yes
+  roles:
+    - samba-traffic-runner

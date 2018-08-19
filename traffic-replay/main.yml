@@ -1,44 +1,8 @@
 #!/usr/bin/env ansible-playbook
 ---
-- name: create servers with openstack role
-  hosts: "localhost"
-  gather_facts: no
-  tasks:
-    - name: absent instances
-      include_role:
-        name: openstack
-      vars:
-        state: present
 
-
-- name: provision all servers with samba-common role in parallel
-  hosts: samba-common
-  gather_facts: yes
-  roles:
-    - samba-common
-
-
-- name: provision samba-dc with role
-  hosts: samba-dc
-  gather_facts: yes
-  roles:
-    - samba-dc
-
-
-- name: setup server as samba-traffic-runner
-  hosts: samba-traffic-runner
-  gather_facts: yes
-  roles:
-    - samba-traffic-runner
-
-
-- name: delete env with openstack role
-  hosts: "localhost"
-  gather_facts: no
-  tasks:
-    - name: absent instances
-      include_role:
-        name: openstack
-      vars:
-        state: absent
-      when: delete_env
+- import_playbook: openstack-present.yml
+- import_playbook: samba-common.yml
+- import_playbook: samba-dc.yml
+- import_playbook: samba-traffic-runner.yml
+- import_playbook: openstack-absent.yml
