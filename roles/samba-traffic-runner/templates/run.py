@@ -2,6 +2,7 @@
 from __future__ import print_function, unicode_literals
 
 import os
+import io
 import re
 import sys
 from os.path import dirname, abspath, join
@@ -76,7 +77,9 @@ def replay():
         for r in r_RANGE:
             output = get_output_path(r, S)
             if os.path.exists(output):
-                if 'Total conversations' in open(output, 'r').read():
+                with io.open(output, mode='rt', encoding='utf8') as text_file:
+                    text = text_file.read()
+                if 'Total conversations' in text:
                     print('skip {}'.format(output))
                     continue
                 else:
