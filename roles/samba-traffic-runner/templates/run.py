@@ -38,6 +38,7 @@ time script/traffic_replay -U {{samba_username}}%{{samba_password}}  \
 -r {r} \
 -S {S} \
 --random-seed=1 \
+--preserve-tempdir \
 -D 300 \
 --debuglevel 0 \
 {MODEL}  {{primary_dc_name}}.{{samba_realm}} \
