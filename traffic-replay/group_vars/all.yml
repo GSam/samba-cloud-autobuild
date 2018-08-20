@@ -2,7 +2,7 @@
 ansible_python_interpreter: /usr/bin/env python3
 ansible_user: ubuntu
 
-repo_url: https://gitlab.com/samba-team/samba.git
+repo_url: https://gitlab.com/catalyst-samba/samba.git
 repo_branch: master
 repo_root: "{{ ansible_env.HOME }}/samba"
 
