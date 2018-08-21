@@ -67,7 +67,9 @@
     domain_admin_password: "{{ samba_password }}"
     state: domain
   register: win_domain_membership_task
-  when: '"windows-dm" in group_names'
+  when:
+    - '"windows-dc" in group_names'
+    - 'primary_dc_name not in group_names'
   tags:
     - win_domain_membership
 
@@ -86,7 +88,9 @@
     state: domain_controller
     log_path: C:\ansible_win_domain_controller.txt
   register: win_domain_controller_task
-  when: '"windows-dc" in group_names'
+  when:
+    - '"windows-dc" in group_names'
+    - 'primary_dc_name in group_names'
   tags:
     - win_domain_controller
 
