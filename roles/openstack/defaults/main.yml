@@ -53,6 +53,9 @@ ansible_python_interpreter: /usr/bin/env python3
 
 # present or absent
 state: present
+# when state is absent, do we delete network, subnet, and router
+# currently os_router is broken, so we will set this to no for now
+delete_network: no
 
 # run packer build to build image
 run_packer_build: no

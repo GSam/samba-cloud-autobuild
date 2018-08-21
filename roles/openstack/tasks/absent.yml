@@ -12,13 +12,16 @@
   os_router:
     name: "{{ OS_ROUTER_NAME }}"
     state: absent
+  when: delete_network
 
 - name: delete subnet
   os_subnet:
     name: "{{ OS_SUBNET_NAME }}"
     state: absent
+  when: delete_network
 
 - name: delete network
   os_network:
     name: "{{ OS_NETWORK_NAME }}"
     state: absent
+  when: delete_network
