@@ -62,5 +62,8 @@
       - "{{tar_dest}}"
   delegate_to: localhost
   ignore_errors: yes
+  when:
+    - lookup('env', 'EMAIL_USERNAME') != ''
+    - lookup('env', 'EMAIL_PASSWORD') != ''
   tags:
     - send-email
