@@ -43,7 +43,7 @@ time script/traffic_replay -U {{samba_username}}%{{samba_password}}  \
 -D 300 \
 --debuglevel 0 \
 {MODEL}  {{primary_dc_name}}.{{samba_realm}} \
-| tee {output}
+> {output}
 """
 
 
