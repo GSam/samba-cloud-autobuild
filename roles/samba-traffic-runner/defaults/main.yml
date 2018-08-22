@@ -21,6 +21,8 @@ email_recipient: "samba-dev@catalyst.net.nz"
 run_generate: no
 run_replay: yes
 run_summary: yes
+# cleanup stats file and run every thing again
+run_cleanup: no
 
 num_dcs: 2
 num_users: 6

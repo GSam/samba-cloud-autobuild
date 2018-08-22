@@ -9,6 +9,7 @@ from os.path import dirname, abspath, join
 import time
 import argparse
 import tarfile
+import shutil
 from datetime import datetime
 
 from io import StringIO
@@ -223,6 +224,10 @@ def main():
         help='run traffic replay')
 
     parser.add_argument(
+        '-c', '--cleanup', action='store_true',
+        help='clean up stats dir')
+
+    parser.add_argument(
         '-s', '--summary', action='store_true',
         help='get traffic summary')
 
@@ -237,6 +242,13 @@ def main():
     args = parser.parse_args()
 
     has_task = False
+
+    if args.cleanup:
+        print('removing stats dir...', file=sys.stderr)
+        shutil.rmtree(STATS_DIR)
+        has_task = True
+    os.system('mkdir -p {}'.format(STATS_DIR))
+
     if args.all or args.replay:
         replay()
         has_task = True

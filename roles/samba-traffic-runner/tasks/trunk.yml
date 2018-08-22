@@ -39,6 +39,13 @@
   tags: templates
 
 - name: trigger run.py
+  command: python run.py --cleanup
+  args:
+    chdir: "{{repo_root}}"
+  when: run_cleanup is defined and run_cleanup
+  tags: run
+
+- name: trigger run.py
   command: python run.py --generate
   args:
     chdir: "{{repo_root}}"
