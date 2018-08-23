@@ -27,7 +27,7 @@ primary_dc_name: samba-dc-0
 
 SAMBA_DC:
   name: samba-dc-0
-  flavor: c1.c2r4
+  flavor: c1.c1r1
   groups:
     - samba-common
     - samba-dc
