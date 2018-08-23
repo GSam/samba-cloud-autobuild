@@ -1,6 +1,17 @@
 #!/bin/sh
 
 tag="$1"
+
+if [ "$tag" == "" ]; then
+    tag="$(git config --get user.name) <$(git config --get user.email)>"
+    if [ "$tag" == " <>" ]; then
+        echo "USAGE: $0 'YOUR NAME <your email>' [commit]"
+        echo "if omitted, commit defaults to origin/master"
+        exit 1
+    fi
+fi
+
+
 if [ "$2" != "" ]; then
     start="$2"
 else
