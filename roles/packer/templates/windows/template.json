@@ -1,0 +1,24 @@
+{
+    "builders": [{
+        "type": "openstack",
+        "source_image_name": "{{OS_IMAGE_NAME}}",
+        "image_name": "{{PACKER_OUTPUT_IMAGE_NAME}}",
+        "flavor": "{{OS_FLAVOR_NAME}}",
+        "security_groups": ["{{OS_SECURITY_GROUP}}"],
+        "floating_ip_pool": "public-net",
+        "networks": ["{{OS_NETWORK_ID}}"],
+        "communicator": "winrm",
+        "winrm_username": "{{WINDOWS_USERNAME}}",
+        "winrm_password": "{{WINDOWS_PASSWORD}}",
+        "user_data_file": "{{PACKER_TMP_DIR}}/userdata.txt"
+    }],
+    "provisioners": [
+        {
+            "type": "powershell",
+            "script": "{{PACKER_TMP_DIR}}/provision.txt"
+        },
+        {
+            "type": "windows-restart"
+        }
+    ]
+}

@@ -1,15 +1,7 @@
 # Ansible Role: Packer
 
-## What
+## What does this role do?
 
-This role create a image with:
-
-- all samba dependencies installed
-- samba code cloned, compiled
-
-## How
-
-Refer to tests/test.yml
-
-## TODO
-network id is hardcoded.
+- download and install packer if not available
+- render packer template and validate
+- run packer build with rendered template

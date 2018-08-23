@@ -1,0 +1,11 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: debug
+  hosts: localhost
+  vars_prompt:
+    name: OS_NETWORK_ID
+    prompt: "OS_NETWORK_ID"
+  vars_files:
+    - "{{ playbook_dir }}/../../../package-lists/ubuntu"
+  roles:
+    - name: packer

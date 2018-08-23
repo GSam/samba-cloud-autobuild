@@ -1,0 +1,10 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: debug
+  hosts: localhost
+  vars_prompt:
+    name: OS_NETWORK_ID
+    prompt: "OS_NETWORK_ID"
+  roles:
+    - name: packer
+      OS_IMAGE_NAME: windows-server-2012r2-x86_64-live-snapshot

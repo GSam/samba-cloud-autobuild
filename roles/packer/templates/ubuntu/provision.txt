@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -x
+sudo apt-get update
+sudo apt-get upgrade -yq
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -yq {{packages|join(' ')}}
+sudo ln --force --symbolic /usr/bin/ld.gold /usr/bin/ld
+cd $HOME
+git clone {{repo_url}}
+cd samba
+git fetch --all
+export CC='ccache gcc'
+./script/autobuild.py --restrict-tests=samba.tests.source --testbase=$HOME/autobuild
+./configure.developer
+make -j

@@ -6,9 +6,11 @@ repo_url: https://gitlab.com/catalyst-samba/samba.git
 repo_branch: master
 
 OS_IMAGE_NAME: ubuntu-16.04-x86_64
+OS_FLAVOR_NAME: c1.c2r2
 OS_SECURITY_GROUP: domain
 
 PACKER_OUTPUT_IMAGE_NAME: "packer-{{OS_IMAGE_NAME}}"
+PACKER_TMP_DIR: /tmp
 
-# this must match the OS_IMAGE_NAME
-package_list_file: "{{ playbook_dir }}/../package-lists/ubuntu"
+WINDOWS_USERNAME: Administrator
+WINDOWS_PASSWORD: Password01@

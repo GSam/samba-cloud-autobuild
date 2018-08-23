@@ -1,45 +1,52 @@
 ---
-
 - name: which packer
-  shell: which packer
-  ignore_errors: yes
-  register: which_packer_result
+  command: which packer
+  changed_when: false
+  failed_when: false
+  register: which_result
 
-- name: download packer if not exist
-  get_url:
-    url: https://releases.hashicorp.com/packer/1.2.5/packer_1.2.5_linux_amd64.zip
-    dest: /tmp/packer_1.2.5_linux_amd64.zip
-    checksum: "sha256:bc58aa3f3db380b76776e35f69662b49f3cf15cf80420fc81a15ce971430824c"
-  when:
-    - which_packer_result.failed
-
-- name: unarchive packer zip to bin path
+- name: download and install packer
   become: yes
   unarchive:
-    src: /tmp/packer_1.2.5_linux_amd64.zip
-    dest: /usr/local/bin
+    src: https://releases.hashicorp.com/packer/1.2.5/packer_1.2.5_linux_amd64.zip
+    dest: /usr/local/bin/
     mode: 0555
     remote_src: yes
-  when:
-    - which_packer_result.failed
+  when: which_result.rc != 0
 
-- name: load samba dependencies package list
-  include_vars: "{{package_list_file}}"
+- name: set fact for platform
+  set_fact:
+    platform: 'ubuntu'
+  when: '"ubuntu" in OS_IMAGE_NAME|lower'
 
-- name: create temp file for packer template
-  tempfile:
-    state: file
-    prefix: "ansible-packer-"
-    suffix: ".json"
-  register: tempfile_task
+- name: set fact for platform
+  set_fact:
+    platform: 'windows'
+  when: '"windows" in OS_IMAGE_NAME|lower'
 
-- name: render packer config file
-  template:
-    src: templates/template.json
-    dest: "{{tempfile_task.path}}"
-    validate: packer validate %s
-  vars:
-    apt_install_packages: "{{packages|join(' ')}}"
+- name: render files and build image for {{platform}}
+  block:
 
-- name: packer build
-  command: packer build "{{tempfile_task.path}}"
+    - name: create temp dir for packer
+      tempfile:
+        prefix: ansible-packer-{{platform}}-
+        state: directory
+      register: tempfile_task
+
+    - name: render templates for packer
+      template:
+        src: "{{role_path}}/templates/{{platform}}/{{item}}"
+        dest: "{{tempfile_task.path}}/{{item}}"
+        force: yes
+      vars:
+        PACKER_TMP_DIR: "{{tempfile_task.path}}"
+      loop:
+        - userdata.txt
+        - provision.txt
+        - template.json
+
+    - name: validate rendered packer template
+      command: "packer validate {{tempfile_task.path}}/template.json"
+
+    - name: packer build
+      command: "packer build {{tempfile_task.path}}/template.json"
