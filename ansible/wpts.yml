@@ -1,3 +1,4 @@
+#!/usr/bin/env ansible-playbook
 ---
 
 - import_playbook: site.yml

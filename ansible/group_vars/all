@@ -6,6 +6,8 @@
 # Official Ubuntu image has no Python2
 ansible_python_interpreter: /usr/bin/python3
 
+keypair_name: catalyst_samba
+
 ## Remote user
 remote_user: ubuntu
 ## Define how many sites to create
