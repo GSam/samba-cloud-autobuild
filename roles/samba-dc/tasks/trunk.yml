@@ -78,7 +78,7 @@
 - name: render /etc/resolv.conf
   become: yes
   vars:
-    primary_dc_ip: "{{hostvars[groups[primary_dc_name][0]].openstack.private_v4}}"
+    primary_dc_ip: "{{hostvars[primary_dc_name].openstack.private_v4}}"
   copy:
     dest: /etc/resolv.conf
     content: |

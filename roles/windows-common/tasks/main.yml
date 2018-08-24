@@ -24,13 +24,9 @@
   tags:
     - chocolatey
 
-- name: set fact for primary_dc_id
-  set_fact:
-    primary_dc_id: "{{groups[primary_dc_name][0]}}"
-
 - name: set fact for primary_dc_ip
   set_fact:
-    primary_dc_ip: "{{hostvars[primary_dc_id].openstack.private_v4}}"
+    primary_dc_ip: "{{hostvars[primary_dc_name].openstack.private_v4}}"
 
 - name: config the DNS client on Windows network adapters
   win_dns_client:
