@@ -45,6 +45,7 @@
 - name: install features for windows-dc
   win_feature:
     name:
+      - Net-Framework-Core
       - AD-Domain-Services
     include_sub_features: yes
     include_management_tools: yes
