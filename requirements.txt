@@ -1,0 +1,6 @@
+pip
+ansible==2.5.5
+shade==1.28.0
+pywinrm
+pexpect
+
