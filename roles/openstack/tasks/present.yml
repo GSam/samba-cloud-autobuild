@@ -58,11 +58,17 @@
     - not os_image_facts_result.failed
     - '"checksum" not in os_image_facts_result.ansible_facts.openstack_image'
 
+- name: load samba dependencies package list
+  include_vars: "{{package_list_file}}"
+  when:
+    - run_packer_build or not packer_image_exist
+
 - name: include packer role if enabled
   include_role:
     name: packer
   vars:
     OS_NETWORK_ID: "{{os_network_result.network.id}}"
+    apt_install_packages: "{{packages|join(' ')}}"
   when:
     - run_packer_build or not packer_image_exist
 
