@@ -13,7 +13,6 @@ fi
   --adminpass='{{ samba_password }}' \
   --krbtgtpass='{{ samba_password }}' \
   --machinepass='{{ samba_password }}' \
-  --ldapadminpass='{{ samba_password }}' \
   --dnspass='{{ samba_password }}' \
   --option='dns forwarder={{ nameservers.0 }}' \
   --option='kccsrv:samba_kcc={{ use_samba_kcc }}' \
