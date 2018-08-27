@@ -33,7 +33,7 @@
   vars:
     name: "{{item.key}}"
     rules: "{{item.value}}"
-  loop: "{{security_groups|dict2items}}"
+  with_dict: "{{security_groups}}"
   when: security_groups is defined
   tags:
     - security_groups
