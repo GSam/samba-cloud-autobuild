@@ -1,0 +1,7 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- name: use openstack role to create network for packer
+  hosts: localhost
+  roles:
+    - openstack

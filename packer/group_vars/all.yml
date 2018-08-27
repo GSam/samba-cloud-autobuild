@@ -1,0 +1,8 @@
+---
+
+ENV_NAME: packer
+
+# we only need network
+OS_SERVERS: []
+
+OS_KEYPAIR_NAME: catalyst_samba
