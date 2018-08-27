@@ -15,6 +15,8 @@ OS_FLAVOR_NAME: c1.c1r1
 OS_USERDATA_FILE: "{{role_path}}/files/userdata.sh"
 OS_AUTO_FLOATING_IP: yes
 
+package_list_file: "{{role_path}}/../../package-lists/ubuntu"
+
 OS_META_GROUPS: ['openstack']
 # used when you create servers in batch
 OS_SERVER_PREFIX: 'server'

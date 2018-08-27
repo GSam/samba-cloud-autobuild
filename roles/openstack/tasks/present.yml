@@ -13,6 +13,10 @@
     name: "{{ OS_NETWORK_NAME }}"
   register: os_network_result
 
+- name: set fact for OS_NETWORK_ID which may be used by packer
+  set_fact:
+    OS_NETWORK_ID: "{{os_network_result.network.id}}"
+
 - name: create subnet {{ OS_SUBNET_NAME }} with cidr {{ OS_SUBNET_CIDR }}
   os_subnet:
     name: "{{ OS_SUBNET_NAME }}"
@@ -68,9 +72,6 @@
 - name: include packer role if enabled
   include_role:
     name: packer
-  vars:
-    OS_NETWORK_ID: "{{os_network_result.network.id}}"
-    apt_install_packages: "{{packages|join(' ')}}"
   when:
     - OS_SERVERS is defined
     - OS_SERVERS|length > 0
@@ -117,7 +118,9 @@
   loop_control:
     index_var: index
   register: os_server_loop
-  when: OS_SERVERS is defined
+  when:
+    - OS_SERVERS is defined
+    - OS_SERVERS|length > 0
 
 - name: wait for instance creation to be complete
   async_status:
@@ -127,14 +130,20 @@
   retries: 100
   loop: "{{os_server_loop.results}}"
   register: os_server_jobs
-  when: OS_SERVERS is defined
+  when:
+    - OS_SERVERS is defined
+    - OS_SERVERS|length > 0
 
 - name: refresh in-memory openstack dynamic inventory
   meta: refresh_inventory
-  when: OS_SERVERS is defined
+  when:
+    - OS_SERVERS is defined
+    - OS_SERVERS|length > 0
 
 - name: refresh cached openstack dynamic inventory
   command: "{{item}} --refresh --list"
   with_items:
     -  "{{lookup('config', 'DEFAULT_HOST_LIST')}}"
-  when: OS_SERVERS is defined
+  when:
+    - OS_SERVERS is defined
+    - OS_SERVERS|length > 0
