@@ -4,7 +4,6 @@
         "ssh_username": "ubuntu",
         "source_image_name": "{{OS_IMAGE_NAME}}",
         "image_name": "{{PACKER_OUTPUT_IMAGE_NAME}}",
-        "image_visibility": "public",
         "flavor": "c1.c1r1",
         "security_groups": ["{{OS_SECURITY_GROUP}}"],
         "floating_ip_pool": "public-net",
