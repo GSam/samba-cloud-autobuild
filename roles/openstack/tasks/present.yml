@@ -45,6 +45,8 @@
   ignore_errors: yes  # will fail if multiple matches found, ignore this case
   when:
     - PACKER_OUTPUT_IMAGE_NAME is defined
+    - OS_SERVERS is defined
+    - OS_SERVERS|length > 0
 
 - name: init packer_image_exist to yes
   set_fact:
@@ -70,6 +72,8 @@
     OS_NETWORK_ID: "{{os_network_result.network.id}}"
     apt_install_packages: "{{packages|join(' ')}}"
   when:
+    - OS_SERVERS is defined
+    - OS_SERVERS|length > 0
     - run_packer_build or not packer_image_exist
 
 - name: set fact for OS_IMAGE_NAME if packer enabeld
