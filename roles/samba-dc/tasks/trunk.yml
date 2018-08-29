@@ -12,11 +12,24 @@
   become: yes
   shell: "killall --quiet --wait samba smbd nmdb winbindd || true"
 
+- name: set fact for my_ip if openstack
+  set_fact:
+    my_ip: "{{openstack.private_v4}}"
+  when:
+    - openstack is defined
+    - openstack.private_v4 is defined
+
+- name: set fact for my_ip if not defined
+  set_fact:
+    my_ip: "{{ansible_host}}"
+  when:
+    - my_ip is not defined
+
 - name: make sure /etc/hosts resolves DC's FQDN and short name to LAN IP
   become: yes
   lineinfile:
     path: "/etc/hosts"
-    line: "{{openstack.private_v4}} {{ansible_hostname}}.{{samba_realm}} {{ansible_hostname}}"
+    line: "{{my_ip}} {{ansible_hostname}}.{{samba_realm}} {{ansible_hostname}}"
 
 - name: remove existing samba files from previous installation if any
   become: yes
