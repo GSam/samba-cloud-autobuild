@@ -88,10 +88,13 @@
     owner: root
     group: root
 
+- name: set fact for primary_dc_ip if not defined
+  set_fact:
+    primary_dc_ip: "{{hostvars[primary_dc_name].openstack.private_v4}}"
+  when: primary_dc_ip is not defined
+
 - name: render /etc/resolv.conf
   become: yes
-  vars:
-    primary_dc_ip: "{{hostvars[primary_dc_name].openstack.private_v4}}"
   copy:
     dest: /etc/resolv.conf
     content: |
@@ -106,13 +109,22 @@
     name: supervisor
     state: stopped
 
+- name: set fact for is_primary_dc
+  set_fact:
+    is_primary_dc: no
+
+- name: set fact for is_primary_dc
+  set_fact:
+    is_primary_dc: yes
+  when:
+    - 'primary_dc_name == ansible_hostname'
+
 - name: copy samba backup file to remote primary dc if defined
   copy:
     src: "{{samba_backup_file}}"
     dest: "{{ansible_env.HOME}}/samba-backup"
   when:
-    - '"samba-dc" in group_names'
-    - 'primary_dc_name in group_names'
+    - is_primary_dc
     - 'samba_backup_file is defined'
 
 - name: make sure samba restore target dir exists if defined
@@ -121,8 +133,7 @@
     state: directory
     path: "{{samba_restore_target_dir}}"
   when:
-    - '"samba-dc" in group_names'
-    - 'primary_dc_name in group_names'
+    - is_primary_dc
     - 'samba_restore_target_dir is defined'
 
 - name: include tasks to run {{operation}}
@@ -130,8 +141,7 @@
   vars:
     operation: domain-provision
   when:
-    - '"samba-dc" in group_names'
-    - 'primary_dc_name in group_names'
+    - is_primary_dc
     - 'samba_backup_file is not defined'
 
 - name: include tasks to run {{operation}}
@@ -140,8 +150,7 @@
     operation: domain-restore
     samba_install_dir: "{{samba_restore_target_dir}}"
   when:
-    - '"samba-dc" in group_names'
-    - 'primary_dc_name in group_names'
+    - is_primary_dc
     - 'samba_backup_file is defined'
     - 'samba_restore_target_dir is defined'
 
@@ -150,5 +159,4 @@
   vars:
     operation: domain-join
   when:
-    - '"samba-dc" in group_names'
-    - 'primary_dc_name not in group_names'
+    - not is_primary_dc
