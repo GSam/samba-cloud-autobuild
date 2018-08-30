@@ -136,7 +136,7 @@ def main():
         sys.exit()
 
     if args.line_regex is None:
-        args.line_regex = '^UNEXPECTED'
+        args.line_regex = '^(UNEXPECTED|\*FAILED\*)'
 
     if args.stderr:
         cache = STDERR_CACHE
