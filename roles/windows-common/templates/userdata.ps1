@@ -14,5 +14,6 @@ net stop winrm
 net start winrm
 
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force
-Install-WindowsFeature RSAT-AD-Tools
-Install-WindowsFeature Net-Framework-Core
+
+Install-WindowsFeature RSAT-AD-Tools Net-Framework-Core ADCS-Cert-Authority
+Install-AdcsCertificationAuthority -CAType EnterpriseRootCa
