@@ -1,4 +1,6 @@
+# Ansible requires Python 2.6+ and 3.5+
 pip
+setuptools
 ansible==2.5.5
 shade==1.28.0
 pywinrm
