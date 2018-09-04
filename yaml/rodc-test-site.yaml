@@ -34,7 +34,7 @@ parameters:
 
   windows_image:
     type: string
-    default: windows-server-2012r2-x86_64-20171221
+    default: windows-server-2012r2-x86_64
     description: Image ID or image name to use for the Windows servers
     constraints:
       - custom_constraint: glance.image
