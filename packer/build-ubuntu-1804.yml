@@ -1,0 +1,17 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- name: use packer role to build ubuntu image
+  hosts: localhost
+  vars_files:
+    - "{{ playbook_dir }}/../package-lists/ubuntu-1804"
+  roles:
+
+    - name: openstack
+      state: present
+
+    - name: packer
+      OS_IMAGE_NAME: ubuntu-18.04-x86_64
+
+    - name: openstack
+      state: absent
