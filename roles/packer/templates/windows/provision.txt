@@ -17,20 +17,24 @@ choco install firefox wireshark winpcap everything notepadplusplus gow cmder -y
 Install-WindowsFeature Net-Framework-Core RSAT-AD-Tools
 
 # download windows protocol test suites files
-Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/GSam/WindowsProtocolTestSuites/master/InstallPrerequisites/InstallPrerequisites.ps1'  -OutFile 'C:\\InstallPrerequisites.ps1'
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Microsoft/WindowsProtocolTestSuites/3.18.9.0/InstallPrerequisites/InstallPrerequisites.ps1'  -OutFile 'C:\\InstallPrerequisites.ps1'
 
-Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/GSam/WindowsProtocolTestSuites/master/InstallPrerequisites/PrerequisitesConfig.xml'  -OutFile 'C:\\PrerequisitesConfig.xml'
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/GSam/WindowsProtocolTestSuites/vs2017/InstallPrerequisites/InstallVs2017Community.cmd'  -OutFile '.\\InstallVs2017Community.cmd'
+
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/GSam/WindowsProtocolTestSuites/vs2017/InstallPrerequisites/InstallVs2017Community.cmd'  -OutFile 'C:\\InstallVs2017Community.cmd'
+
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/GSam/WindowsProtocolTestSuites/vs2017/InstallPrerequisites/PrerequisitesConfig.xml'  -OutFile 'C:\\PrerequisitesConfig.xml'
 
 C:\\InstallPrerequisites.ps1 -Category Core -ConfigPath 'C:\\PrerequisitesConfig.xml'
 
 Invoke-WebRequest -Uri 'https://github.com/Microsoft/WindowsProtocolTestSuites/archive/master.zip' -OutFile 'C:\\WindowsProtocolTestSuites.zip'
 
-Invoke-WebRequest -Uri 'https://github.com/Microsoft/WindowsProtocolTestSuites/releases/download/2.0.66.0/ADFamily-TestSuite-ServerEP.msi'  -OutFile 'C:\\ADFamily-TestSuite-ServerEP.msi'
+Invoke-WebRequest -Uri 'https://github.com/Microsoft/WindowsProtocolTestSuites/releases/download/3.18.9.0/ADFamily-TestSuite-ServerEP.msi'  -OutFile 'C:\\ADFamily-TestSuite-ServerEP.msi'
 
-Invoke-WebRequest -Uri 'https://github.com/Microsoft/WindowsProtocolTestSuites/releases/download/2.0.66.0/Kerberos-TestSuite-ServerEP.msi'  -OutFile 'C:\\Kerberos-TestSuite-ServerEP.msi'
+Invoke-WebRequest -Uri 'https://github.com/Microsoft/WindowsProtocolTestSuites/releases/download/3.18.9.0/Kerberos-TestSuite-ServerEP.msi'  -OutFile 'C:\\Kerberos-TestSuite-ServerEP.msi'
 
-Invoke-WebRequest -Uri 'https://github.com/Microsoft/WindowsProtocolTestSuites/releases/download/2.0.66.0/MS-AZOD-TestSuite-ODEP.msi'  -OutFile 'C:\\MS-AZOD-TestSuite-ODEP.msi'
+Invoke-WebRequest -Uri 'https://github.com/Microsoft/WindowsProtocolTestSuites/releases/download/3.18.9.0/MS-AZOD-TestSuite-ODEP.msi'  -OutFile 'C:\\MS-AZOD-TestSuite-ODEP.msi'
 
-Invoke-WebRequest -Uri 'https://github.com/Microsoft/WindowsProtocolTestSuites/releases/download/2.0.66.0/ProtocolTestManager.msi'  -OutFile 'C:\\ProtocolTestManager.msi'
+Invoke-WebRequest -Uri 'https://github.com/Microsoft/WindowsProtocolTestSuites/releases/download/3.18.9.0/ProtocolTestManager.msi'  -OutFile 'C:\\ProtocolTestManager.msi'
 
 C:\\ProtocolTestManager.msi /q
