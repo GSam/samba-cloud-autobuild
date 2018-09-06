@@ -11,11 +11,11 @@ keypair_name: catalyst_samba
 ## Remote user
 remote_user: ubuntu
 ## Define how many sites to create
-sites: 3
+sites: 1
 site_basename: s
 
 ## Define how many hosts per site to create
-hosts_in_site: 2
+hosts_in_site: 1
 node_basename: dc
 
 windows_basename: win
@@ -105,7 +105,8 @@ windows_flavour: c1.c2r4
 ## OS image to use
 master_image: ubuntu-16.04-x86_64
 slave_image: ubuntu-16.04-x86_64
-windows_image: windows-protocol-test-suites-packer-image
+##windows_image: windows-protocol-test-suites-packer-image
+windows_image: temporary-windows
 
 ## Security group names used
 master_security_group: "{{ env_prefix }}-master"

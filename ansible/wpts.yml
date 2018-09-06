@@ -44,7 +44,7 @@
     test_suite_category: "{{ test_suite_dict.category }}"
     test_suite_msi: "{{ test_suite_dict.msi }}"
     test_suite_ptfconfig: "{{ test_suite_dict.ptfconfig }}"
-    test_suite_root: "C:\\MicrosoftProtocolTests\\{{ test_suite_name }}\\Server-Endpoint\\2.0.66.0"
+    test_suite_root: "C:\\MicrosoftProtocolTests\\{{ test_suite_name }}\\Server-Endpoint\\3.18.9.0"
     test_suite_bin: "{{ test_suite_root }}\\Bin"
 
   tasks:
