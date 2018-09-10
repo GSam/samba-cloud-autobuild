@@ -10,5 +10,10 @@
 
 3. Usage:
 
-    ./build-ubuntu.yml
+    ./build-ubuntu-1604.yml
+    ./build-ubuntu-1804.yml
     ./build-windows.yml
+
+Default output image will be `packer-{{OS_IMAGE_NAME}}`, to override:
+
+    ./build-ubuntu-1604.yml -e PACKER_OUTPUT_IMAGE_NAME=samba-build-16.04-template
