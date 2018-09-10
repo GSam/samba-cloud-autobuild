@@ -12,3 +12,4 @@
 /perf-daemon/perf-results/*
 ansible-venv/
 debug.yml
+.vagrant/
