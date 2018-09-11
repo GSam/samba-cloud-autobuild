@@ -1,4 +1,7 @@
 ---
+ansible_python_interpreter: /usr/bin/env python3
+ansible_user: ubuntu
+
 samba_realm: 'samdom.example.com'
 samba_domain: 'samdom'
 samba_username: 'Administrator'
