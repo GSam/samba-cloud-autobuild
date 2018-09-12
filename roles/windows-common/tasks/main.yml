@@ -24,6 +24,17 @@
   tags:
     - chocolatey
 
+- name: install features for windows-dc
+  win_feature:
+    name:
+      - Net-Framework-Core
+      - AD-Domain-Services
+    include_sub_features: yes
+    include_management_tools: yes
+  when: '"windows-dc" in group_names'
+  tags:
+    - win_feature
+
 - name: set fact for primary_dc_ip
   set_fact:
     primary_dc_ip: "{{hostvars[primary_dc_name].openstack.private_v4}}"
@@ -41,17 +52,6 @@
   when: '"windows-dc" in group_names'
   tags:
     - win_domain
-
-- name: install features for windows-dc
-  win_feature:
-    name:
-      - Net-Framework-Core
-      - AD-Domain-Services
-    include_sub_features: yes
-    include_management_tools: yes
-  when: '"windows-dc" in group_names'
-  tags:
-    - win_feature
 
 - name: reboot host if required
   win_reboot:
