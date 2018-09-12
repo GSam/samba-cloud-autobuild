@@ -70,7 +70,7 @@
   tags:
     - win_domain_membership
 
-- name: reboot host if required
+- name: reboot host if required by win_domain_membership
   win_reboot:
   when:
     - '"windows-dm" in group_names'
@@ -91,6 +91,6 @@
   tags:
     - win_domain_controller
 
-- name: reboot host if required
+- name: reboot host if required by win_domain_controller
   win_reboot:
   when: win_domain_controller_task.reboot_required
