@@ -14,6 +14,7 @@
     - gow
     - cmder
     - openssh
+    - dotnet4.7.1
   tags:
     - chocolatey
 
