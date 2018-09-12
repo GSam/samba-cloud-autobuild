@@ -44,53 +44,54 @@
     adapter_names: "Ethernet"
     ipv4_addresses: ["{{primary_dc_ip}}", 202.78.247.199]
 
-- name: ensure the named domain is reachable
-  win_domain:
-    dns_domain_name: "{{dns_domain_name}}"
-    safe_mode_password: "{{ samba_password }}"
-  register: win_domain_task
-  when: '"windows-dc" in group_names'
-  tags:
-    - win_domain
+- name: tasks for primary dc
+  block:
 
-- name: reboot host if required
-  win_reboot:
-  when: win_domain_task.reboot_required
+    - name: ensure the named domain is reachable
+      win_domain:
+        dns_domain_name: "{{dns_domain_name}}"
+        safe_mode_password: "{{ samba_password }}"
+      register: win_domain_task
 
-- name: join windows computer to domain
-  win_domain_membership:
-    dns_domain_name: "{{dns_domain_name}}"
-    domain_admin_user: "Administrator@{{ samba_realm }}"
-    domain_admin_password: "{{ samba_password }}"
-    state: domain
-  register: win_domain_membership_task
+    - name: reboot host if required by win_domain
+      win_reboot:
+      when: win_domain_task.reboot_required
+
+    - name: promote windows computer as domain controller
+      win_domain_controller:
+        dns_domain_name: "{{dns_domain_name}}"
+        domain_admin_user: "{{ansible_user}}@{{dns_domain_name}}"
+        domain_admin_password: "{{ samba_password }}"
+        safe_mode_password: "{{ samba_password }}"
+        state: domain_controller
+        log_path: C:\ansible_win_domain_controller.txt
+      register: win_domain_controller_task
+
+    - name: reboot host if required by win_domain_controller
+      win_reboot:
+      when: win_domain_controller_task.reboot_required
+
+  when:
+    - '"windows-dc" in group_names'
+    - 'primary_dc_name in group_names'
+
+- name: tasks for backup dc
+  block:
+
+    - name: join windows computer to domain
+      win_domain_membership:
+        dns_domain_name: "{{dns_domain_name}}"
+        domain_admin_user: "Administrator@{{ samba_realm }}"
+        domain_admin_password: "{{ samba_password }}"
+        state: domain
+      register: win_domain_membership_task
+
+    - name: reboot host if required by win_domain_membership
+      win_reboot:
+      when: win_domain_membership_task.reboot_required
+
   when:
     - '"windows-dc" in group_names'
     - 'primary_dc_name not in group_names'
   tags:
     - win_domain_membership
-
-- name: reboot host if required by win_domain_membership
-  win_reboot:
-  when:
-    - '"windows-dm" in group_names'
-    - win_domain_membership_task.reboot_required
-
-- name: promote windows computer as domain controller
-  win_domain_controller:
-    dns_domain_name: "{{dns_domain_name}}"
-    domain_admin_user: "{{ansible_user}}@{{dns_domain_name}}"
-    domain_admin_password: "{{ samba_password }}"
-    safe_mode_password: "{{ samba_password }}"
-    state: domain_controller
-    log_path: C:\ansible_win_domain_controller.txt
-  register: win_domain_controller_task
-  when:
-    - '"windows-dc" in group_names'
-    - 'primary_dc_name in group_names'
-  tags:
-    - win_domain_controller
-
-- name: reboot host if required by win_domain_controller
-  win_reboot:
-  when: win_domain_controller_task.reboot_required
