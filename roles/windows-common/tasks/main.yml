@@ -127,7 +127,7 @@
     - name: join windows computer to domain
       win_domain_membership:
         dns_domain_name: "{{dns_domain_name}}"
-        domain_admin_user: "Administrator@{{ samba_realm }}"
+        domain_admin_user: "{{ansible_user}}@{{ samba_realm }}"
         domain_admin_password: "{{ samba_password }}"
         state: domain
       register: win_domain_membership_task
