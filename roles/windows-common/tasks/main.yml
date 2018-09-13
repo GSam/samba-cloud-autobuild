@@ -2,6 +2,24 @@
 - name: win_ping
   win_ping:
 
+- name: edit registry to show file extensions
+  win_regedit:
+    path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    name: HideFileExt
+    type: dword
+    data: 0
+  tags:
+    - show_file_ext
+
+- name: edit registry to show hidden
+  win_regedit:
+    path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    name: Hidden
+    type: dword
+    data: 1
+  tags:
+    - show_hidden
+
 - name: win_chocolatey install packages
   win_chocolatey:
     name: "{{item}}"
