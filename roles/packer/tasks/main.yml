@@ -48,6 +48,10 @@
     - name: validate rendered packer template
       command: "packer validate {{tempfile_task.path}}/template.json"
 
+    - name: print packer build command
+      debug:
+        msg: "packer build {{tempfile_task.path}}/template.json"
+
     - name: packer build
       command: "packer build {{tempfile_task.path}}/template.json"
       environment:
