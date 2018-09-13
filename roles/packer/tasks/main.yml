@@ -50,3 +50,5 @@
 
     - name: packer build
       command: "packer build {{tempfile_task.path}}/template.json"
+      environment:
+        PACKER_LOG: 1
