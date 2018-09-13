@@ -5,6 +5,13 @@
     - win_ping
     - ping
 
+- name: run win_updates which could take hours
+  win_updates:
+    category_names:
+      - SecurityUpdates
+      - CriticalUpdates
+      - UpdateRollups
+
 - name: edit registry to show file extensions
   win_regedit:
     path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
@@ -34,6 +41,7 @@
     - notepadplusplus
     - gow
     - cmder
+    - pswindowsupdate
     - dotnet4.7.1
   tags:
     - chocolatey
