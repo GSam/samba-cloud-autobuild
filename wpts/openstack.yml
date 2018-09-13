@@ -1,0 +1,7 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- name: create servers
+  hosts: localhost
+  roles:
+    - openstack

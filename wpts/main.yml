@@ -1,0 +1,6 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- import_playbook: openstack.yml
+- import_playbook: samba.yml
+- import_playbook: windows.yml

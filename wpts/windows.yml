@@ -1,0 +1,7 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- name: apply windows-common role
+  hosts: windows-common
+  roles:
+    - windows-common
