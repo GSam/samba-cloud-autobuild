@@ -1,6 +1,9 @@
 ---
 - name: win_ping
   win_ping:
+  tags:
+    - win_ping
+    - ping
 
 - name: edit registry to show file extensions
   win_regedit:
