@@ -48,12 +48,16 @@
     - name: validate rendered packer template
       command: "packer validate {{tempfile_task.path}}/template.json"
 
+    - name: set fact for packer build command
+      set_fact:
+        cmd: "packer build --on-error={{PACKER_BUILD_ON_ERROR|default('cleanup')}} {{tempfile_task.path}}/template.json"
+
     - name: print packer build command
       debug:
-        msg: "packer build {{tempfile_task.path}}/template.json"
+        msg: "{{cmd}}"
 
     - name: packer build
-      shell: "packer build {{tempfile_task.path}}/template.json"
+      command: "{{cmd}}"
       environment:
         PACKER_LOG: 1
       when: not dry_run
