@@ -56,3 +56,4 @@
       shell: "packer build {{tempfile_task.path}}/template.json"
       environment:
         PACKER_LOG: 1
+      when: not dry_run
