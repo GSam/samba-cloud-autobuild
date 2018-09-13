@@ -53,6 +53,31 @@
   tags:
     - win_feature
 
+- name: download visutal studio 2017 community version
+  win_get_url:
+    url: https://aka.ms/vs/15/release/vs_community.exe
+    dest: C:\vs_community.exe
+
+- name: create cmd file to install vs_community.exe
+  win_copy:
+    content: |
+      %1 --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community" ^
+      --add Microsoft.VisualStudio.Workload.NativeDesktop ^
+      --add Microsoft.VisualStudio.Workload.ManagedDesktop ^
+      --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 ^
+      --add Microsoft.Net.Component.4.7.1.TargetingPack ^
+      --add Microsoft.Net.ComponentGroup.4.7.1.DeveloperTools ^
+      --add Microsoft.VisualStudio.Component.Windows10SDK.16299.Desktop ^
+      --add Microsoft.VisualStudio.Component.TestTools.Core ^
+      --add Microsoft.Component.MSBuild ^
+      --norestart --quiet --wait
+    dest: C:\InstallVs2017Community.cmd
+
+- name: run cmd script to install vs_community.exe
+  win_command: InstallVs2017Community.cmd vs_community.exe
+  args:
+    chdir: C:\
+
 - name: set fact for primary_dc_ip
   set_fact:
     primary_dc_ip: "{{hostvars[primary_dc_name].openstack.private_v4}}"
