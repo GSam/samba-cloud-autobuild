@@ -53,6 +53,6 @@
         msg: "packer build {{tempfile_task.path}}/template.json"
 
     - name: packer build
-      command: "packer build {{tempfile_task.path}}/template.json"
+      shell: "packer build {{tempfile_task.path}}/template.json"
       environment:
         PACKER_LOG: 1
