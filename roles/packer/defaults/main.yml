@@ -14,3 +14,5 @@ PACKER_TMP_DIR: /tmp
 
 WINDOWS_USERNAME: Administrator
 WINDOWS_PASSWORD: Password01@
+
+dry_run: no
