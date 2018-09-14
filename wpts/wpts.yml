@@ -1,0 +1,107 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- name: Windows initial setup
+  hosts: "windows-common"
+  vars:
+    windows_ip: "202.49.242.114"  # TODO
+    master_hostname: "{{primary_dc_name}}"
+    master_priv_ip: "{{ hostvars[primary_dc_name].openstack.private_v4 }}"
+    master_fqdn: "{{ primary_dc_name }}.{{ samba_realm|lower }}"
+    master_service_salt: "{{ samba_realm }}host{{ master_fqdn }}"
+
+    windows_hostname: "{{ansible_hostname}}"
+    windows_priv_ip: "{{ openstack.private_v4 }}"
+    windows_fqdn: "{{ windows_hostname }}.{{ samba_realm|lower }}"
+    windows_service_salt: "{{ samba_realm }}host{{ windows_fqdn }}"
+
+    test_suite_dict: "{{ windows_protocol_test_suites[test_suite_name] }}"
+    test_suite_category: "{{ test_suite_dict.category }}"
+    test_suite_msi: "{{ test_suite_dict.msi }}"
+    test_suite_ptfconfig: "{{ test_suite_dict.ptfconfig }}"
+    test_suite_root: "MicrosoftProtocolTests\\{{ test_suite_name }}\\Server-Endpoint\\2.0.66.0"
+    test_suite_bin: "{{ test_suite_root }}\\Bin"
+
+  tasks:
+    - name: ping
+      win_ping:
+
+    - name: download WPTS master code
+      win_get_url:
+        url: "https://github.com/Microsoft/WindowsProtocolTestSuites/archive/master.zip"
+        dest: "C:\\WindowsProtocolTestSuites.zip"
+
+    - name: download WPTS realse msi
+      win_get_url:
+        url: "https://github.com/Microsoft/WindowsProtocolTestSuites/releases/download/3.18.9.0/{{item}}"
+        dest: "C:\\{{item}}"
+      loop:
+        - ADFamily-TestSuite-ServerEP.msi
+        - Kerberos-TestSuite-ServerEP.msi
+        - MS-AZOD-TestSuite-ODEP.msi
+        - ProtocolTestManager.msi
+
+    - name: download MS InstallPrerequisites
+      win_get_url:
+        url: "https://raw.githubusercontent.com/Microsoft/WindowsProtocolTestSuites/3.18.9.0/InstallPrerequisites/{{item}}"
+        dest: "C:\\{{item}}"
+      loop:
+        - InstallPrerequisites.ps1
+
+    - name: download GSAM InstallPrerequisites
+      win_get_url:
+        url: "https://raw.githubusercontent.com/GSam/WindowsProtocolTestSuites/vs2017/InstallPrerequisites/{{item}}"
+        dest: "C:\\{{item}}"
+      loop:
+        - InstallVs2017Community.cmd
+        - PrerequisitesConfig.xml
+
+    - name: Install ProtocolTestManager MSI
+      win_package:
+        path: "C:\\ProtocolTestManager.msi"
+        wait: yes
+        state: present
+
+    - name: Install Prerequisites
+      win_shell: "C:\\InstallPrerequisites.ps1 -Category {{ test_suite_category }} -ConfigPath C:\\PrerequisitesConfig.xml"
+
+    - name: Install MSI
+      win_package:
+        path: "{{ test_suite_msi }}"
+        state: present
+      ignore_errors: yes
+
+    - name: render ptfconfig
+      win_template:
+        src: "templates/{{ test_suite_name }}/{{ test_suite_ptfconfig }}"
+        dest: "{{ test_suite_bin }}\\{{ test_suite_ptfconfig }}"
+
+    - name: render run.cmd
+      win_copy:
+        src: "templates/{{ test_suite_name }}/run.cmd"
+        dest: C:\run.cmd
+
+    - name: Set machine account password
+      win_shell: "ksetup /SetComputerPassword {{ samba_password }}"
+
+    - name: reboot windows
+      win_reboot:
+
+    - pause:
+        seconds: 60
+        prompt: "pause for windows to fully reboot"
+
+    - name: run pexpect script to trigger test
+      local_action: command "python scripts/wpts-run.py {{ windows_ip }} Administrator@{{ samba_realm }} {{ samba_password }}"
+
+    - name: fetch test result file from windows
+      fetch:
+        src: testresult.trx
+        dest: "/tmp/testresult.trx"
+        flat: yes
+
+    - name: parse trx file and convert format
+      local_action: command 'python scripts/parse-trx.py --trx /tmp/testresult.trx'
+      register: out
+
+    - debug: var=out
