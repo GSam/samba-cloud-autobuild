@@ -5,3 +5,6 @@ ansible_password: Password01@
 ansible_connection: winrm
 ansible_winrm_transport: basic
 ansible_winrm_server_cert_validation: ignore
+
+# run win_updates or not, it could take 1 hour
+run_win_updates: yes
