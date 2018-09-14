@@ -58,6 +58,7 @@
     name:
       - Net-Framework-Core
       - AD-Domain-Services
+      - RSAT-AD-Tools
     include_sub_features: yes
     include_management_tools: yes
   when: '"windows-dc" in group_names'
