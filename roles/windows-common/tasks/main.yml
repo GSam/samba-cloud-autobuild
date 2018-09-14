@@ -3,14 +3,14 @@
   win_ping:
   tags:
     - win_ping
-    - ping
 
-- name: run win_updates which could take hours
+- name: run win_updates (could take hours)
   win_updates:
     category_names:
       - SecurityUpdates
       - CriticalUpdates
       - UpdateRollups
+  when: run_win_updates
 
 - name: edit registry to show file extensions
   win_regedit:
@@ -30,28 +30,37 @@
   tags:
     - show_hidden
 
-- name: win_chocolatey install packages
+- name: win_chocolatey install generic util packages
   win_chocolatey:
     name: "{{item}}"
   loop:
     - firefox
-    - wireshark
+    - cmder
+    - gow
+    - notepadplusplus
     - winpcap
     - everything
-    - notepadplusplus
-    - gow
-    - cmder
-    - pswindowsupdate
-    - dotnet4.7.1
+    - wireshark
+    - git
   tags:
-    - chocolatey
+    - win_chocolatey
 
 - name: win_chocolatey install openssh
   win_chocolatey:
     name: "openssh"
     params: "'/SSHServerFeature'"
   tags:
-    - chocolatey
+    - win_chocolatey
+
+- name: win_chocolatey install windows dev/test packages
+  win_chocolatey:
+    name: "{{item}}"
+  loop:
+    - pswindowsupdate
+    - dotnet4.7.1
+    - wixtoolset
+  tags:
+    - win_chocolatey
 
 - name: install features for windows-dc
   win_feature:
@@ -61,19 +70,18 @@
       - RSAT-AD-Tools
     include_sub_features: yes
     include_management_tools: yes
-  when: '"windows-dc" in group_names'
   tags:
     - win_feature
 
 - name: download visutal studio 2017 community version
   win_get_url:
     url: https://aka.ms/vs/15/release/vs_community.exe
-    dest: C:\vs_community.exe
+    dest: vs_community.exe
 
 - name: create cmd file to install vs_community.exe
   win_copy:
     content: |
-      %1 --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community" ^
+      %1 --installPath "C:\\Program Files (x86)\Microsoft Visual Studio\2017\Community" ^
       --add Microsoft.VisualStudio.Workload.NativeDesktop ^
       --add Microsoft.VisualStudio.Workload.ManagedDesktop ^
       --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 ^
@@ -90,14 +98,21 @@
   args:
     chdir: C:\
 
-- name: set fact for primary_dc_ip
-  set_fact:
-    primary_dc_ip: "{{hostvars[primary_dc_name].openstack.private_v4}}"
+- name: set dns if primary_dc_name defined
+  block:
 
-- name: config the DNS client on Windows network adapters
-  win_dns_client:
-    adapter_names: "Ethernet"
-    ipv4_addresses: ["{{primary_dc_ip}}", 202.78.247.199]
+    - name: set fact for primary_dc_ip
+      set_fact:
+        primary_dc_ip: "{{hostvars[primary_dc_name].openstack.private_v4}}"
+
+    - name: config the DNS client on Windows network adapters
+      win_dns_client:
+        adapter_names: "Ethernet"
+        ipv4_addresses: ["{{primary_dc_ip}}", 202.78.247.199]
+
+  when:
+    - primary_dc_name is defined
+    - 'primary_dc_name in hostvars'
 
 - name: tasks for primary dc
   block:
@@ -128,7 +143,7 @@
 
   when:
     - '"windows-dc" in group_names'
-    - 'primary_dc_name in group_names'
+    - 'primary_dc_name == ansible_hostname'
 
 - name: tasks for backup dc
   block:
@@ -147,6 +162,6 @@
 
   when:
     - '"windows-dc" in group_names'
-    - 'primary_dc_name not in group_names'
+    - 'primary_dc_name != ansible_hostname'
   tags:
     - win_domain_membership
