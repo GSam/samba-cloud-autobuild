@@ -76,7 +76,8 @@
 - name: download visutal studio 2017 community version
   win_get_url:
     url: https://aka.ms/vs/15/release/vs_community.exe
-    dest: vs_community.exe
+    dest: C:\vs_community.exe
+  tags: install-visual-studio
 
 - name: create cmd file to install vs_community.exe
   win_copy:
@@ -92,11 +93,13 @@
       --add Microsoft.Component.MSBuild ^
       --norestart --quiet --wait
     dest: C:\InstallVs2017Community.cmd
+  tags: install-visual-studio
 
 - name: run cmd script to install vs_community.exe
-  win_command: InstallVs2017Community.cmd vs_community.exe
+  win_command: .\InstallVs2017Community.cmd vs_community.exe
   args:
     chdir: C:\
+  tags: install-visual-studio
 
 - name: set dns if primary_dc_name defined
   block:
