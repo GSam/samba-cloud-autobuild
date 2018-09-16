@@ -7,9 +7,19 @@
 - name: run win_updates (could take hours)
   win_updates:
     category_names:
-      - SecurityUpdates
+      # - Application
+      # - Connectors
       - CriticalUpdates
+      # - DefinitionUpdates
+      - DeveloperKits
+      - FeaturePacks
+      # - Guidance
+      - SecurityUpdates
+      - ServicePacks
+      - Tools
       - UpdateRollups
+      - Updates
+
   when: run_win_updates
 
 - name: edit registry to show file extensions
