@@ -52,6 +52,7 @@
     - everything
     - wireshark
     - git
+    - pswindowsupdate
   tags:
     - win_chocolatey
 
@@ -62,12 +63,14 @@
   tags:
     - win_chocolatey
 
-- name: win_chocolatey install windows dev/test packages
+- name: win_chocolatey install microsoft dev packages
+  become: yes
+  become_user: SYSTEM
+  become_method: runas
   win_chocolatey:
     name: "{{item}}"
   loop:
     - vcredist-all
-    - pswindowsupdate
     - dotnet4.7.1
     - wixtoolset
   tags:
