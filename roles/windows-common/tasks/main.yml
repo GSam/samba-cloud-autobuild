@@ -23,7 +23,7 @@
     - show_hidden
 
 - name: Set machine account password (reboot required)
-  win_shell: "ksetup /SetComputerPassword {{samba_password}}"
+  win_shell: "ksetup /SetComputerPassword {{ansible_password}}"
 
 - name: run win_updates (could take hours)
   win_updates:
