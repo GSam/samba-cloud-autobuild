@@ -14,5 +14,3 @@ net stop winrm
 net start winrm
 
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force
-Install-WindowsFeature RSAT-AD-Tools
-Install-WindowsFeature Net-Framework-Core
