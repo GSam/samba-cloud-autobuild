@@ -17,7 +17,7 @@ OS_SERVERS:
     groups: ['samba-common', 'samba-dc']
 
   - name: win0
-    image: packer-windows-server-2012r2-x86_64-live-snapshot
+    image: windows-server-2012r2-x86_64-live-snapshot
     flavor: c1.c2r4
     boot_from_volume: yes
     volume_size: 100
