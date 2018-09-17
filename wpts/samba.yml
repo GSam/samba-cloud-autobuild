@@ -11,19 +11,3 @@
   hosts: samba-dc
   roles:
     - samba-dc
-
-
-- name: Config dc to match ptfconfig
-  remote_user: "ubuntu"
-  hosts: samba-dc
-  tasks:
-
-    - name: render script to create samba users
-      template:
-        src: "templates/{{test_suite_name}}/config-dc.sh"
-        dest: "{{ansible_env.HOME}}/config-dc.sh"
-        mode: 0755
-
-    - name: run script to create samba users
-      become: yes
-      shell: "{{ansible_env.HOME}}/config-dc.sh"
