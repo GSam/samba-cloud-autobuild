@@ -19,22 +19,23 @@
 - name: Windows initial setup
   hosts: "windows-common"
   vars:
-    windows_ip: "202.49.242.114"  # TODO
+    windows_ip: "{{openstack.public_v4}}"
     master_hostname: "{{primary_dc_name}}"
     master_priv_ip: "{{ hostvars[primary_dc_name].openstack.private_v4 }}"
     master_fqdn: "{{ primary_dc_name }}.{{ samba_realm|lower }}"
     master_service_salt: "{{ samba_realm }}host{{ master_fqdn }}"
 
     windows_hostname: "{{ansible_hostname}}"
-    windows_priv_ip: "{{ openstack.private_v4 }}"
     windows_fqdn: "{{ windows_hostname }}.{{ samba_realm|lower }}"
     windows_service_salt: "{{ samba_realm }}host{{ windows_fqdn }}"
 
-    test_suite_dict: "{{ windows_protocol_test_suites[test_suite_name] }}"
-    test_suite_category: "{{ test_suite_dict.category }}"
-    test_suite_msi: "{{ test_suite_dict.msi }}"
-    test_suite_ptfconfig: "{{ test_suite_dict.ptfconfig }}"
-    test_suite_root: "MicrosoftProtocolTests\\{{ test_suite_name }}\\Server-Endpoint\\2.0.66.0"
+    wpts_version: "3.18.9.0"
+
+    test_suite_config: "{{ windows_protocol_test_suites[test_suite_name] }}"
+    test_suite_category: "{{ test_suite_config.category }}"
+    test_suite_msi: "{{ test_suite_config.msi }}"
+    test_suite_ptfconfig: "{{ test_suite_config.ptfconfig }}"
+    test_suite_root: "C:\\MicrosoftProtocolTests\\{{ test_suite_name }}\\Server-Endpoint\\{{wpts_version}}"
     test_suite_bin: "{{ test_suite_root }}\\Bin"
 
   tasks:
@@ -48,7 +49,7 @@
 
     - name: download WPTS realse msi
       win_get_url:
-        url: "https://github.com/Microsoft/WindowsProtocolTestSuites/releases/download/3.18.9.0/{{item}}"
+        url: "https://github.com/Microsoft/WindowsProtocolTestSuites/releases/download/{{wpts_version}}/{{item}}"
         dest: "C:\\{{item}}"
       loop:
         - ADFamily-TestSuite-ServerEP.msi
@@ -58,7 +59,7 @@
 
     - name: download MS InstallPrerequisites
       win_get_url:
-        url: "https://raw.githubusercontent.com/Microsoft/WindowsProtocolTestSuites/3.18.9.0/InstallPrerequisites/{{item}}"
+        url: "https://raw.githubusercontent.com/Microsoft/WindowsProtocolTestSuites/{{wpts_version}}/InstallPrerequisites/{{item}}"
         dest: "C:\\{{item}}"
       loop:
         - InstallPrerequisites.ps1
@@ -82,7 +83,7 @@
 
     - name: Install MSI
       win_package:
-        path: "{{ test_suite_msi }}"
+        path: "C:\\{{ test_suite_msi }}"
         state: present
       ignore_errors: yes
 
@@ -92,22 +93,15 @@
         dest: "{{ test_suite_bin }}\\{{ test_suite_ptfconfig }}"
 
     - name: render run.cmd
-      win_copy:
+      win_template:
         src: "templates/{{ test_suite_name }}/run.cmd"
-        dest: C:\run.cmd
+        dest: "C:\\run.cmd"
 
-    - name: Set machine account password
-      win_shell: "ksetup /SetComputerPassword {{ samba_password }}"
-
-    - name: reboot windows
-      win_reboot:
-
-    - pause:
-        seconds: 60
-        prompt: "pause for windows to fully reboot"
-
-    - name: run pexpect script to trigger test
-      local_action: command "python scripts/wpts-run.py {{ windows_ip }} Administrator@{{ samba_realm }} {{ samba_password }}"
+    - name: trigger
+      become: yes
+      become_user: SYSTEM
+      become_method: runas
+      win_command: C:\run.cmd
 
     - name: fetch test result file from windows
       fetch:
