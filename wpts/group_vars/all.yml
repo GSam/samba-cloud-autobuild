@@ -43,3 +43,9 @@ windows_protocol_test_suites:
     category: AZOD
     msi: MS-AZOD-TestSuite-ODEP.msi
     ptfconfig: MS-AZOD_ODTestSuite.deployment.ptfconfig
+
+
+VSCOMN: "C:\\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7"
+VSCOMNTOOLS: "{{VSCOMMON}}\Tools"
+VSCOMNIDE: "{{VSCOMMON}}\IDE"
+MSTEST: "{{VSCOMNIDE}}\MSTest.exe"
