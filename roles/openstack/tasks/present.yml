@@ -59,7 +59,7 @@
     key_name: "{{ item.keypair|default(OS_KEYPAIR_NAME) }}"
     network: "{{ OS_NETWORK_NAME }}"
     auto_floating_ip: "{{ item.auto_floating_ip|default(OS_AUTO_FLOATING_IP) }}"
-    userdata: "{{item.userdata|default(lookup('file', OS_USERDATA_FILE))}}"
+    userdata: "{{lookup('template', item.userdata|default(OS_USERDATA_FILE))}}"
     meta:
       group: "{{ ENV_NAME }}"
       groups: "{{ item.groups|default(OS_META_GROUPS)|join(',') }}"

@@ -1,5 +1,4 @@
 #ps1_sysnative
-# powershell template for user_data_file/cloud_init_file
 
 wmic UserAccount set PasswordExpires=False
 net user Administrator {{samba_password}}
@@ -14,5 +13,3 @@ net stop winrm
 net start winrm
 
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force
-Install-WindowsFeature RSAT-AD-Tools
-Install-WindowsFeature Net-Framework-Core
