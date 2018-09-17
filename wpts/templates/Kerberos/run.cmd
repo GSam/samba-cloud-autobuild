@@ -23,7 +23,7 @@ if not defined vspath (
 del C:\testresult.trx
 
 %vspath%"..\IDE\mstest.exe" ^
-/testContainer:C:\MicrosoftProtocolTests\Kerberos\Server-Endpoint\2.0.66.0\Bin\Kerberos_ServerTestSuite.dll ^
-/runconfig:C:\MicrosoftProtocolTests\Kerberos\Server-Endpoint\2.0.66.0\Bin\ServerLocalTestRun.testrunconfig ^
+/testContainer:{{test_suite_bin}}\Kerberos_ServerTestSuite.dll ^
+/runconfig:{{test_suite_bin}}\ServerLocalTestRun.testrunconfig ^
 /usestderr /noisolation /resultsfile:C:\testresult.trx
 
