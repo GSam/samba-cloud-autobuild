@@ -7,6 +7,9 @@ OS_ROUTER_NAME: "{{ ENV_NAME }}-router"
 OS_SUBNET_NAME: "{{ ENV_NAME }}-subnet"
 OS_SUBNET_CIDR: "10.0.0.0/24"
 
+samba_user: Administrator
+samba_password: Password01@
+
 ## Porirua region DNS
 OS_NAMESERVERS: [202.78.247.197, 202.78.247.198, 202.78.247.199]
 
