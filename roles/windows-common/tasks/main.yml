@@ -4,24 +4,6 @@
   tags:
     - win_ping
 
-- name: run win_updates (could take hours)
-  win_updates:
-    category_names:
-      # - Application
-      # - Connectors
-      - CriticalUpdates
-      # - DefinitionUpdates
-      - DeveloperKits
-      - FeaturePacks
-      # - Guidance
-      - SecurityUpdates
-      - ServicePacks
-      - Tools
-      - UpdateRollups
-      - Updates
-
-  when: run_win_updates
-
 - name: edit registry to show file extensions
   win_regedit:
     path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
@@ -40,7 +22,39 @@
   tags:
     - show_hidden
 
-- name: win_chocolatey install generic util packages
+- name: run win_updates (could take hours)
+  win_updates:
+    category_names:
+      # - Application
+      # - Connectors
+      - CriticalUpdates
+      # - DefinitionUpdates
+      - DeveloperKits
+      - FeaturePacks
+      # - Guidance
+      - SecurityUpdates
+      - ServicePacks
+      - Tools
+      - UpdateRollups
+      - Updates
+  register: win_updates_result
+  when: run_win_updates
+
+- name: win_reboot after win_udpates if required
+  win_reboot:
+  when: win_updates_result.reboot_required
+
+- name: win_chocolatey install packages with params
+  win_chocolatey:
+    name: "{{item.name}}"
+    params: "{{item.params}}"
+  loop:
+    - name: "openssh"
+      params: "'/SSHServerFeature'"
+  tags:
+    - win_chocolatey
+
+- name: win_chocolatey install packages without params
   win_chocolatey:
     name: "{{item}}"
   loop:
@@ -56,14 +70,7 @@
   tags:
     - win_chocolatey
 
-- name: win_chocolatey install openssh
-  win_chocolatey:
-    name: "openssh"
-    params: "'/SSHServerFeature'"
-  tags:
-    - win_chocolatey
-
-- name: win_chocolatey install microsoft dev packages
+- name: win_chocolatey install packages as SYSTEM user
   become: yes
   become_user: SYSTEM
   become_method: runas
@@ -71,12 +78,28 @@
     name: "{{item}}"
   loop:
     - vcredist-all
-    - dotnet4.7.1
+    - dotnet4.7.2
     - wixtoolset
   tags:
     - win_chocolatey
 
-- name: install features for windows-dc
+- name: win_chocolatey install Visual Studio
+  win_chocolatey:
+    name: visualstudio2017enterprise
+    params: >
+      --add Microsoft.VisualStudio.Workload.NativeDesktop
+      --add Microsoft.VisualStudio.Workload.ManagedDesktop
+      --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64
+      --add Microsoft.Net.Component.4.7.1.TargetingPack
+      --add Microsoft.Net.ComponentGroup.4.7.1.DeveloperTools
+      --add Microsoft.VisualStudio.Component.Windows10SDK.16299.Desktop
+      --add Microsoft.VisualStudio.Component.TestTools.Core
+      --add Microsoft.Component.MSBuild
+      --norestart --quiet --wait
+  tags:
+    - win_chocolatey
+
+- name: win_feature install features
   win_feature:
     name:
       - Net-Framework-Core
@@ -86,34 +109,6 @@
     include_management_tools: yes
   tags:
     - win_feature
-
-- name: download visutal studio 2017 community version
-  win_get_url:
-    url: https://aka.ms/vs/15/release/vs_community.exe
-    dest: C:\vs_community.exe
-  tags: install-visual-studio
-
-- name: create cmd file to install vs_community.exe
-  win_copy:
-    content: |
-      %1 --installPath "C:\\Program Files (x86)\Microsoft Visual Studio\2017\Community" ^
-      --add Microsoft.VisualStudio.Workload.NativeDesktop ^
-      --add Microsoft.VisualStudio.Workload.ManagedDesktop ^
-      --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 ^
-      --add Microsoft.Net.Component.4.7.1.TargetingPack ^
-      --add Microsoft.Net.ComponentGroup.4.7.1.DeveloperTools ^
-      --add Microsoft.VisualStudio.Component.Windows10SDK.16299.Desktop ^
-      --add Microsoft.VisualStudio.Component.TestTools.Core ^
-      --add Microsoft.Component.MSBuild ^
-      --norestart --quiet --wait
-    dest: C:\InstallVs2017Community.cmd
-  tags: install-visual-studio
-
-- name: run cmd script to install vs_community.exe
-  win_command: .\InstallVs2017Community.cmd vs_community.exe
-  args:
-    chdir: C:\
-  tags: install-visual-studio
 
 - name: set dns if primary_dc_name defined
   block:
