@@ -4,3 +4,4 @@
 - import_playbook: openstack.yml
 - import_playbook: samba.yml
 - import_playbook: windows.yml
+- import_playbook: wpts.yml
