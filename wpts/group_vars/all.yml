@@ -14,10 +14,12 @@ OS_SERVERS:
 
   - name: dc0
     image: packer-ubuntu-16.04-x86_64
+    userdata: "templates/userdata.sh"
     groups: ['samba-common', 'samba-dc']
 
   - name: win0
     image: windows-server-2012r2-x86_64-live-snapshot
+    userdata: "templates/userdata.ps1"
     flavor: c1.c2r4
     boot_from_volume: yes
     volume_size: 100
