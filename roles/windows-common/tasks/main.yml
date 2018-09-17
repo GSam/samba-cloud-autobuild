@@ -41,7 +41,8 @@
       - UpdateRollups
       - Updates
   register: win_updates_result
-  when: run_win_updates
+  tags:
+    - win_updates
 
 - name: win_reboot after win_udpates if required
   win_reboot:
