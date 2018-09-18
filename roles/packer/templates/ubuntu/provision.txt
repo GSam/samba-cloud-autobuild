@@ -1,14 +1,25 @@
 #!/bin/bash
 
 set -x
-sudo apt-get update
-sudo apt-get upgrade -yq
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -yq {{packages|join(' ')}}
+
+# cloud-init will change /etc/apt/sources.list and may not finish yet
+# if it changes sources in middle, then apt-get install will fail to find
+# pkgs with new source since list never fetched.
+# so do git clone first, wait for cloud-init to finish in the mean while
+# it requires git available through
+REPO_ROOT=$HOME/samba
+mkdir -p $REPO_ROOT && cd $REPO_ROOT && git clone {{repo_url}} . && git fetch --all
+
+# have another sleep to be safe that cloud-init will finish
+sleep 10
+
+sudo apt-get update && \
+sudo apt-get upgrade -yq && \
+sudo apt-get dist-upgrade -yq && \
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -yq {{packages|join(' ')}} && \
+sudo apt-get clean && \
 sudo ln --force --symbolic /usr/bin/ld.gold /usr/bin/ld
-cd $HOME
-git clone {{repo_url}}
-cd samba
-git fetch --all
+
 export CC='ccache gcc'
 ./script/autobuild.py --restrict-tests=samba.tests.source --testbase=$HOME/autobuild
 ./configure.developer
