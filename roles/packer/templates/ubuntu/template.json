@@ -4,7 +4,7 @@
         "ssh_username": "ubuntu",
         "source_image_name": "{{OS_IMAGE_NAME}}",
         "image_name": "{{PACKER_OUTPUT_IMAGE_NAME}}",
-        "flavor": "c1.c1r1",
+        "flavor": "{{OS_FLAVOR_NAME}}",
         "ssh_keypair_name": "{{OS_KEYPAIR_NAME}}",
         "ssh_private_key_file": "{{OS_PRIVATE_KEY_FILE}}",
         "security_groups": ["{{OS_SECURITY_GROUP}}"],
