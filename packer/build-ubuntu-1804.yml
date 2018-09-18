@@ -12,6 +12,7 @@
 
     - name: packer
       OS_IMAGE_NAME: ubuntu-18.04-x86_64
+      PACKER_OUTPUT_IMAGE_NAME: samba-build-18.04-template
 
     - name: openstack
       state: absent
