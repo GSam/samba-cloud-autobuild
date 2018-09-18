@@ -8,6 +8,8 @@ repo_branch: master
 OS_IMAGE_NAME: ubuntu-16.04-x86_64
 OS_FLAVOR_NAME: c1.c2r2
 OS_SECURITY_GROUP: domain
+OS_KEYPAIR_NAME: catalyst_samba
+OS_PRIVATE_KEY_FILE: "{{ansible_env.HOME}}/.ssh/id_rsa_catalyst_samba"
 
 PACKER_OUTPUT_IMAGE_NAME: "packer-{{OS_IMAGE_NAME}}"
 PACKER_TMP_DIR: /tmp

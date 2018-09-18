@@ -5,6 +5,8 @@
         "source_image_name": "{{OS_IMAGE_NAME}}",
         "image_name": "{{PACKER_OUTPUT_IMAGE_NAME}}",
         "flavor": "c1.c1r1",
+        "ssh_keypair_name": "{{OS_KEYPAIR_NAME}}",
+        "ssh_private_key_file": "{{OS_PRIVATE_KEY_FILE}}",
         "security_groups": ["{{OS_SECURITY_GROUP}}"],
         "floating_ip_pool": "public-net",
         "user_data_file": "{{PACKER_TMP_DIR}}/userdata.txt",
