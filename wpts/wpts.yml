@@ -43,6 +43,17 @@
     - name: ping
       win_ping:
 
+    - name: check .NET Framework version via registry
+      win_reg_stat:
+        path: HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full
+        name: Release
+      register: reg_release
+
+    - name: check release version
+      fail:
+        msg: "current .NET version: {{reg_release}}, minimal required: 4.7.1(461310)"
+      when: reg_release.value < 461310
+
     - name: download WPTS master code
       win_get_url:
         url: "https://github.com/Microsoft/WindowsProtocolTestSuites/archive/master.zip"
