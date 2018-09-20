@@ -38,6 +38,7 @@
     test_suite_ptfconfig: "{{ test_suite_config.ptfconfig }}"
     test_suite_root: "C:\\MicrosoftProtocolTests\\{{ test_suite_name }}\\Server-Endpoint\\{{wpts_version}}"
     test_suite_bin: "{{ test_suite_root }}\\Bin"
+    test_result_file: "C:\\testresult.trx"
 
   tasks:
     - name: ping
@@ -109,20 +110,35 @@
         src: "templates/{{ test_suite_name }}/run.cmd"
         dest: "C:\\run.cmd"
 
-    - name: trigger
+    # - name: run pexpect script to trigger test
+      # local_action: command "python scripts/wpts-run.py {{ windows_ip }} Administrator@{{ samba_realm }} {{ samba_password }}"
+
+    - name: delete existing {{test_result_file}}
+      win_file:
+        path: "{{test_result_file}}"
+        state: absent
+
+    - name: trigger run.cmd
       become: yes
       become_user: SYSTEM
       become_method: runas
       win_command: "C:\\run.cmd"
+      async: 1000
+      poll: 0  # this task never exit, so don't poll it
+
+    - name: wait until testresult file exists
+      win_wait_for:
+        path: "{{test_result_file}}"
 
     - name: fetch test result file from windows
       fetch:
-        src: testresult.trx
+        src: "{{test_result_file}}"
         dest: "/tmp/testresult.trx"
         flat: yes
 
     - name: parse trx file and convert format
-      local_action: command 'python scripts/parse-trx.py --trx /tmp/testresult.trx'
+      local_action: command {{playbook_dir}}/scripts/parse-trx.py --trx /tmp/testresult.trx
       register: out
+      tags: parse-trx
 
     - debug: var=out
