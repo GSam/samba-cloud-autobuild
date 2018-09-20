@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import unicode_literals, print_function
 import argparse
 
 import xml.etree.ElementTree as ET
@@ -38,7 +39,7 @@ test_mapping = {
 FIXED = 'Microsoft.Protocol.TestSuites.{}'.format(args.test_suite)
 
 for x in print_xml:
-    print ET.tostring(entries[x])
+    print(ET.tostring(entries[x]))
 
 unit_tests = {}
 for test in entries['TestDefinitions']:
@@ -49,40 +50,41 @@ for test in entries['TestDefinitions']:
         unit_tests[test_guid] = (test, class_name)
         break
 
-print 'testsuite:', FIXED
-print parser.parse(entries['Times'].attrib['start']).strftime('time: %Y-%m-%d %H:%m:%S.%fZ')
-print 'progress: push'
+print('testsuite:', FIXED)
+print(parser.parse(entries['Times'].attrib['start']).strftime('time: %Y-%m-%d %H:%m:%S.%fZ'))
+print('progress: push')
 for result in entries['Results']:
     if result.tag.endswith('UnitTestResult'):
         start_time = result.attrib.get('startTime')
         if start_time:
-            print parser.parse(start_time).strftime('startTime: %Y-%m-%d %H:%m:%S.%fZ')
+            print(parser.parse(start_time).strftime('startTime: %Y-%m-%d %H:%m:%S.%fZ'))
 
         test = '%s.%s' % (unit_tests[result.attrib['testId']][1], result.attrib['testName'])
-        print 'test: ', test
+        print('test: ', test)
 
         out = result.find('ns:Output/ns:StdOut', namespaces={'ns': ns})
         if out is not None:
-            print ET.tostring(out, method='text').strip() + '\n'
+            print(ET.tostring(out, method='text').strip())
+            print(end='\n')
             pass
 
         end_time = result.attrib.get('endTime')
         if end_time:
-            print parser.parse(end_time).strftime('endTime: %Y-%m-%d %H:%m:%S.%fZ')
+            print(parser.parse(end_time).strftime('endTime: %Y-%m-%d %H:%m:%S.%fZ'))
 
         error = result.find('ns:Output/ns:ErrorInfo', namespaces={'ns': ns})
         if error is not None:
-            print '%s: %s \n[\n%s\n]\n' % (test_mapping[result.attrib['outcome']],
-                                         test, ET.tostring(error, method='text'))
+            print('%s: %s \n[\n%s\n]\n' % (test_mapping[result.attrib['outcome']],
+                                         test, ET.tostring(error, method='text')))
         else:
-            print '%s: %s' % (test_mapping[result.attrib['outcome']], test)
+            print('%s: %s' % (test_mapping[result.attrib['outcome']], test))
     else:
-        print ET.tostring(result, method='text').strip() + '\n'
+        print(ET.tostring(result, method='text').strip() + '\n')
 
-print parser.parse(entries['Times'].attrib['finish']).strftime('finish time: %Y-%m-%d %H:%m:%S.%fZ')
-print 'progress: pop'
+print(parser.parse(entries['Times'].attrib['finish']).strftime('finish time: %Y-%m-%d %H:%m:%S.%fZ'))
+print('progress: pop')
 outcome = entries['ResultSummary'].attrib.get('outcome', 'None')
-print 'testsuite-{}: {}'.format(mapping.get(outcome, outcome), FIXED)
+print('testsuite-{}: {}'.format(mapping.get(outcome, outcome), FIXED))
 
 counters = entries['ResultSummary'].find('ns:Counters', namespaces={'ns': ns})
 for k, v in counters.attrib.items():
