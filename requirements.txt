@@ -6,3 +6,7 @@ shade==1.28.0
 pywinrm
 pexpect
 
+# required by wpts/scripts/trx-parse.py
+lxml
+python-dateutil
+
