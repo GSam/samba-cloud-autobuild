@@ -19,7 +19,6 @@
 - name: Windows initial setup
   hosts: "windows-common"
   vars:
-    windows_ip: "{{openstack.public_v4}}"
     master_hostname: "{{primary_dc_name}}"
     master_priv_ip: "{{ hostvars[primary_dc_name].openstack.private_v4 }}"
     master_fqdn: "{{ primary_dc_name }}.{{ samba_realm|lower }}"
@@ -28,6 +27,8 @@
     windows_hostname: "{{ansible_hostname}}"
     windows_fqdn: "{{ windows_hostname }}.{{ samba_realm|lower }}"
     windows_service_salt: "{{ samba_realm }}host{{ windows_fqdn }}"
+    windows_ip: "{{openstack.public_v4}}"
+    windows_priv_ip: "{{openstack.private_v4}}"
 
     wpts_version: "3.18.9.0"
 
@@ -101,7 +102,7 @@
       become: yes
       become_user: SYSTEM
       become_method: runas
-      win_command: C:\run.cmd
+      win_command: "C:\\run.cmd"
 
     - name: fetch test result file from windows
       fetch:
