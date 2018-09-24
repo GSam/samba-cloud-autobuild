@@ -7,7 +7,7 @@ ansible_user: ubuntu
 
 samba_user: Administrator
 samba_password: Password01@
-samba_realm: samdom.example.com
+samba_realm: SAMDOM.EXAMPLE.COM
 samba_basedn: DC=samdom,DC=example,DC=com
 
 OS_SERVERS:
@@ -45,7 +45,7 @@ windows_protocol_test_suites:
     ptfconfig: MS-AZOD_ODTestSuite.deployment.ptfconfig
 
 
-VSCOMN: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Enterprise\\Common7"
+VSCOMN: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7"
 VSCOMNTOOLS: "{{VSCOMN}}\\Tools"
 VSCOMNIDE: "{{VSCOMN}}\\IDE"
 MSTEST: "{{VSCOMNIDE}}\\MSTest.exe"

@@ -21,11 +21,11 @@
   vars:
     master_hostname: "{{primary_dc_name}}"
     master_priv_ip: "{{ hostvars[primary_dc_name].openstack.private_v4 }}"
-    master_fqdn: "{{ primary_dc_name }}.{{ samba_realm|lower }}"
+    master_fqdn: "{{ primary_dc_name|lower }}.{{ samba_realm|lower }}"
     master_service_salt: "{{ samba_realm }}host{{ master_fqdn }}"
 
     windows_hostname: "{{ansible_hostname}}"
-    windows_fqdn: "{{ windows_hostname }}.{{ samba_realm|lower }}"
+    windows_fqdn: "{{ windows_hostname|lower }}.{{ samba_realm|lower }}"
     windows_service_salt: "{{ samba_realm }}host{{ windows_fqdn }}"
     windows_ip: "{{openstack.public_v4}}"
     windows_priv_ip: "{{openstack.private_v4}}"
