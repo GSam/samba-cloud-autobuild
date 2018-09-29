@@ -87,22 +87,22 @@
   tags:
     - win_chocolatey
 
-- name: win_chocolatey install Visual Studio
-  win_chocolatey:
-    name: visualstudio2017enterprise
-    params: >
-      --add Microsoft.VisualStudio.Workload.NativeDesktop
-      --add Microsoft.VisualStudio.Workload.ManagedDesktop
-      --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64
-      --add Microsoft.Net.Component.4.7.1.TargetingPack
-      --add Microsoft.Net.ComponentGroup.4.7.1.DeveloperTools
-      --add Microsoft.VisualStudio.Component.Windows10SDK.16299.Desktop
-      --add Microsoft.VisualStudio.Component.TestTools.Core
-      --add Microsoft.Component.MSBuild
-      --norestart --quiet --wait
-  tags:
-    - win_chocolatey
-
+#- name: win_chocolatey install Visual Studio
+#  win_chocolatey:
+#    name: visualstudio2017enterprise
+#    params: >
+#      --add Microsoft.VisualStudio.Workload.NativeDesktop
+#      --add Microsoft.VisualStudio.Workload.ManagedDesktop
+#      --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64
+#      --add Microsoft.Net.Component.4.7.1.TargetingPack
+#      --add Microsoft.Net.ComponentGroup.4.7.1.DeveloperTools
+#      --add Microsoft.VisualStudio.Component.Windows10SDK.16299.Desktop
+#      --add Microsoft.VisualStudio.Component.TestTools.Core
+#      --add Microsoft.Component.MSBuild
+#      --norestart --quiet --wait
+#  tags:
+#    - win_chocolatey
+#
 - name: win_feature install features
   win_feature:
     name:

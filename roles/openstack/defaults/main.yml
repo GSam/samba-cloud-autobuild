@@ -52,6 +52,18 @@ security_groups:
       port_range_min: 3389
       port_range_max: 3389
       remote_ip_prefix: 202.78.240.7/32
+    - protocol: tcp  # ssh
+      port_range_min: 22
+      port_range_max: 22
+      remote_ip_prefix: 202.49.242.198/32
+    - protocol: tcp  # winrm
+      port_range_min: 5985
+      port_range_max: 5986
+      remote_ip_prefix: 202.49.242.198/32
+    - protocol: tcp  # rdp
+      port_range_min: 3389
+      port_range_max: 3389
+      remote_ip_prefix: 202.49.242.198/32
 
 ansible_user: ubuntu
 ansible_python_interpreter: /usr/bin/env python3

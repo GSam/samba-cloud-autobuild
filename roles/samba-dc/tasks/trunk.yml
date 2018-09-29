@@ -160,3 +160,12 @@
     operation: domain-join
   when:
     - not is_primary_dc
+    - '"samba-rodc" not in group_names'
+
+- name: include tasks to run {{operation}}
+  include_tasks: tasks/domain-operation.yml
+  vars:
+    operation: domain-join-rodc
+  when:
+    - not is_primary_dc
+    - '"samba-rodc" in group_names'
